@@ -13,8 +13,8 @@ import FirebaseFirestoreInternal
 
 class HomeViewController: TabmanViewController, TMBarDataSource {
     
-    let userID = UserDefaults.standard.value(forKey: "userID") as! String
-    let database = Firestore.firestore()
+    let userID = Manager.shared.getUserID()
+    let database = Manager.shared.getDB()
     
     var videoURL = "string example"
     var videoType = "category type"
@@ -30,7 +30,6 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("UserID = \(userID)")
         let docRef = database.collection(userID).document("categories")
         
         docRef.getDocument { document, error in
@@ -46,6 +45,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
                 self.populateViewControllers()
             }
         }
+        
     }
     
     @IBAction func addList(_ sender: Any) {

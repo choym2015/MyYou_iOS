@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VideoListViewController" customModule="MyYou" customModuleProvider="target">
             <connections>
+                <outlet property="collectionView" destination="gXB-3Q-c2F" id="s4Y-IY-wjY"/>
+                <outlet property="emptyLabel" destination="wH5-CB-Iff" id="hhP-jU-qJe"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,17 +21,36 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="asdf" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLd-6D-5Cq">
-                    <rect key="frame" x="175" y="423" width="34" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="gXB-3Q-c2F">
+                    <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="aQw-Mo-jEi">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="저장된 동영상이 없습니다" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wH5-CB-Iff">
+                    <rect key="frame" x="0.0" y="428" width="393" height="21"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-            <point key="canvasLocation" x="140" y="20"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="gXB-3Q-c2F" secondAttribute="bottom" id="0Ya-yq-5vm"/>
+                <constraint firstItem="gXB-3Q-c2F" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="9fA-rg-bqH"/>
+                <constraint firstItem="gXB-3Q-c2F" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Jka-81-0aM"/>
+                <constraint firstItem="wH5-CB-Iff" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="aiA-mD-wO4"/>
+                <constraint firstItem="wH5-CB-Iff" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="cJi-iB-ZYv"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="gXB-3Q-c2F" secondAttribute="trailing" id="mXk-KK-uHN"/>
+                <constraint firstItem="wH5-CB-Iff" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="r1e-DX-N2E"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wH5-CB-Iff" secondAttribute="trailing" id="xNS-uX-ui5"/>
+            </constraints>
+            <point key="canvasLocation" x="139.69465648854961" y="19.718309859154932"/>
         </view>
     </objects>
     <resources>

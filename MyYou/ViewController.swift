@@ -12,58 +12,65 @@ class ViewController: UIViewController {
 
     let userDefaults = UserDefaults.standard
     let database = Firestore.firestore()
+    var userID: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if userDefaults.value(forKey: "userID") == nil {
-            generateUUID()
-        } else {
-            print("UUID exists. moving on.")
-            moveToNextScreen()
-        }
+        Manager.shared.setDB(db: database)
         
+        if let userID = self.userDefaults.string(forKey: "userID") {
+            self.userID = userID
+            Manager.shared.setUserID(userID: userID)
+            self.loadConfigurations()
+        } else {
+            self.generateUUID()
+        }
     }
 
     func generateUUID() {
-        let userID = UUID().uuidString
-        userDefaults.setValue(userID, forKey: "userID")
-        print("UUID created.")
+        self.userID = UUID().uuidString
+        self.userDefaults.setValue(self.userID, forKey: "userID")
+        Manager.shared.setUserID(userID: self.userID)
         
         let currentTime = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-m-dd hh.mm:ss.sss"
         
-        do {
-           database.collection(userID).document("categories").setData([
-                "order": ["전체영상","설정"]
-            ])
+        database.collection(userID).document("categories").setData([
+             "order": ["전체영상","설정"]
+         ])
+         
+        database.collection(userID).document("configurations").setData([
+         "createdAt": dateFormatter.string(from: currentTime),
+         "thumbnail": true,
+         "showAll": true,
+         "playNext": true,
+         "repeatSelection": ["1", "3", "5", "7", "10", "15", "무한"],
+         "selectedRepeatSelection": "1",
+         "userPhoneNumber": "",
+         "premium": false,
+         "pushEnabled": false,
+         "os": "ios"
+        ])
+         
+        database.collection(userID).document("videoOrder").setData([
+          "order": [""]
+        ])
+         
+        self.loadConfigurations()
+    }
+    
+    func loadConfigurations() {
+        
+        let documentReference = database.collection(self.userID).document("configurations")
+        documentReference.getDocument { documentSnapshot, error in
+            guard let documentSnapshot = documentSnapshot else { return }
             
-           database.collection(userID).document("configurations").setData([
-            "createdAt": dateFormatter.string(from: currentTime),
-            "thumbnail": true,
-            "showAll": true,
-            "playNext": true,
-            "repeatSelection": ["1", "3", "5", "7", "10", "15", "무한"],
-            "selectedRepeatSelection": "1",
-            "userPhoneNumber": "",
-            "premium": false,
-            "pushEnabled": false,
-            "os": "ios"
-            //"videoOrder": ["order": ""]
-            
-           ])
-            
-           database.collection(userID).document("videoOrder").setData([
-             "order": [""]
-           ])
-            
-          print("Document successfully written!")
-            self.moveToNextScreen()
-        } catch {
-          print("Error writing document: \(error)")
+            Manager.shared.setManager(documentSnapShot: documentSnapshot, closure: {
+                self.moveToNextScreen()                
+            })
         }
-
     }
     
     func moveToNextScreen() {
@@ -75,6 +82,5 @@ class ViewController: UIViewController {
             self.present(homeTabBarViewController, animated: true, completion: nil)
         }
     }
-    
 }
 
