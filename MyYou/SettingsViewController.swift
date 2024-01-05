@@ -9,18 +9,15 @@ import UIKit
 import Malert
 class SettingsViewController: UIViewController {
     @IBOutlet weak var backgroundView: UIView!
-
     @IBOutlet weak var proLabel: UILabel!
     @IBOutlet weak var repeatLabel: UILabel!
     @IBOutlet weak var registerLabel: UILabel!
     @IBOutlet weak var pushLabel: UILabel!
-    
     @IBOutlet weak var appAgreeLabel: UILabel!
     @IBOutlet weak var pushLabelSwitch: UISwitch!
     @IBOutlet weak var playNextSwitch: UISwitch!
     @IBOutlet weak var showAllSwitch: UISwitch!
     @IBOutlet weak var thumbnailSwitch: UISwitch!
-    
     @IBOutlet weak var proButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
     
@@ -55,7 +52,7 @@ class SettingsViewController: UIViewController {
             }
             
             self.thumbnailSwitch.isOn = Manager.shared.isShowThumbnail()
-            self.showAllSwitch.isOn = Manager.shared.isShoudShowAll()
+            self.showAllSwitch.isOn = Manager.shared.getCategories()[0] == "전체영상"
             self.playNextSwitch.isOn = Manager.shared.isPlayNext()
         }
         
@@ -86,8 +83,21 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func showAllSwitchChanged(_ sender: UISwitch) {
-        let documentReference = database.collection(userID).document("configurations")
-        documentReference.updateData(["showAll": sender.isOn])
+        var categories = Manager.shared.getCategories()
+        if sender.isOn {
+            categories.insert("전체영상", at: 0)
+        } else {
+            guard let index = categories.firstIndex(of: "전체영상") else { return }
+            categories.remove(at: index)
+        }
+        
+        let documentReference = database.collection(userID).document("categories")
+        documentReference.updateData(["order": categories]) { error in
+            guard error == nil else { return }
+            
+            Manager.shared.setCategories(categories: categories)
+            NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+        }
     }
     
     @IBAction func playNextSwitchChanged(_ sender: UISwitch) {

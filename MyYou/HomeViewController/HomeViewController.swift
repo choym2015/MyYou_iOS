@@ -25,11 +25,15 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     var tabNames = [String]()
     
     var tabBar: TMBarView<TMHorizontalBarLayout, TabPagerButton, TMBarIndicator.None>!
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.loadDB()
+        self.addObserver()
+    }
+    
+    func loadDB() {
         let docRef = database.collection(userID).document("categories")
         
         docRef.getDocument { document, error in
@@ -40,26 +44,36 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
                     
             self.tabNames = order
+            Manager.shared.setCategories(categories: order)
             
             DispatchQueue.main.async {
                 self.populateViewControllers()
             }
         }
-        
+    }
+    
+    private func addObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCategory), name: Notification.Name("updateCategory"), object: nil)
+    }
+    
+    deinit {
+      NotificationCenter.default.removeObserver(self, name: Notification.Name("updateCategory"), object: nil)
+    }
+    
+    @objc private func updateCategory() {
+        self.viewControllers.removeAll()
+        self.loadDB()
     }
     
     @IBAction func addList(_ sender: Any) {
         createNewList()
     }
     
-    
     let videoAddLauncher = VideoAddLauncher()
     private func createNewList() {
         // Pop-up view should take place above. 
         videoAddLauncher.showSettings()
     }
-    
-    
     
     private func populateViewControllers() {
         //populate view controllers here
@@ -74,19 +88,16 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             viewControllers.append(viewController)
         }
         
-        self.addTabBar()
+        if self.tabBar == nil {
+            self.addTabBar()
+        } else {
+            self.removeBar(self.tabBar)
+            self.addTabBar()
+        }
     }
     
     private func addTabBar() {
         self.dataSource = self
-        
-//        let bar = TMBar.ButtonBar()
-//        bar.layout.transitionStyle = .snap
-//        bar.backgroundView.style = .flat(color: .white)
-//        bar.layout.contentInset = UIEdgeInsets(top: 0.0, left: 20.0, bottom: 10.0, right: 20.0)
-//        bar.fadesContentEdges = true
-//        
-//        self.addBar(bar, dataSource: self, at: .top)
         
         let bar = TMBarView<TMHorizontalBarLayout, TabPagerButton, TMBarIndicator.None>()
         bar.layout.transitionStyle = .snap

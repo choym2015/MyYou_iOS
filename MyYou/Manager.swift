@@ -15,7 +15,6 @@ public class Manager {
     private var userID: String!
     private var videoOrderList: [String]!
     private var shouldShowThumbnail: Bool!
-    private var shoudShowAll: Bool!
     private var shouldPlayNext: Bool!
     private var repeatSelection: [String]!
     private var selectedRepeatSelection: String!
@@ -104,14 +103,6 @@ public class Manager {
         return self.premium
     }
     
-    public func setShoudShowAll(shoudShowAll: Bool) {
-        self.shoudShowAll = shoudShowAll
-    }
-    
-    public func isShoudShowAll() -> Bool {
-        return self.shoudShowAll
-    }
-    
     public func setPushEnabled(pushEnabled: Bool) {
         self.pushEnabled = pushEnabled
     }
@@ -135,7 +126,6 @@ public class Manager {
               let repeatSelection = documentSnapShot.get("repeatSelection") as? [String],
               let selectedRepeatSelection = documentSnapShot.get("selectedRepeatSelection") as? String,
               let thumbnail = documentSnapShot.get("thumbnail") as? Bool,
-              let showAll = documentSnapShot.get("showAll") as? Bool,
               let userPhoneNumber = documentSnapShot.get("userPhoneNumber") as? String else { return }
         
         self.shouldPlayNext = playNext
@@ -144,7 +134,6 @@ public class Manager {
         self.repeatSelection = repeatSelection
         self.selectedRepeatSelection = selectedRepeatSelection
         self.shouldShowThumbnail = thumbnail
-        self.shoudShowAll = showAll
         self.userPhoneNumber = userPhoneNumber
         
         closure()

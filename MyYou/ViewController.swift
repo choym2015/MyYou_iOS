@@ -44,7 +44,6 @@ class ViewController: UIViewController {
         database.collection(userID).document("configurations").setData([
          "createdAt": dateFormatter.string(from: currentTime),
          "thumbnail": true,
-         "showAll": true,
          "playNext": true,
          "repeatSelection": ["1", "3", "5", "7", "10", "15", "무한"],
          "selectedRepeatSelection": "1",
