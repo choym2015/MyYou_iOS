@@ -35,7 +35,7 @@ class ViewController: UIViewController {
         
         let currentTime = Date()
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-m-dd hh.mm:ss.sss"
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
         
         database.collection(userID).document("categories").setData([
              "order": ["전체영상","설정"]
@@ -51,7 +51,9 @@ class ViewController: UIViewController {
          "userPhoneNumber": "",
          "premium": false,
          "pushEnabled": false,
-         "os": "ios"
+         "os": "ios",
+         "newMessage": false,
+         "playbackSpeed": "1.0x"
         ])
          
         database.collection(userID).document("videoOrder").setData([

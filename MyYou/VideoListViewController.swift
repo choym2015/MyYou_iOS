@@ -41,13 +41,13 @@ class VideoListViewController: UIViewController {
                       let title = document.get("title") as? String,
                       let liked = document.get("liked") as? Bool,
                       let time = document.get("time") as? String,
-                      let categories = document.get("category") as? [String] else { return }
+                      let category = document.get("category") as? String else { return }
                 
-                if self.category != "전체영상" && categories.firstIndex(of: self.category) == nil {
+                if self.category != "전체영상" && category != self.category {
                     continue
                 }
                 
-                let videoItem = VideoItem(videoID: videoID, title: title, liked: liked, time: time, categories: categories)
+                let videoItem = VideoItem(videoID: videoID, title: title, liked: liked, time: time, category: category)
                 self.videos.append(videoItem)
             }
             

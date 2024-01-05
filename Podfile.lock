@@ -812,7 +812,9 @@ PODS:
     - gRPC-Core/Interface (= 1.49.1)
   - gRPC-Core/Interface (1.49.1)
   - GTMSessionFetcher/Core (3.2.0)
+  - JDStatusBarNotification (2.2.1)
   - leveldb-library (1.22.2)
+  - Malert (4.2)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -823,13 +825,17 @@ PODS:
   - RecaptchaInterop (100.0.0)
   - Tabman (3.0.2):
     - Pageboy (~> 4.0.2)
+  - youtube-ios-player-helper (1.0.4)
 
 DEPENDENCIES:
   - Firebase/Analytics
   - Firebase/Auth
   - Firebase/DynamicLinks
   - Firebase/Firestore
+  - JDStatusBarNotification
+  - Malert
   - Tabman (~> 3.0)
+  - youtube-ios-player-helper
 
 SPEC REPOS:
   trunk:
@@ -852,12 +858,15 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
+    - JDStatusBarNotification
     - leveldb-library
+    - Malert
     - nanopb
     - Pageboy
     - PromisesObjC
     - RecaptchaInterop
     - Tabman
+    - youtube-ios-player-helper
 
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
@@ -879,13 +888,16 @@ SPEC CHECKSUMS:
   "gRPC-C++": 2df8cba576898bdacd29f0266d5236fa0e26ba6a
   gRPC-Core: a21a60aefc08c68c247b439a9ef97174b0c54f96
   GTMSessionFetcher: 41b9ef0b4c08a6db4b7eb51a21ae5183ec99a2c8
+  JDStatusBarNotification: d43e8481174a2c5f195d16ce65c611f4a12bf507
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
+  Malert: 4327c2aab8aab459824ebf647195cfb6b5cd06a4
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   Pageboy: 34ff11e8d1041b81769d5bcde9b19a0cb7218bd9
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   Tabman: 6326ec3a792da1c2a6e79c7eddb56af7b591c9d6
+  youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: 93d2517b4c4bb027a0f8554c9f73a43ee575a602
+PODFILE CHECKSUM: 9954c2a46206697001230eb572b4f45d303dc6f0
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.12.1

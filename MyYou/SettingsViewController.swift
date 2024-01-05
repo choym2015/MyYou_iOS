@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import Malert
 class SettingsViewController: UIViewController {
     @IBOutlet weak var backgroundView: UIView!
 
@@ -96,7 +96,10 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func repeatButtonPressed(_ sender: UIButton) {
-        
+        DispatchQueue.main.async {
+            let repeatVC = RepeatViewController(nibName: "RepeatViewController", bundle: Bundle.main)
+            self.present(repeatVC, animated: true)            
+        }
     }
     
     @IBAction func proButtonPressed(_ sender: UIButton) {

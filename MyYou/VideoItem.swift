@@ -12,5 +12,5 @@ public struct VideoItem {
     let title: String
     let liked: Bool
     let time: String
-    let categories: [String]
+    let category: String
 }

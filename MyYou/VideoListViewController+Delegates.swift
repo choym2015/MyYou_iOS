@@ -44,6 +44,16 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let videoItem = self.videos[indexPath.row]
         
-        //show youtube
+        database.collection(userID).document("video_" + videoItem.videoID).getDocument { documentSnaptshot, error in
+            guard let documentSnapshot = documentSnaptshot,
+                let time = documentSnapshot.get("time") as? String else { return }
+
+            
+            DispatchQueue.main.async {
+                let youtubePlayerVC = YoutubeViewController(nibName: "YoutubeViewController", bundle: Bundle.main).receiveItem(index: indexPath.row, videoList: self.videos, time: time)
+                
+                self.present(youtubePlayerVC, animated: true)                
+            }
+        }
     }
 }
