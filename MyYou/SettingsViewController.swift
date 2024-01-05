@@ -112,6 +112,9 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func appAgreeButtonPressed(_ sender: UIButton) {
-        
+        DispatchQueue.main.async {
+            let appAgreeVC = AppAgreeViewController(nibName: "AppAgreeViewController", bundle: Bundle.main)
+            self.present(appAgreeVC, animated: true)
+        }
     }
 }

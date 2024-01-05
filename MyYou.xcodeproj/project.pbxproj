@@ -41,6 +41,8 @@
 		C79DFD7A2B47C0C9004AD425 /* RepeatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD782B47C0C9004AD425 /* RepeatTableViewCell.swift */; };
 		C79DFD7B2B47C0C9004AD425 /* RepeatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD792B47C0C9004AD425 /* RepeatTableViewCell.xib */; };
 		C79DFD7D2B47C568004AD425 /* ContentSizedTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */; };
+		C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */; };
+		C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */; };
 		CC054056B88B2CEE45D662A0 /* Pods_MyYou.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */; };
 /* End PBXBuildFile section */
 
@@ -111,6 +113,8 @@
 		C79DFD782B47C0C9004AD425 /* RepeatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatTableViewCell.swift; sourceTree = "<group>"; };
 		C79DFD792B47C0C9004AD425 /* RepeatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RepeatTableViewCell.xib; sourceTree = "<group>"; };
 		C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedTableView.swift; sourceTree = "<group>"; };
+		C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAgreeViewController.swift; sourceTree = "<group>"; };
+		C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AppAgreeViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +190,8 @@
 				C79DFD782B47C0C9004AD425 /* RepeatTableViewCell.swift */,
 				C79DFD792B47C0C9004AD425 /* RepeatTableViewCell.xib */,
 				C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */,
+				C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */,
+				C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -329,6 +335,7 @@
 			files = (
 				C79DFD7B2B47C0C9004AD425 /* RepeatTableViewCell.xib in Resources */,
 				5452835B2B35552E0017F268 /* LaunchScreen.storyboard in Resources */,
+				C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */,
 				54158BD12B3D1B5600E7B218 /* SettingsViewController.xib in Resources */,
 				54158BCD2B3D1A3E00E7B218 /* VideoListViewController.xib in Resources */,
 				545283632B3558240017F268 /* GoogleService-Info.plist in Resources */,
@@ -408,6 +415,7 @@
 				C75BDEC22B3EA58600AEC760 /* VideoListViewController+Delegates.swift in Sources */,
 				C79DFD7A2B47C0C9004AD425 /* RepeatTableViewCell.swift in Sources */,
 				C79DFD682B463DDB004AD425 /* YoutubeViewController.swift in Sources */,
+				C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */,
 				5452836B2B3A5B2E0017F268 /* UIColor.swift in Sources */,
 				C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
