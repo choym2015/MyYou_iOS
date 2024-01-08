@@ -15,5 +15,6 @@ target 'MyYou' do
   pod 'youtube-ios-player-helper'
   pod 'Malert'
   pod 'JDStatusBarNotification'
+  pod 'Floaty', '~> 4.2.0'
 
 end

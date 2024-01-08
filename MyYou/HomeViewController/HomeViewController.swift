@@ -10,6 +10,7 @@ import Tabman
 import Pageboy
 import FirebaseFirestore
 import FirebaseFirestoreInternal
+import Floaty
 
 class HomeViewController: TabmanViewController, TMBarDataSource {
     
@@ -31,6 +32,28 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         
         self.loadDB()
         self.addObserver()
+        self.setFloaty()
+        self.title = "마이유"
+    }
+    
+    func setFloaty() {
+        let floaty = Floaty()
+        floaty.addItem("카테고리 수정/삭제", icon: UIImage(named: "edit", in: Bundle.main, with: nil)) { item in
+            DispatchQueue.main.async {
+                let categoryListViewController = CategoryListViewController(nibName: "CategoryListViewController", bundle: Bundle.main)
+                categoryListViewController.modalPresentationStyle = .fullScreen
+                self.navigationController?.pushViewController(categoryListViewController, animated: true)
+            }
+        }
+        floaty.addItem("동영상 불러오기", icon: UIImage(named: "download", in: Bundle.main, with: nil)) { item in
+            DispatchQueue.main.async {
+            }
+        }
+        floaty.addItem("동영상 보내기", icon: UIImage(named: "premium", in: Bundle.main, with: nil)) { item in
+            DispatchQueue.main.async {
+            }
+        }
+        self.view.addSubview(floaty)
     }
     
     func loadDB() {

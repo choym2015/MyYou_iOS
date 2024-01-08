@@ -79,8 +79,9 @@ class ViewController: UIViewController {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
             homeTabBarViewController.modalPresentationStyle = .fullScreen
+            let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
             
-            self.present(homeTabBarViewController, animated: true, completion: nil)
+            self.present(navigationController, animated: true, completion: nil)
         }
     }
 }

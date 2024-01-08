@@ -43,6 +43,13 @@
 		C79DFD7D2B47C568004AD425 /* ContentSizedTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */; };
 		C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */; };
 		C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */; };
+		C79DFD8A2B4B88AC004AD425 /* CategoryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD882B4B88AC004AD425 /* CategoryListViewController.swift */; };
+		C79DFD8B2B4B88AC004AD425 /* CategoryListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD892B4B88AC004AD425 /* CategoryListViewController.xib */; };
+		C79DFD952B4B8C48004AD425 /* CategoryListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD932B4B8C48004AD425 /* CategoryListTableViewCell.swift */; };
+		C79DFD962B4B8C48004AD425 /* CategoryListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD942B4B8C48004AD425 /* CategoryListTableViewCell.xib */; };
+		C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */; };
+		C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */; };
+		C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */; };
 		CC054056B88B2CEE45D662A0 /* Pods_MyYou.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */; };
 /* End PBXBuildFile section */
 
@@ -115,6 +122,13 @@
 		C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSizedTableView.swift; sourceTree = "<group>"; };
 		C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAgreeViewController.swift; sourceTree = "<group>"; };
 		C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AppAgreeViewController.xib; sourceTree = "<group>"; };
+		C79DFD882B4B88AC004AD425 /* CategoryListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListViewController.swift; sourceTree = "<group>"; };
+		C79DFD892B4B88AC004AD425 /* CategoryListViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryListViewController.xib; sourceTree = "<group>"; };
+		C79DFD932B4B8C48004AD425 /* CategoryListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListTableViewCell.swift; sourceTree = "<group>"; };
+		C79DFD942B4B8C48004AD425 /* CategoryListTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryListTableViewCell.xib; sourceTree = "<group>"; };
+		C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryAlertView.swift; sourceTree = "<group>"; };
+		C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryAlertView.xib; sourceTree = "<group>"; };
+		C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CategoryListViewController+Delegates.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +173,11 @@
 		5452834D2B35552D0017F268 /* MyYou */ = {
 			isa = PBXGroup;
 			children = (
+				C79DFD922B4B8BFB004AD425 /* VideoList */,
+				C79DFD912B4B8BED004AD425 /* CustomViews */,
+				C79DFD902B4B8BDF004AD425 /* YoutubeViewController */,
+				C79DFD8E2B4B8B90004AD425 /* SettingsViewController */,
+				C79DFD8C2B4B8B67004AD425 /* CategoryListViewController */,
 				545283762B3A8E870017F268 /* MyYou.entitlements */,
 				545283672B356D810017F268 /* Extensions */,
 				545283662B356D780017F268 /* Classes */,
@@ -171,27 +190,8 @@
 				545283592B35552E0017F268 /* LaunchScreen.storyboard */,
 				5452835C2B35552E0017F268 /* Info.plist */,
 				545283622B3558240017F268 /* GoogleService-Info.plist */,
-				54158BCA2B3D1A3E00E7B218 /* VideoListViewController.swift */,
-				54158BCB2B3D1A3E00E7B218 /* VideoListViewController.xib */,
-				54158BCE2B3D1B5600E7B218 /* SettingsViewController.swift */,
-				54158BCF2B3D1B5600E7B218 /* SettingsViewController.xib */,
 				C75BDEB92B3E949800AEC760 /* Manager.swift */,
-				C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */,
-				C75BDEBC2B3EA4E000AEC760 /* VideoCollectionViewCell.xib */,
-				C75BDEBF2B3EA53900AEC760 /* PaddingLabel.swift */,
-				C75BDEC12B3EA58600AEC760 /* VideoListViewController+Delegates.swift */,
 				C75BDEC32B3EA5C200AEC760 /* VideoItem.swift */,
-				C75BDEC52B3EA67200AEC760 /* UIImageView+downloadImage.swift */,
-				C75BDEC72B3EA69600AEC760 /* UIImage+resizeImage.swift */,
-				C79DFD662B463DDB004AD425 /* YoutubeViewController.swift */,
-				C79DFD672B463DDB004AD425 /* YoutubeViewController.xib */,
-				C79DFD742B47B934004AD425 /* RepeatViewController.swift */,
-				C79DFD752B47B934004AD425 /* RepeatViewController.xib */,
-				C79DFD782B47C0C9004AD425 /* RepeatTableViewCell.swift */,
-				C79DFD792B47C0C9004AD425 /* RepeatTableViewCell.xib */,
-				C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */,
-				C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */,
-				C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -206,6 +206,8 @@
 		545283672B356D810017F268 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				C75BDEC52B3EA67200AEC760 /* UIImageView+downloadImage.swift */,
+				C75BDEC72B3EA69600AEC760 /* UIImage+resizeImage.swift */,
 				5452836A2B3A5B2E0017F268 /* UIColor.swift */,
 				54158BD22B3D1C0300E7B218 /* UIView+roundCorners.swift */,
 			);
@@ -248,6 +250,81 @@
 				9FF7973D3F65161CB6AC0919 /* Pods-MyYou.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		C79DFD8C2B4B8B67004AD425 /* CategoryListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFD882B4B88AC004AD425 /* CategoryListViewController.swift */,
+				C79DFD892B4B88AC004AD425 /* CategoryListViewController.xib */,
+				C79DFD932B4B8C48004AD425 /* CategoryListTableViewCell.swift */,
+				C79DFD942B4B8C48004AD425 /* CategoryListTableViewCell.xib */,
+				C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */,
+				C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */,
+				C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */,
+			);
+			path = CategoryListViewController;
+			sourceTree = "<group>";
+		};
+		C79DFD8D2B4B8B80004AD425 /* RepeatViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFD742B47B934004AD425 /* RepeatViewController.swift */,
+				C79DFD752B47B934004AD425 /* RepeatViewController.xib */,
+				C79DFD782B47C0C9004AD425 /* RepeatTableViewCell.swift */,
+				C79DFD792B47C0C9004AD425 /* RepeatTableViewCell.xib */,
+			);
+			path = RepeatViewController;
+			sourceTree = "<group>";
+		};
+		C79DFD8E2B4B8B90004AD425 /* SettingsViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFD8F2B4B8BC7004AD425 /* AppAgreeViewController */,
+				C79DFD8D2B4B8B80004AD425 /* RepeatViewController */,
+				54158BCE2B3D1B5600E7B218 /* SettingsViewController.swift */,
+				54158BCF2B3D1B5600E7B218 /* SettingsViewController.xib */,
+			);
+			path = SettingsViewController;
+			sourceTree = "<group>";
+		};
+		C79DFD8F2B4B8BC7004AD425 /* AppAgreeViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFD802B47D29B004AD425 /* AppAgreeViewController.swift */,
+				C79DFD812B47D29B004AD425 /* AppAgreeViewController.xib */,
+			);
+			path = AppAgreeViewController;
+			sourceTree = "<group>";
+		};
+		C79DFD902B4B8BDF004AD425 /* YoutubeViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFD662B463DDB004AD425 /* YoutubeViewController.swift */,
+				C79DFD672B463DDB004AD425 /* YoutubeViewController.xib */,
+			);
+			path = YoutubeViewController;
+			sourceTree = "<group>";
+		};
+		C79DFD912B4B8BED004AD425 /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				C75BDEBF2B3EA53900AEC760 /* PaddingLabel.swift */,
+				C79DFD7C2B47C568004AD425 /* ContentSizedTableView.swift */,
+			);
+			path = CustomViews;
+			sourceTree = "<group>";
+		};
+		C79DFD922B4B8BFB004AD425 /* VideoList */ = {
+			isa = PBXGroup;
+			children = (
+				54158BCA2B3D1A3E00E7B218 /* VideoListViewController.swift */,
+				54158BCB2B3D1A3E00E7B218 /* VideoListViewController.xib */,
+				C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */,
+				C75BDEBC2B3EA4E000AEC760 /* VideoCollectionViewCell.xib */,
+				C75BDEC12B3EA58600AEC760 /* VideoListViewController+Delegates.swift */,
+			);
+			path = VideoList;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -337,6 +414,7 @@
 				5452835B2B35552E0017F268 /* LaunchScreen.storyboard in Resources */,
 				C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */,
 				54158BD12B3D1B5600E7B218 /* SettingsViewController.xib in Resources */,
+				C79DFD8B2B4B88AC004AD425 /* CategoryListViewController.xib in Resources */,
 				54158BCD2B3D1A3E00E7B218 /* VideoListViewController.xib in Resources */,
 				545283632B3558240017F268 /* GoogleService-Info.plist in Resources */,
 				C75BDEBE2B3EA4E000AEC760 /* VideoCollectionViewCell.xib in Resources */,
@@ -344,6 +422,8 @@
 				C79DFD692B463DDB004AD425 /* YoutubeViewController.xib in Resources */,
 				545283562B35552D0017F268 /* Main.storyboard in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
+				C79DFD962B4B8C48004AD425 /* CategoryListTableViewCell.xib in Resources */,
+				C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,14 +498,18 @@
 				C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */,
 				5452836B2B3A5B2E0017F268 /* UIColor.swift in Sources */,
 				C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */,
+				C79DFD8A2B4B88AC004AD425 /* CategoryListViewController.swift in Sources */,
+				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
 				C79DFD762B47B934004AD425 /* RepeatViewController.swift in Sources */,
 				C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */,
 				545283752B3A8AB40017F268 /* VideoAddLauncher.swift in Sources */,
+				C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */,
 				C75BDEC62B3EA67200AEC760 /* UIImageView+downloadImage.swift in Sources */,
 				C75BDEC02B3EA53900AEC760 /* PaddingLabel.swift in Sources */,
 				545283512B35552D0017F268 /* SceneDelegate.swift in Sources */,
 				545283652B3562530017F268 /* HomeViewController.swift in Sources */,
+				C79DFD952B4B8C48004AD425 /* CategoryListTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

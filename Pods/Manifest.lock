@@ -711,6 +711,7 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
   - FirebaseSharedSwift (10.19.0)
+  - Floaty (4.2.0)
   - GoogleAppMeasurement (10.19.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.19.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -832,6 +833,7 @@ DEPENDENCIES:
   - Firebase/Auth
   - Firebase/DynamicLinks
   - Firebase/Firestore
+  - Floaty (~> 4.2.0)
   - JDStatusBarNotification
   - Malert
   - Tabman (~> 3.0)
@@ -853,6 +855,7 @@ SPEC REPOS:
     - FirebaseFirestoreInternal
     - FirebaseInstallations
     - FirebaseSharedSwift
+    - Floaty
     - GoogleAppMeasurement
     - GoogleUtilities
     - "gRPC-C++"
@@ -883,6 +886,7 @@ SPEC CHECKSUMS:
   FirebaseFirestoreInternal: a15405fb607dfd14edd568bba77028f4c7a69688
   FirebaseInstallations: 033d199474164db20c8350736842a94fe717b960
   FirebaseSharedSwift: f34eeb7d3ea87a34497629b6ca41657beadef76a
+  Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleAppMeasurement: 68afe759316673c6554dac35a0c7ae8f5d6cb4ed
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   "gRPC-C++": 2df8cba576898bdacd29f0266d5236fa0e26ba6a
@@ -898,6 +902,6 @@ SPEC CHECKSUMS:
   Tabman: 6326ec3a792da1c2a6e79c7eddb56af7b591c9d6
   youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: 9954c2a46206697001230eb572b4f45d303dc6f0
+PODFILE CHECKSUM: e51476d9873dc064103bac9a4703ef755ff02397
 
 COCOAPODS: 1.12.1
