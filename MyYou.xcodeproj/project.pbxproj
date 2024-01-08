@@ -50,6 +50,10 @@
 		C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */; };
 		C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */; };
 		C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */; };
+		C79DFD9E2B4BAB99004AD425 /* VideoEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFD9D2B4BAB99004AD425 /* VideoEditView.swift */; };
+		C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */; };
+		C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */; };
+		C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */; };
 		CC054056B88B2CEE45D662A0 /* Pods_MyYou.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */; };
 /* End PBXBuildFile section */
 
@@ -129,6 +133,10 @@
 		C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryAlertView.swift; sourceTree = "<group>"; };
 		C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryAlertView.xib; sourceTree = "<group>"; };
 		C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CategoryListViewController+Delegates.swift"; sourceTree = "<group>"; };
+		C79DFD9D2B4BAB99004AD425 /* VideoEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditView.swift; sourceTree = "<group>"; };
+		C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoEditView.xib; sourceTree = "<group>"; };
+		C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryViewController.swift; sourceTree = "<group>"; };
+		C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +181,7 @@
 		5452834D2B35552D0017F268 /* MyYou */ = {
 			isa = PBXGroup;
 			children = (
+				C79DFDA12B4BB76B004AD425 /* SelectCategoryViewController */,
 				C79DFD922B4B8BFB004AD425 /* VideoList */,
 				C79DFD912B4B8BED004AD425 /* CustomViews */,
 				C79DFD902B4B8BDF004AD425 /* YoutubeViewController */,
@@ -323,8 +332,19 @@
 				C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */,
 				C75BDEBC2B3EA4E000AEC760 /* VideoCollectionViewCell.xib */,
 				C75BDEC12B3EA58600AEC760 /* VideoListViewController+Delegates.swift */,
+				C79DFD9D2B4BAB99004AD425 /* VideoEditView.swift */,
+				C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */,
 			);
 			path = VideoList;
+			sourceTree = "<group>";
+		};
+		C79DFDA12B4BB76B004AD425 /* SelectCategoryViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */,
+				C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */,
+			);
+			path = SelectCategoryViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -414,6 +434,7 @@
 				5452835B2B35552E0017F268 /* LaunchScreen.storyboard in Resources */,
 				C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */,
 				54158BD12B3D1B5600E7B218 /* SettingsViewController.xib in Resources */,
+				C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */,
 				C79DFD8B2B4B88AC004AD425 /* CategoryListViewController.xib in Resources */,
 				54158BCD2B3D1A3E00E7B218 /* VideoListViewController.xib in Resources */,
 				545283632B3558240017F268 /* GoogleService-Info.plist in Resources */,
@@ -421,6 +442,7 @@
 				545283582B35552E0017F268 /* Assets.xcassets in Resources */,
 				C79DFD692B463DDB004AD425 /* YoutubeViewController.xib in Resources */,
 				545283562B35552D0017F268 /* Main.storyboard in Resources */,
+				C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
 				C79DFD962B4B8C48004AD425 /* CategoryListTableViewCell.xib in Resources */,
 				C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */,
@@ -486,6 +508,7 @@
 			files = (
 				C75BDEC42B3EA5C200AEC760 /* VideoItem.swift in Sources */,
 				54158BCC2B3D1A3E00E7B218 /* VideoListViewController.swift in Sources */,
+				C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */,
 				545283732B3A5F520017F268 /* HomeViewController+Delegate.swift in Sources */,
 				C79DFD7D2B47C568004AD425 /* ContentSizedTableView.swift in Sources */,
 				C75BDEC82B3EA69600AEC760 /* UIImage+resizeImage.swift in Sources */,
@@ -506,6 +529,7 @@
 				545283752B3A8AB40017F268 /* VideoAddLauncher.swift in Sources */,
 				C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */,
 				C75BDEC62B3EA67200AEC760 /* UIImageView+downloadImage.swift in Sources */,
+				C79DFD9E2B4BAB99004AD425 /* VideoEditView.swift in Sources */,
 				C75BDEC02B3EA53900AEC760 /* PaddingLabel.swift in Sources */,
 				545283512B35552D0017F268 /* SceneDelegate.swift in Sources */,
 				545283652B3562530017F268 /* HomeViewController.swift in Sources */,

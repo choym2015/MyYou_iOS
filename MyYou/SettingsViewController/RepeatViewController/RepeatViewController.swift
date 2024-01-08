@@ -135,8 +135,6 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RepeatTableViewCell", for: indexPath)
-//        cell.accessoryType = .checkmark
         self.selectedRepeatSelection = self.repeatSelections[indexPath.row]
     }
     

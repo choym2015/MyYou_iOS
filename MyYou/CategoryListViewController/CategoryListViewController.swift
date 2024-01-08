@@ -211,6 +211,8 @@ class CategoryListViewController: UIViewController {
                     return
                 }
                 
+                Manager.shared.setCategories(categories: updatedCategories)
+                
                 updatedCategories.removeAll { category in
                     category == "전체영상" || category == "설정"
                 }

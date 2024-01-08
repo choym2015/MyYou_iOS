@@ -30,7 +30,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.loadDB()
+        self.loadVideoOrder()
         self.addObserver()
         self.setFloaty()
         self.title = "마이유"
@@ -54,6 +54,20 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
         }
         self.view.addSubview(floaty)
+    }
+    
+    func loadVideoOrder() {
+        let docRef = database.collection(userID).document("videoOrder")
+        docRef.getDocument { document, error in
+            guard let document = document,
+                  let order = document.get("order") as? [String] else {
+                print("NO DOCUMENT")
+                return
+            }
+            
+            Manager.shared.setVideoOrderList(videoOrderList: order)
+            self.loadDB()
+        }
     }
     
     func loadDB() {
