@@ -37,8 +37,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        let saveData = UserDefaults.init(suiteName: "group.com.chopas.jungbonet.myyouapp.share")
+        if let _ = saveData?.string(forKey: "urlData") {
+            NotificationCenter.default.post(name: Notification.Name("receivedYoutubeShare"), object: nil)
+        }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {

@@ -30,6 +30,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.receivedYoutubeShare()
         self.loadVideoOrder()
         self.addObserver()
         self.setFloaty()
@@ -91,15 +92,28 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateCategory), name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
     deinit {
-      NotificationCenter.default.removeObserver(self, name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
     @objc private func updateCategory() {
         self.viewControllers.removeAll()
         self.loadDB()
+    }
+    
+    @objc private func receivedYoutubeShare() {
+        let saveData = UserDefaults.init(suiteName: "group.com.chopas.jungbonet.myyouapp.share")
+        guard let url = saveData?.string(forKey: "urlData") else { return }
+        
+        DispatchQueue.main.async {
+            saveData?.set(nil, forKey: "urlData")
+        }
+        
+        let id = url.youtubeID
     }
     
     @IBAction func addList(_ sender: Any) {
@@ -170,4 +184,3 @@ class TabPagerButton: Tabman.TMLabelBarButton {
         super.update(for: selectionState)
     }
 }
-
