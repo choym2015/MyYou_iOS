@@ -11,6 +11,7 @@ target 'MyYou' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/DynamicLinks'
+  pod 'Firebase/Messaging'
   pod 'Tabman', '~> 3.0'
   pod 'youtube-ios-player-helper'
   pod 'Malert'
