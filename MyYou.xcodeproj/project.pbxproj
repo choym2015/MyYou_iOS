@@ -370,6 +370,8 @@
 				5452839A2B3AAACB0017F268 /* PBXTargetDependency */,
 			);
 			name = MyYou;
+			packageProductDependencies = (
+			);
 			productName = MyYou;
 			productReference = 5452834B2B35552D0017F268 /* MyYou.app */;
 			productType = "com.apple.product-type.application";
@@ -418,6 +420,9 @@
 				Base,
 			);
 			mainGroup = 545283422B35552D0017F268;
+			packageReferences = (
+				54B1B57C2B4FC8F100A16B55 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 5452834C2B35552D0017F268 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -869,6 +874,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		54B1B57C2B4FC8F100A16B55 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 8.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 545283432B35552D0017F268 /* Project object */;
 }
