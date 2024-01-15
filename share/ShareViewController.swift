@@ -13,7 +13,7 @@ class ShareViewController: UIViewController {
     
     private let appUrlString = "MyYou://home?url="
     private let typeText = String(kUTTypeText)
-//    private let typeUrl = String(kUTTypeURL)
+    private let typeUrl = String(kUTTypeURL)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,8 +26,11 @@ class ShareViewController: UIViewController {
             return
         }
         
+        
         if itemProvider.hasItemConformingToTypeIdentifier(typeText) {
             self.handleIncomingText(itemProvider: itemProvider)
+        } else if itemProvider.hasItemConformingToTypeIdentifier(typeUrl) {
+            self.handleIncomingUrl(itemProvider: itemProvider)
         } else {
             print("error: no url or text found")
             self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
@@ -49,6 +52,23 @@ class ShareViewController: UIViewController {
                 
                 DispatchQueue.main.async {
                     saveData?.set(url, forKey: "urlData")
+                    saveData?.synchronize()
+                    self.openMainApp()
+                }
+            }
+        }
+    }
+    
+    private func handleIncomingUrl(itemProvider: NSItemProvider) {
+        itemProvider.loadItem(forTypeIdentifier: typeUrl, options: nil) { (item, error) in
+            if let error = error {
+                print("URL-Error: \(error.localizedDescription)")
+            }
+            
+            if let url = item as? NSURL, let urlString = url.absoluteString {
+                DispatchQueue.main.async {
+                    let saveData = UserDefaults.init(suiteName: "group.com.chopas.jungbonet.myyouapp.share")
+                    saveData?.set(urlString, forKey: "urlData")
                     saveData?.synchronize()
                     self.openMainApp()
                 }

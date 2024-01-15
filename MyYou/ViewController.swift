@@ -82,7 +82,6 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
-//            homeTabBarViewController.modalPresentationStyle = .fullScreen
             let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
             navigationController.modalPresentationStyle = .fullScreen
             

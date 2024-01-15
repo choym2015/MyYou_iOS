@@ -30,7 +30,6 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.receivedYoutubeShare()
         self.loadVideoOrder()
         self.addObserver()
         self.setFloaty()
@@ -41,23 +40,23 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         let floaty = Floaty()
         floaty.paddingX = 15
         floaty.paddingY = 40
-        floaty.buttonColor = hexStringToUIColor(hex: "#6200EE")
-        floaty.selectedColor = hexStringToUIColor(hex: "#DC5C60")
+        floaty.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        floaty.selectedColor = UIColor().hexStringToUIColor(hex: "#DC5C60")
         floaty.plusColor = UIColor.white
         let item = FloatyItem()
-        item.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         item.icon = UIImage(named: "edit")
         item.title = "카테고리 수정/삭제"
         item.handler = { item in
             DispatchQueue.main.async {
-                item.buttonColor = self.hexStringToUIColor(hex: "#6200EE")
+                item.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
                 let categoryListViewController = CategoryListViewController(nibName: "CategoryListViewController", bundle: Bundle.main)
                 categoryListViewController.modalPresentationStyle = .fullScreen
                 self.navigationController?.pushViewController(categoryListViewController, animated: true)
             }
         }
         let item2 = FloatyItem()
-        item2.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item2.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         item2.icon = UIImage(named: "link")
         item2.title = "동영상 불러오기"
         item2.handler = { item in
@@ -66,7 +65,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
         }
         let item3 = FloatyItem()
-        item3.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item3.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         item3.icon = UIImage(named: "premium")
         item3.title = "동영상 보내기"
         item3.handler = { item in
@@ -114,7 +113,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     private func addObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateCategory), name: Notification.Name("updateCategory"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.checkForYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
     deinit {
@@ -127,7 +126,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         self.loadDB()
     }
     
-    @objc private func receivedYoutubeShare() {
+    @objc private func checkForYoutubeShare() {
         let saveData = UserDefaults.init(suiteName: "group.com.chopas.jungbonet.myyouapp.share")
         guard let url = saveData?.string(forKey: "urlData") else { return }
         
@@ -135,7 +134,9 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             saveData?.set(nil, forKey: "urlData")
         }
         
-        let id = url.youtubeID
+        
+        let id = url.youtubeID!
+        getVideoInfo(videoID: id)
     }
     
     @IBAction func addList(_ sender: Any) {
@@ -186,26 +187,40 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         }
     }
     
-    func hexStringToUIColor (hex:String) -> UIColor {
-        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+    func getVideoInfo(videoID: String) {
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/videos?id=\(videoID)&key=AIzaSyBVWwUR7x6-axUKWIQn9pH6tl8MS_4vPfE&part=snippet,contentDetails,statistics,status")
         
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
+        let task = URLSession.shared.dataTask(with: url!) { (data, reponse, error) in
+            guard error == nil else {
+                print("UNABLE TO FETCH YOUTUBE INFO")
+                return
+            }
+            
+            guard let content = data,
+                  let jsonArray = try? JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as? [String: Any] else {
+                print("UNABLE TO PARSE YOUTUBE INFO")
+                return
+            }
+            
+            guard let itemJson = jsonArray["items"] as? [[String: Any]],
+                  let id = itemJson[0]["id"] as? String,
+                  let snippet = itemJson[0]["snippet"] as? [String: AnyObject],
+                  let title = snippet["title"] as? String else {
+                print("UNABLE TO PARSE YOUTUBE JSON")
+                return
+            }
+            
+            self.database.collection(self.userID).document("video_" + id).setData([
+              "title": title,
+              "videoID": id,
+              "liked": false,
+              "time": "",
+              "category": ""
+            ])
+            
+            self.updateCategory()
         }
-        
-        if ((cString.count) != 6) {
-            return UIColor.gray
-        }
-        
-        var rgbValue:UInt32 = 0
-        Scanner(string: cString).scanHexInt32(&rgbValue)
-        
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
+        task.resume()
     }
 }
 
