@@ -39,21 +39,43 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     func setFloaty() {
         let floaty = Floaty()
-        floaty.addItem("카테고리 수정/삭제", icon: UIImage(named: "edit", in: Bundle.main, with: nil)) { item in
+        floaty.paddingX = 15
+        floaty.paddingY = 40
+        floaty.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        floaty.selectedColor = hexStringToUIColor(hex: "#DC5C60")
+        floaty.plusColor = UIColor.white
+        let item = FloatyItem()
+        item.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item.icon = UIImage(named: "edit")
+        item.title = "카테고리 수정/삭제"
+        item.handler = { item in
             DispatchQueue.main.async {
+                item.buttonColor = self.hexStringToUIColor(hex: "#6200EE")
                 let categoryListViewController = CategoryListViewController(nibName: "CategoryListViewController", bundle: Bundle.main)
                 categoryListViewController.modalPresentationStyle = .fullScreen
                 self.navigationController?.pushViewController(categoryListViewController, animated: true)
             }
         }
-        floaty.addItem("동영상 불러오기", icon: UIImage(named: "download", in: Bundle.main, with: nil)) { item in
+        let item2 = FloatyItem()
+        item2.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item2.icon = UIImage(named: "link")
+        item2.title = "동영상 불러오기"
+        item2.handler = { item in
+            DispatchQueue.main.async {
+
+            }
+        }
+        let item3 = FloatyItem()
+        item3.buttonColor = hexStringToUIColor(hex: "#6200EE")
+        item3.icon = UIImage(named: "premium")
+        item3.title = "동영상 보내기"
+        item3.handler = { item in
             DispatchQueue.main.async {
             }
         }
-        floaty.addItem("동영상 보내기", icon: UIImage(named: "premium", in: Bundle.main, with: nil)) { item in
-            DispatchQueue.main.async {
-            }
-        }
+        floaty.addItem(item: item)
+        floaty.addItem(item: item2)
+        floaty.addItem(item: item3)
         self.view.addSubview(floaty)
     }
     
@@ -162,6 +184,28 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         self.tabBar.buttons.customize { (button) in
             button.update(for: .unselected)
         }
+    }
+    
+    func hexStringToUIColor (hex:String) -> UIColor {
+        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+        
+        if ((cString.count) != 6) {
+            return UIColor.gray
+        }
+        
+        var rgbValue:UInt32 = 0
+        Scanner(string: cString).scanHexInt32(&rgbValue)
+        
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
     }
 }
 

@@ -14,8 +14,12 @@ class ViewController: UIViewController {
     let database = Firestore.firestore()
     var userID: String!
     
+    @IBOutlet weak var versionLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.updateVersion()
         
         Manager.shared.setDB(db: database)
         
@@ -78,10 +82,20 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
-            homeTabBarViewController.modalPresentationStyle = .fullScreen
+//            homeTabBarViewController.modalPresentationStyle = .fullScreen
             let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
+            navigationController.modalPresentationStyle = .fullScreen
             
             self.present(navigationController, animated: true, completion: nil)
+        }
+    }
+    
+    private func updateVersion() {
+        guard let dictionary = Bundle.main.infoDictionary,
+              let version = dictionary["CFBundleShortVersionString"] as? String else { return }
+        
+        DispatchQueue.main.async {
+            self.versionLabel.text = "v \(version)"
         }
     }
 }

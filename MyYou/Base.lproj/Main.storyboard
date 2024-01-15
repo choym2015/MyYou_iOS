@@ -17,17 +17,33 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hello world" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C91-zv-SMj">
-                                <rect key="frame" x="133" y="394" width="127" height="65"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                <nil key="textColor"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash" translatesAutoresizingMaskIntoConstraints="NO" id="kP9-5R-dmj">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yRL-MV-xPl">
+                                <rect key="frame" x="175.66666666666666" y="817" width="42" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="yRL-MV-xPl" secondAttribute="height" multiplier="2:1" id="Ca5-Vd-tYv"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="yRL-MV-xPl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="6u5-CN-RQA"/>
+                            <constraint firstItem="kP9-5R-dmj" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="ZFb-ZX-ArY"/>
+                            <constraint firstItem="kP9-5R-dmj" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="cwv-Yz-6Wz"/>
+                            <constraint firstAttribute="bottom" secondItem="kP9-5R-dmj" secondAttribute="bottom" id="tHb-6z-6ma"/>
+                            <constraint firstItem="kP9-5R-dmj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="vE5-DR-mei"/>
+                            <constraint firstAttribute="bottom" secondItem="yRL-MV-xPl" secondAttribute="bottom" constant="14" id="wFa-EM-P78"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="versionLabel" destination="yRL-MV-xPl" id="6gg-Bm-xCy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -50,6 +66,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="splash" width="1125" height="2436"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
