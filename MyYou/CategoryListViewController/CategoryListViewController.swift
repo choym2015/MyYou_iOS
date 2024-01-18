@@ -8,44 +8,31 @@
 import UIKit
 import Malert
 import JDStatusBarNotification
+import Alamofire
 
 class CategoryListViewController: UIViewController {
     @IBOutlet weak var categoryTableView: UITableView!
     
-    let database = Manager.shared.getDB()
     let userID = Manager.shared.getUserID()
-    var categories: [String] = []
-    var showAll: Bool = false
+    var categories: [String] = Manager.shared.getCategories()
+    var videoCategories: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.categoryTableView.register(UINib(nibName: "CategoryListTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: "CategoryListTableViewCell")
         
-        self.loadCategories()
-        self.addRightButton()
-    }
-    
-    func loadCategories() {
-        let documentReference = self.database.collection(userID).document("categories")
-        documentReference.getDocument { documentSnapshot, error in
-            guard error == nil else { return }
-            
-            if var categories = documentSnapshot?.get("order") as? [String] {
-                self.showAll = categories.first == "전체영상"
-                
-                categories.removeAll { category in
-                    category == "설정" || category == "전체영상"
-                }
-                
-                self.categories = categories
-                
-                self.categoryTableView.dataSource = self
-                self.categoryTableView.delegate = self
-                self.categoryTableView.dragInteractionEnabled = true
-                self.categoryTableView.dragDelegate = self
-            }
+        self.videoCategories = self.categories
+        self.videoCategories.removeAll { category in
+            category == "전체영상" || category == "설정"
         }
+        
+        self.categoryTableView.dataSource = self
+        self.categoryTableView.delegate = self
+        self.categoryTableView.dragInteractionEnabled = true
+        self.categoryTableView.dragDelegate = self
+        
+        self.addRightButton()
     }
     
     func addRightButton() {
@@ -80,32 +67,42 @@ class CategoryListViewController: UIViewController {
                 return
             }
             
-            let documentReference = self.database.collection(self.userID).document("categories")
-            documentReference.getDocument { documentSnapshot, error in
-                guard error == nil,
-                      var updatedCategories = documentSnapshot?.get("order") as? [String] else { return }
-                
-                if updatedCategories.first == "전체영상" {
-                    updatedCategories.insert(newCategory, at: 1)
-                } else {
-                    updatedCategories.insert(newCategory, at: 0)
-                }
-                
-                documentReference.updateData(["order": updatedCategories]) { error in
-                    guard error == nil else {
-                        NotificationPresenter.shared.present(error!.localizedDescription, includedStyle: .error)
-                        return
-                    }
-                    
-                    updatedCategories.removeAll { category in
-                        category == "전체영상" || category == "설정"
-                    }
-                    
-                    self.categories = updatedCategories
-                    self.categoryTableView.reloadData()
-                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-                }
+            if self.videoCategories.contains(newCategory) {
+                return
             }
+            
+            if let firstCategory = self.categories.first,
+               firstCategory == "전체영상" {
+                self.categories.insert(newCategory, at: 1)
+            } else {
+                self.categories.insert(newCategory, at: 0)
+            }
+            
+            self.videoCategories.insert(newCategory, at: 0)
+            
+            
+            let listString = self.categories.joined(separator: ",")
+            let params: Parameters = ["categories" : listString, "userID" : self.userID]
+            
+            AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
+                       method: .post,
+                       parameters: params,
+                       encoding: URLEncoding.default,
+                       headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+            
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+                switch response.result {
+                case .success:
+                    Manager.shared.setCategories(categories: self.categories)
+                    DispatchQueue.main.async {
+                        self.categoryTableView.reloadData()
+                        NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                    }
+                case .failure(let err):
+                    print(err.localizedDescription)
+                }
+            })
         }
         
         completeButton.cornerRadius = 10
@@ -179,48 +176,60 @@ class CategoryListViewController: UIViewController {
     }
     
     func updateVideoWithCategoryEdit(oldCategory: String, newCategory: String) {
-        self.database.collection(userID).whereField("category", isEqualTo: oldCategory).getDocuments { querySnapshot, error in
-            guard error == nil,
-                  let documentSnapshots = querySnapshot?.documents else { return }
-            
-            for documentSnapshot in documentSnapshots {
-                let documentReference = self.database.collection(self.userID).document(documentSnapshot.documentID)
-                documentReference.updateData(["category": newCategory])
+        let params: Parameters = ["oldCategory" : oldCategory, "newCategory" : newCategory, "userID" : self.userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/videoTable/update_all_videos_with_category.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                self.updateCategoryName(oldCategory: oldCategory, newCategory: newCategory)
+            case .failure(let err):
+                print(err.localizedDescription)
             }
-        }
+        })
     }
     
     func updateCategoryName(oldCategory: String, newCategory: String) {
-        let documentReference = self.database.collection(userID).document("categories")
-        documentReference.getDocument { documentSnapshot, error in
-            guard error == nil,
-                  var updatedCategories = documentSnapshot?.get("order") as? [String] else { return }
-            
-            guard let index = updatedCategories.firstIndex(of: oldCategory) else { return }
-            
-            if newCategory.isEmpty {
-                updatedCategories.remove(at: index)
-            } else {
-                updatedCategories.insert(newCategory, at: index)
-                updatedCategories.remove(at: index + 1)
-            }
-            
-            documentReference.updateData(["order": updatedCategories]) { error in
-                guard error == nil else {
-                    NotificationPresenter.shared.present(error!.localizedDescription, includedStyle: .error)
-                    return
-                }
-                
-                Manager.shared.setCategories(categories: updatedCategories)
-                
-                updatedCategories.removeAll { category in
+        guard let index = self.categories.firstIndex(of: oldCategory) else { return }
+        
+        if newCategory.isEmpty {
+            self.categories.remove(at: index)
+        } else {
+            self.categories[index] = newCategory
+        }
+        
+        let listString = self.categories.joined(separator: ",")
+        let params: Parameters = ["categories" : listString, "userID" : self.userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                Manager.shared.setCategories(categories: self.categories)
+                self.videoCategories = self.categories
+                self.videoCategories.removeAll { category in
                     category == "전체영상" || category == "설정"
                 }
                 
-                self.categories = updatedCategories
-                self.categoryTableView.reloadData()
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                DispatchQueue.main.async {
+                    self.categoryTableView.reloadData()
+                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
             }
-        }
+        })
     }
 }

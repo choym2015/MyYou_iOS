@@ -55,6 +55,12 @@
 		C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */; };
 		C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */; };
 		C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */; };
+		C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A292B5509560065D2B3 /* Configuration.swift */; };
+		C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */; };
+		C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2F2B5612AF0065D2B3 /* User.swift */; };
+		C7DE1A322B5613A90065D2B3 /* SimpleResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A312B5613A90065D2B3 /* SimpleResponse.swift */; };
+		C7DE1A342B5636D30065D2B3 /* SettingsViewController+Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A332B5636D30065D2B3 /* SettingsViewController+Network.swift */; };
+		C7DE1A362B563ED70065D2B3 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A352B563ED70065D2B3 /* Category.swift */; };
 		CC054056B88B2CEE45D662A0 /* Pods_MyYou.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */; };
 /* End PBXBuildFile section */
 
@@ -139,6 +145,12 @@
 		C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoEditView.xib; sourceTree = "<group>"; };
 		C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryViewController.swift; sourceTree = "<group>"; };
 		C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryViewController.xib; sourceTree = "<group>"; };
+		C7DE1A292B5509560065D2B3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		C7DE1A2F2B5612AF0065D2B3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C7DE1A312B5613A90065D2B3 /* SimpleResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleResponse.swift; sourceTree = "<group>"; };
+		C7DE1A332B5636D30065D2B3 /* SettingsViewController+Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsViewController+Network.swift"; sourceTree = "<group>"; };
+		C7DE1A352B563ED70065D2B3 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +195,7 @@
 		5452834D2B35552D0017F268 /* MyYou */ = {
 			isa = PBXGroup;
 			children = (
+				C7DE1A282B55094D0065D2B3 /* Classes */,
 				C79DFDA12B4BB76B004AD425 /* SelectCategoryViewController */,
 				C79DFD922B4B8BFB004AD425 /* VideoList */,
 				C79DFD912B4B8BED004AD425 /* CustomViews */,
@@ -191,7 +204,6 @@
 				C79DFD8C2B4B8B67004AD425 /* CategoryListViewController */,
 				545283762B3A8E870017F268 /* MyYou.entitlements */,
 				545283672B356D810017F268 /* Extensions */,
-				545283662B356D780017F268 /* Classes */,
 				545283712B3A5F380017F268 /* HomeViewController */,
 				5452834E2B35552D0017F268 /* AppDelegate.swift */,
 				545283502B35552D0017F268 /* SceneDelegate.swift */,
@@ -205,13 +217,6 @@
 				C75BDEC32B3EA5C200AEC760 /* VideoItem.swift */,
 			);
 			path = MyYou;
-			sourceTree = "<group>";
-		};
-		545283662B356D780017F268 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Classes;
 			sourceTree = "<group>";
 		};
 		545283672B356D810017F268 /* Extensions */ = {
@@ -296,6 +301,7 @@
 				C79DFD8D2B4B8B80004AD425 /* RepeatViewController */,
 				54158BCE2B3D1B5600E7B218 /* SettingsViewController.swift */,
 				54158BCF2B3D1B5600E7B218 /* SettingsViewController.xib */,
+				C7DE1A332B5636D30065D2B3 /* SettingsViewController+Network.swift */,
 			);
 			path = SettingsViewController;
 			sourceTree = "<group>";
@@ -348,6 +354,18 @@
 				C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */,
 			);
 			path = SelectCategoryViewController;
+			sourceTree = "<group>";
+		};
+		C7DE1A282B55094D0065D2B3 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C7DE1A292B5509560065D2B3 /* Configuration.swift */,
+				C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */,
+				C7DE1A2F2B5612AF0065D2B3 /* User.swift */,
+				C7DE1A312B5613A90065D2B3 /* SimpleResponse.swift */,
+				C7DE1A352B563ED70065D2B3 /* Category.swift */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -514,12 +532,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7DE1A342B5636D30065D2B3 /* SettingsViewController+Network.swift in Sources */,
 				C75BDEC42B3EA5C200AEC760 /* VideoItem.swift in Sources */,
 				54158BCC2B3D1A3E00E7B218 /* VideoListViewController.swift in Sources */,
 				C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */,
 				545283732B3A5F520017F268 /* HomeViewController+Delegate.swift in Sources */,
+				C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */,
+				C7DE1A362B563ED70065D2B3 /* Category.swift in Sources */,
 				C79DFD7D2B47C568004AD425 /* ContentSizedTableView.swift in Sources */,
 				C75BDEC82B3EA69600AEC760 /* UIImage+resizeImage.swift in Sources */,
+				C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */,
 				54158BD32B3D1C0300E7B218 /* UIView+roundCorners.swift in Sources */,
 				545283532B35552D0017F268 /* ViewController.swift in Sources */,
 				54158BD02B3D1B5600E7B218 /* SettingsViewController.swift in Sources */,
@@ -527,10 +549,12 @@
 				C79DFD7A2B47C0C9004AD425 /* RepeatTableViewCell.swift in Sources */,
 				C79DFD682B463DDB004AD425 /* YoutubeViewController.swift in Sources */,
 				C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */,
+				C7DE1A322B5613A90065D2B3 /* SimpleResponse.swift in Sources */,
 				5452836B2B3A5B2E0017F268 /* UIColor.swift in Sources */,
 				C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */,
 				C79DFD8A2B4B88AC004AD425 /* CategoryListViewController.swift in Sources */,
 				C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */,
+				C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */,
 				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
 				C79DFD762B47B934004AD425 /* RepeatViewController.swift in Sources */,

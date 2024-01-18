@@ -7,6 +7,7 @@
 
 import UIKit
 import JDStatusBarNotification
+import Alamofire
 
 class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
@@ -18,7 +19,6 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     var repeatSelections = Manager.shared.getRepeatSelection()
     var selectedRepeatSelection = Manager.shared.getSelectedRepeatSelection()
-    let database = Manager.shared.getDB()
     let userID = Manager.shared.getUserID()
     
     override func viewDidLoad() {
@@ -64,17 +64,18 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @IBAction func completeButtonPressed(_ sender: UIButton) {
-        let documentReference = self.database.collection(userID).document("configurations")
-        documentReference.updateData(["selectedRepeatSelection": self.selectedRepeatSelection]) { error in
-            guard error == nil else {
-                return
-            }
-            
-            Manager.shared.setSelectedRepeatSelection(selectedRepeatSelection: self.selectedRepeatSelection)
-            DispatchQueue.main.async {
-                self.dismiss(animated: true)
-            }
-        }
+//        let documentReference = self.database.collection(userID).document("configurations")
+//        documentReference.updateData(["selectedRepeatSelection": self.selectedRepeatSelection]) { error in
+//            guard error == nil else {
+//                return
+//            }
+//            
+//            Manager.shared.setSelectedRepeatSelection(selectedRepeatSelection: self.selectedRepeatSelection)
+//            DispatchQueue.main.async {
+//                self.dismiss(animated: true)
+//            }
+//        }
+        self.updateSelectedRepeatSelection()
     }
     
     func addSelectionNumber() {
@@ -95,21 +96,22 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         
-        let documentReference = self.database.collection(userID).document("configurations")
-        documentReference.updateData(["repeatSelection": sortedRepeatSelections])
-        documentReference.updateData(["repeatSelection": sortedRepeatSelections]) { error in
-            guard error == nil else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                Manager.shared.setRepeatSelection(repeatSelection: sortedRepeatSelections)
-                self.repeatSelections = sortedRepeatSelections
-                self.repeatTableView.reloadData()
-                self.repeatTextField.text = ""
-                self.repeatTextField.resignFirstResponder()
-            }
-        }
+        self.updateRepeatSelections(repeatSelections: sortedRepeatSelections)
+//        let documentReference = self.database.collection(userID).document("configurations")
+//        documentReference.updateData(["repeatSelection": sortedRepeatSelections])
+//        documentReference.updateData(["repeatSelection": sortedRepeatSelections]) { error in
+//            guard error == nil else {
+//                return
+//            }
+//            
+//            DispatchQueue.main.async {
+//                Manager.shared.setRepeatSelection(repeatSelection: sortedRepeatSelections)
+//                self.repeatSelections = sortedRepeatSelections
+//                self.repeatTableView.reloadData()
+//                self.repeatTextField.text = ""
+//                self.repeatTextField.resignFirstResponder()
+//            }
+//        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -121,15 +123,6 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let repeatNumber = self.repeatSelections[indexPath.row]
         cell.repeatLabel.text = repeatNumber
-        
-//        if repeatNumber == self.selectedRepeatSelection {
-//            cell.isSelected = true
-//            cell.accessoryType = .checkmark
-//            
-//        } else {
-//            cell.isSelected = false
-//            cell.accessoryType = .none
-//        }
                 
         return cell
     }
@@ -150,5 +143,55 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if self.view.frame.origin.y != 0 {
             self.view.frame.origin.y = 0
         }
+    }
+    
+    func updateSelectedRepeatSelection() {
+        let params: Parameters = ["selectedRepeatSelection" : self.selectedRepeatSelection, "userID" : userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_selected_repeat_selection.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                Manager.shared.setSelectedRepeatSelection(selectedRepeatSelection: self.selectedRepeatSelection)
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true)
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        })
+    }
+    
+    func updateRepeatSelections(repeatSelections: [String]) {
+        let listString = repeatSelections.joined(separator: ",")
+        let params: Parameters = ["repeatSelection" : listString, "userID" : userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_repeat_selections.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                Manager.shared.setRepeatSelection(repeatSelection: repeatSelections)
+                DispatchQueue.main.async {
+                    self.repeatSelections = repeatSelections
+                    self.repeatTableView.reloadData()
+                    self.repeatTextField.text = ""
+                    self.repeatTextField.resignFirstResponder()
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        })
     }
 }

@@ -8,11 +8,11 @@
 import UIKit
 import Malert
 import JDStatusBarNotification
+import Alamofire
 
-class VideoListViewController: UIViewController {
+class VideoListViewController: UIViewController {    
     var category: String!
     var videos: [VideoItem]! = []
-    let database = Manager.shared.getDB()
     let userID = Manager.shared.getUserID()
     private var doubleTapGesture: UITapGestureRecognizer!
 
@@ -29,43 +29,46 @@ class VideoListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.loadDb()
+        self.loadVideos()
     }
     
     public func receiveCategory(category: String) -> UIViewController {
         self.category = category
         return self
     }
-
-    func loadDb() {
-        database.collection(userID).getDocuments { querySnapshot, error in
-            guard let querySnapshot = querySnapshot else { return }
-            
-            let documents = querySnapshot.documents.filter { querySnapshotDocument in
-                querySnapshotDocument.documentID.starts(with: "video_")
-            }
-            
-            
-            for document in documents {
-                guard let videoID = document.get("videoID") as? String,
-                      let title = document.get("title") as? String,
-                      let liked = document.get("liked") as? Bool,
-                      let time = document.get("time") as? String,
-                      let category = document.get("category") as? String else { return }
+    
+    func loadVideos() {
+        let userID = Manager.shared.getUserID()
+        let params: Parameters = ["userID" : userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/videoTable/get_videos.php/",
+                   method: .get,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: VideoItemList.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                guard let videoItemList = response.value else { return }
                 
-                if self.category != "전체영상" && category != self.category {
-                    continue
+                let filteredVideos = videoItemList.product.filter { videoItem in
+                    if self.category == "전체영상" {
+                        return true
+                    } else {
+                        return videoItem.category == self.category
+                    }
                 }
                 
-                let videoItem = VideoItem(videoID: videoID, title: title, liked: liked, time: time, category: category)
-                self.videos.append(videoItem)
+                self.videos = filteredVideos
+                self.reorderVideos()
+                DispatchQueue.main.async {
+                    self.emptyLabel.isHidden = !self.videos.isEmpty
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
             }
-            
-            DispatchQueue.main.async {
-                self.setCollectionView()
-                self.emptyLabel.isHidden = !self.videos.isEmpty
-            }
-        }
+        })
     }
     
     private func setCollectionView() {
@@ -73,6 +76,7 @@ class VideoListViewController: UIViewController {
         
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
+        self.collectionView.dragInteractionEnabled = true
         self.collectionView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -136,29 +140,29 @@ class VideoListViewController: UIViewController {
         cancelButton.borderWidth = 1
         
         let deleteButton = MalertAction(title: "삭제") {
-            let documentReference = self.database.collection(self.userID).document("video_" + videoItem.videoID)
-            documentReference.delete { error in
-                guard error == nil else { return }
-                
-                NotificationPresenter.shared.present("동영상을 삭제했습니다", includedStyle: .success)
-                
-                var videoOrder = Manager.shared.getVideoOrderList()
-                videoOrder.removeAll { videoID in
-                    videoID == videoItem.videoID
-                }
-                
-                let videoOrderReference = self.database.collection(self.userID).document("videoOrder")
-                videoOrderReference.updateData(["order": videoOrder]) { error in
-                    guard error == nil else { return }
-                    
-                    Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
-                    let configurationsReference = self.database.collection(self.userID).document("configurations")
-                    configurationsReference.updateData(["lastCategoryIndex": self.category!])
-                    
-                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-                }
-
-            }
+//            let documentReference = self.database.collection(self.userID).document("video_" + videoItem.videoID)
+//            documentReference.delete { error in
+//                guard error == nil else { return }
+//                
+//                NotificationPresenter.shared.present("동영상을 삭제했습니다", includedStyle: .success)
+//                
+//                var videoOrder = Manager.shared.getVideoOrderList()
+//                videoOrder.removeAll { videoID in
+//                    videoID == videoItem.videoID
+//                }
+//                
+//                let videoOrderReference = self.database.collection(self.userID).document("videoOrder")
+//                videoOrderReference.updateData(["order": videoOrder]) { error in
+//                    guard error == nil else { return }
+//                    
+//                    Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
+//                    let configurationsReference = self.database.collection(self.userID).document("configurations")
+//                    configurationsReference.updateData(["lastCategoryIndex": self.category!])
+//                    
+//                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+//                }
+//
+//            }
            
         }
         
@@ -174,9 +178,9 @@ class VideoListViewController: UIViewController {
             dict["liked"] = videoItem.liked
             dict["time"] = videoItem.time
 
-            self.database.collection(self.userID).document("video_" + videoItem.videoID).setData(dict)
-            let configurationsReference = self.database.collection(self.userID).document("configurations")
-            configurationsReference.updateData(["lastCategoryIndex": self.category!])
+//            self.database.collection(self.userID).document("video_" + videoItem.videoID).setData(dict)
+//            let configurationsReference = self.database.collection(self.userID).document("configurations")
+//            configurationsReference.updateData(["lastCategoryIndex": self.category!])
             
             NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
         }
@@ -202,7 +206,30 @@ class VideoListViewController: UIViewController {
                 self.selectedCategory = newCategory
             }
             self.presentedViewController?.present(selectCategoryVC, animated: true)
-//            self.present(selectCategoryVC, animated: true)
+        }
+    }
+    
+    func reorderVideos() {
+        let videoOrderList = Manager.shared.getVideoOrderList()
+        var orderedVideoList: [VideoItem] = []
+        let videoItemIds: [String] = self.videos.map { videoItem in
+            videoItem.videoID
+        }
+        
+        for videoOrder in videoOrderList {
+            if let index = videoItemIds.firstIndex(of: videoOrder) {
+                orderedVideoList.append(self.videos[index])
+            }
+            
+            if orderedVideoList.count == self.videos.count {
+                break
+            }
+        }
+        
+        self.videos = orderedVideoList
+        
+        DispatchQueue.main.async {
+            self.setCollectionView()
         }
     }
 }

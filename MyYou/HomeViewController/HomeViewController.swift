@@ -10,104 +10,29 @@ import Tabman
 import Pageboy
 import FirebaseFirestore
 import FirebaseFirestoreInternal
-import Floaty
+import Alamofire
 
 class HomeViewController: TabmanViewController, TMBarDataSource {
     
     let userID = Manager.shared.getUserID()
-    let database = Manager.shared.getDB()
-    
-    var videoURL = "string example"
-    var videoType = "category type"
-    var videoThumbnail = "some type of image name"
-    
     var viewControllers: [UIViewController] = []
-    
     var tabNames = [String]()
-    
     var tabBar: TMBarView<TMHorizontalBarLayout, TabPagerButton, TMBarIndicator.None>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.loadVideoOrder()
+        self.setTabs()
         self.addObserver()
         self.setFloaty()
         self.title = "마이유"
     }
     
-    func setFloaty() {
-        let floaty = Floaty()
-        floaty.paddingX = 15
-        floaty.paddingY = 40
-        floaty.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-        floaty.selectedColor = UIColor().hexStringToUIColor(hex: "#DC5C60")
-        floaty.plusColor = UIColor.white
-        let item = FloatyItem()
-        item.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-        item.icon = UIImage(named: "edit")
-        item.title = "카테고리 수정/삭제"
-        item.handler = { item in
-            DispatchQueue.main.async {
-                item.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-                let categoryListViewController = CategoryListViewController(nibName: "CategoryListViewController", bundle: Bundle.main)
-                categoryListViewController.modalPresentationStyle = .fullScreen
-                self.navigationController?.pushViewController(categoryListViewController, animated: true)
-            }
-        }
-        let item2 = FloatyItem()
-        item2.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-        item2.icon = UIImage(named: "link")
-        item2.title = "동영상 불러오기"
-        item2.handler = { item in
-            DispatchQueue.main.async {
-
-            }
-        }
-        let item3 = FloatyItem()
-        item3.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-        item3.icon = UIImage(named: "premium")
-        item3.title = "동영상 보내기"
-        item3.handler = { item in
-            DispatchQueue.main.async {
-            }
-        }
-        floaty.addItem(item: item)
-        floaty.addItem(item: item2)
-        floaty.addItem(item: item3)
-        self.view.addSubview(floaty)
-    }
-    
-    func loadVideoOrder() {
-        let docRef = database.collection(userID).document("videoOrder")
-        docRef.getDocument { document, error in
-            guard let document = document,
-                  let order = document.get("order") as? [String] else {
-                print("NO DOCUMENT")
-                return
-            }
-            
-            Manager.shared.setVideoOrderList(videoOrderList: order)
-            self.loadDB()
-        }
-    }
-    
-    func loadDB() {
-        let docRef = database.collection(userID).document("categories")
+    func setTabs() {
+        self.tabNames = Manager.shared.getCategories()
         
-        docRef.getDocument { document, error in
-            guard let document = document,
-                  let order = document.get("order") as? [String] else {
-                print("NO DOCUMENT")
-                return
-            }
-                    
-            self.tabNames = order
-            Manager.shared.setCategories(categories: order)
-            
-            DispatchQueue.main.async {
-                self.populateViewControllers()
-            }
+        DispatchQueue.main.async {
+            self.populateViewControllers()
         }
     }
     
@@ -123,7 +48,34 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     @objc private func updateCategory() {
         self.viewControllers.removeAll()
-        self.loadDB()
+        self.reloadCategories()
+    }
+    
+    private func reloadCategories() {
+        let params: Parameters = ["userID" : self.userID]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/get_categories.php/",
+                   method: .get,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: Category.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                guard let categories = response.value?.categories.components(separatedBy: ",") else { return }
+                
+                self.tabNames = categories
+                Manager.shared.setCategories(categories: categories)
+                
+                DispatchQueue.main.async {
+                    self.populateViewControllers()
+                }
+                
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        })
     }
     
     @objc private func checkForYoutubeShare() {
@@ -209,18 +161,47 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
                 print("UNABLE TO PARSE YOUTUBE JSON")
                 return
             }
-            
-            self.database.collection(self.userID).document("video_" + id).setData([
-              "title": title,
-              "videoID": id,
-              "liked": false,
-              "time": "",
-              "category": ""
-            ])
-            
-            self.updateCategory()
+
+            self.addVideoFromShare(title: title, videoID: id)
         }
         task.resume()
+    }
+    
+    private func addVideoFromShare(title: String, videoID: String) {
+        var videoOrder = Manager.shared.getVideoOrderList()
+        
+        guard let firstItem = videoOrder.first else { return }
+        
+        if firstItem.isEmpty {
+            videoOrder[0] = videoID
+        } else {
+            videoOrder.insert(videoID, at: 0)
+        }
+        
+        let listString = videoOrder.joined(separator: ",")
+        
+        let params: Parameters = [
+            "videoID" : videoID,
+            "userID" : self.userID,
+            "title" : title,
+            "videoOrder" : listString]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/videoTable/create_product.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
+                self.updateCategory()
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        })
     }
 }
 
