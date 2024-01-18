@@ -19,9 +19,12 @@ public class Manager {
     private var repeatSelection: [String]!
     private var selectedRepeatSelection: String!
     private var userPhoneNumber: String!
-    private var premium: Bool!
     private var pushEnabled: Bool!
     private var iosFcmKey: String!
+    private var lastCategory: String!
+    private var newMessage: Bool!
+    private var playbackSpeed: String!
+    private var subscription: String!
     
     public func setCategories(categories: [String]) {
         self.categories = categories
@@ -95,14 +98,6 @@ public class Manager {
         return userPhoneNumber
     }
     
-    public func setPremium(premium: Bool) {
-        self.premium = premium
-    }
-    
-    public func isPremium() -> Bool {
-        return self.premium
-    }
-    
     public func setPushEnabled(pushEnabled: Bool) {
         self.pushEnabled = pushEnabled
     }
@@ -119,24 +114,36 @@ public class Manager {
         return iosFcmKey
     }
     
-    public func setManager(documentSnapShot: DocumentSnapshot, closure: () -> ()) {
-        guard let playNext = documentSnapShot.get("playNext") as? Bool,
-              let premium = documentSnapShot.get("premium") as? Bool,
-              let pushEnabled = documentSnapShot.get("pushEnabled") as? Bool,
-              let repeatSelection = documentSnapShot.get("repeatSelection") as? [String],
-              let selectedRepeatSelection = documentSnapShot.get("selectedRepeatSelection") as? String,
-              let thumbnail = documentSnapShot.get("thumbnail") as? Bool,
-              let userPhoneNumber = documentSnapShot.get("userPhoneNumber") as? String else { return }
-        
-        self.shouldPlayNext = playNext
-        self.premium = premium
-        self.pushEnabled = pushEnabled
-        self.repeatSelection = repeatSelection
-        self.selectedRepeatSelection = selectedRepeatSelection
-        self.shouldShowThumbnail = thumbnail
-        self.userPhoneNumber = userPhoneNumber
-        
-        closure()
+    public func getLastCategory() -> String {
+        return lastCategory
+    }
+    
+    public func setLastCategory(lastCategory: String) {
+        self.lastCategory = lastCategory
+    }
+    
+    public func isNewMessage() -> Bool {
+        return self.newMessage
+    }
+    
+    public func setNewMessage(newMessage: Bool) {
+        self.newMessage = newMessage
+    }
+    
+    public func getPlaybackSpeed() -> String {
+        return playbackSpeed
+    }
+    
+    public func setPlaybackSpeed(playbackSpeed: String) {
+        self.playbackSpeed = playbackSpeed
+    }
+    
+    public func getSubscription() -> String {
+        return subscription
+    }
+    
+    public func setSubscription(subscription: String) {
+        self.subscription = subscription
     }
 }
 

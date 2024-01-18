@@ -21,14 +21,12 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var proButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
     
-    let database = Manager.shared.getDB()
     let userID = Manager.shared.getUserID()
         
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.setupUI()
-        print(userID)
     }
     
     func setupUI() {
@@ -45,18 +43,25 @@ class SettingsViewController: UIViewController {
                 self.registerButton.isHidden = true
             }
             
-            if Manager.shared.isPremium() {
-                self.proLabel.text = "마이유 프로 구독중"
-                self.proLabel.isUserInteractionEnabled = false
-                self.proButton.isHidden = true
-            }
-            
+            self.setupSubscriptionUI()
             self.thumbnailSwitch.isOn = Manager.shared.isShowThumbnail()
             self.showAllSwitch.isOn = Manager.shared.getCategories()[0] == "전체영상"
             self.playNextSwitch.isOn = Manager.shared.isPlayNext()
         }
         
         self.addGestures()
+    }
+    
+    func setupSubscriptionUI() {
+        if Manager.shared.getSubscription() == "pro" {
+            self.proLabel.text = "마이유 프로 구독중"
+            self.proLabel.isUserInteractionEnabled = false
+            self.proButton.isHidden = true
+        } else if Manager.shared.getSubscription() == "premium" {
+            self.proLabel.text = "마이유 프리미엄 구독중"
+            self.proLabel.isUserInteractionEnabled = false
+            self.proButton.isHidden = true
+        }
     }
     
     func addGestures() {
@@ -78,8 +83,7 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func thumbnailSwitchChanged(_ sender: UISwitch) {
-        let documentReference = database.collection(userID).document("configurations")
-        documentReference.updateData(["thumbnail": sender.isOn])
+        self.updateThumbnail(thumbnail: sender.isOn)
     }
     
     @IBAction func showAllSwitchChanged(_ sender: UISwitch) {
@@ -91,18 +95,11 @@ class SettingsViewController: UIViewController {
             categories.remove(at: index)
         }
         
-        let documentReference = database.collection(userID).document("categories")
-        documentReference.updateData(["order": categories]) { error in
-            guard error == nil else { return }
-            
-            Manager.shared.setCategories(categories: categories)
-            NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-        }
+        self.updateCategories(categories: categories)
     }
     
     @IBAction func playNextSwitchChanged(_ sender: UISwitch) {
-        let documentReference = database.collection(userID).document("configurations")
-        documentReference.updateData(["playNext": sender.isOn])
+        self.updatePlayNext(playNext: sender.isOn)
     }
     
     @IBAction func repeatButtonPressed(_ sender: UIButton) {
@@ -113,12 +110,11 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func proButtonPressed(_ sender: UIButton) {
-        
+        self.updatePro(subscription: "pro")
     }
     
     @IBAction func pushSwitchChanged(_ sender: UISwitch) {
-        let documentReference = database.collection(userID).document("configurations")
-        documentReference.updateData(["pushEnabled": sender.isOn])
+        self.updatePushEnabled(pushEnabled: sender.isOn)
     }
     
     @IBAction func appAgreeButtonPressed(_ sender: UIButton) {

@@ -8,14 +8,13 @@
 import UIKit
 import youtube_ios_player_helper
 import FirebaseFirestore
-
+import Alamofire
 class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
 
     @IBOutlet weak var youtubePlayerView: YTPlayerView!
     var index: Int!
     var videoList: [VideoItem]!
     var time: String!
-    let database = Manager.shared.getDB()
     let userID = Manager.shared.getUserID()
     var currentVideo: VideoItem!
     var repeatIndex: Int!
@@ -51,13 +50,26 @@ class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
                 return
             } else {
                 self.youtubePlayerView.duration { duration, error in
-                    let documentReference = self.database.collection(self.userID).document("video_" + self.currentVideo.videoID)
-                    if String(format: "%.0f", duration) == String(format: "%.0f", time) {
-                        documentReference.updateData(["time": ""])
-                    }
-                    else {
-                        documentReference.updateData(["time": String(format: "%.0f", time)])
-                    }
+                    let params: Parameters = [
+                        "videoID" : self.currentVideo.videoID,
+                        "userID" : self.userID,
+                        "time" : String(format: "%.0f", time)]
+                    
+                    AF.request("https://chopas.com/smartappbook/myyou/videoTable/update_video_time.php/",
+                               method: .post,
+                               parameters: params,
+                               encoding: URLEncoding.default,
+                               headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+                    
+                    .validate(statusCode: 200..<300)
+                    .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+                        switch response.result {
+                        case .success:
+                            print("updated time")
+                        case .failure(let err):
+                            print(err.localizedDescription)
+                        }
+                    })
                 }
             }
         }
