@@ -8,6 +8,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseFirestoreInternal
 import JDStatusBarNotification
+import Malert
 import Alamofire
 
 class ViewController: UIViewController {
@@ -17,6 +18,9 @@ class ViewController: UIViewController {
     let userDefaults = UserDefaults.standard
     let database = Firestore.firestore()
     var userID: String!
+    
+    let blackView = UIView()
+    var popupView = UIView()
     
     @IBOutlet weak var versionLabel: UILabel!
     
@@ -72,13 +76,15 @@ class ViewController: UIViewController {
         
         if let userID = self.userDefaults.string(forKey: "userID") {
             Manager.shared.setUserID(userID: userID)
-            self.loadUserConfigs()
+            self.loadUserConfigs {
+                self.moveToNextScreen()
+            }
         } else {
             self.generateUser()
         }
     }
     
-    private func loadUserConfigs() {
+    private func loadUserConfigs(closure: @escaping () -> Void) {
         let userID = Manager.shared.getUserID()
         let params: Parameters = ["userID" : userID]
         
@@ -94,7 +100,8 @@ class ViewController: UIViewController {
                 guard let user = response.value else { return }
                 
                 user.updateManager()
-                self.moveToNextScreen()
+                closure()
+//                self.moveToNextScreen()
                 
             case .failure(let err):
                 print(err.localizedDescription)
@@ -120,13 +127,95 @@ class ViewController: UIViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                self.loadUserConfigs()
+                self.loadUserConfigs {
+                    self.showAuthDialog()
+                }
             case .failure(let err):
                 print(err.localizedDescription)
             }
         })
     }
     
+    func showAuthDialog() {
+        let view = AuthDialogView.instantiateFromNib()
+        
+        let malert = Malert(title: nil, customView: view, tapToDismiss: false, dismissOnActionTapped: true)
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        malert.buttonsHeight = 50
+        malert.presentDuration = 1.0
+        
+        let completeButton = MalertAction(title: "확인") {
+            malert.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
+                    authVC.modalPresentationStyle = .fullScreen
+                    authVC.receiveItem(fromAuthDialog: true)
+                    self.present(authVC, animated: true)
+                }
+            }
+        }
+        
+        completeButton.cornerRadius = 10
+        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#8851f5")
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
+        
+        let cancelButton = MalertAction(title: "다음에") {
+            malert.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    self.showNextTimeDialog()
+                }
+            }
+        }
+
+        cancelButton.cornerRadius = 10
+        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#e5e8f7")
+        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#9c9eaa")
+        cancelButton.borderColor = UIColor().hexStringToUIColor(hex: "#e5e8f7")
+        cancelButton.borderWidth = 1
+        
+        malert.addAction(completeButton)
+        malert.addAction(cancelButton)
+    
+        DispatchQueue.main.async {
+            self.present(malert, animated: true, completion: nil)
+        }
+    }
+    
+    func showNextTimeDialog() {
+        let view = NextTimeDialogView.instantiateFromNib()
+        
+        let malert = Malert(title: nil, customView: view, tapToDismiss: false, dismissOnActionTapped: true)
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        malert.buttonsHeight = 50
+        malert.presentDuration = 1.0
+        
+        let completeButton = MalertAction(title: "확인") {
+            self.moveToNextScreen()
+        }
+        
+        completeButton.cornerRadius = 10
+        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#8851f5")
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
+        
+        malert.addAction(completeButton)
+    
+        DispatchQueue.main.async {
+            self.present(malert, animated: true)
+        }
+    }
+ 
     func moveToNextScreen() {
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)

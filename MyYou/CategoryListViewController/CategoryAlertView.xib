@@ -25,10 +25,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cCZ-tK-9fd">
-                    <rect key="frame" x="20" y="129" width="260" height="34"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="50" id="JZf-X7-W6B"/>
-                    </constraints>
+                    <rect key="frame" x="20" y="129" width="260" height="87"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" returnKeyType="done"/>
                 </textField>

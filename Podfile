@@ -18,5 +18,6 @@ target 'MyYou' do
   pod 'JDStatusBarNotification'
   pod 'Floaty', '~> 4.2.0'
   pod 'Alamofire'
+  pod 'BonsaiController'
 
 end

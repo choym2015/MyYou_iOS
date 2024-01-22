@@ -11,7 +11,9 @@ import JDStatusBarNotification
 import Alamofire
 
 class CategoryListViewController: UIViewController {
-    @IBOutlet weak var categoryTableView: UITableView!
+    //@IBOutlet weak var categoryTableView: UITableView!
+    
+    @IBOutlet weak var collectionView: UICollectionView!
     
     let userID = Manager.shared.getUserID()
     var categories: [String] = Manager.shared.getCategories()
@@ -20,19 +22,54 @@ class CategoryListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.categoryTableView.register(UINib(nibName: "CategoryListTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: "CategoryListTableViewCell")
+        self.title = "카테고리 수정"
+        navigationItem.backButtonTitle = " "
+        self.view.changeStatusBarBgColor(bgColor: UIColor().hexStringToUIColor(hex: "#6200EE"))
+        navigationController?.navigationBar.tintColor = UIColor.white
+//        self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "6200EE")
+        //self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+//        self.categoryTableView.register(UINib(nibName: "CategoryListTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: "CategoryListTableViewCell")
+        
+        if  let navigationBar = navigationController?.navigationBar {
+                let appearance = UINavigationBarAppearance()
+                appearance.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+                appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+                appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+                let barAppearence = UIBarButtonItemAppearance()
+                barAppearence.normal.titleTextAttributes = [.foregroundColor: UIColor.yellow]
+                appearance.buttonAppearance = barAppearence
+                navigationBar.scrollEdgeAppearance = appearance
+                navigationBar.compactAppearance = appearance
+                navigationBar.standardAppearance = appearance
+                // Do any additional setup after loading the view.
+            }
         
         self.videoCategories = self.categories
         self.videoCategories.removeAll { category in
             category == "전체영상" || category == "설정"
         }
+
         
-        self.categoryTableView.dataSource = self
-        self.categoryTableView.delegate = self
-        self.categoryTableView.dragInteractionEnabled = true
-        self.categoryTableView.dragDelegate = self
-        
+//        self.categoryTableView.dataSource = self
+//        self.categoryTableView.delegate = self
+//        self.categoryTableView.dragInteractionEnabled = true
+//        self.categoryTableView.dragDelegate = self
+        self.setCollectionView()
         self.addRightButton()
+    }
+    
+    private func setCollectionView() {
+        self.collectionView.register(UINib(nibName: "CategoryListViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: "CategoryListViewCell")
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 30, right: 20)
+        layout.minimumLineSpacing = 40
+        layout.estimatedItemSize = CGSize(width: collectionView.frame.width, height: 50)
+        
+        self.collectionView.collectionViewLayout = layout
     }
     
     func addRightButton() {
@@ -96,7 +133,7 @@ class CategoryListViewController: UIViewController {
                 case .success:
                     Manager.shared.setCategories(categories: self.categories)
                     DispatchQueue.main.async {
-                        self.categoryTableView.reloadData()
+                        self.collectionView.reloadData()
                         NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
                     }
                 case .failure(let err):
@@ -107,7 +144,7 @@ class CategoryListViewController: UIViewController {
         
         completeButton.cornerRadius = 10
         completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        completeButton.tintColor = .white
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
         
         malert.addAction(cancelButton)
         malert.addAction(completeButton)
@@ -224,7 +261,7 @@ class CategoryListViewController: UIViewController {
                 }
                 
                 DispatchQueue.main.async {
-                    self.categoryTableView.reloadData()
+                    self.collectionView.reloadData()
                     NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
                 }
             case .failure(let err):
