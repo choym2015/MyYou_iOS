@@ -11,6 +11,7 @@ import Pageboy
 import FirebaseFirestore
 import FirebaseFirestoreInternal
 import Alamofire
+import Malert
 
 class HomeViewController: TabmanViewController, TMBarDataSource {
     
@@ -21,11 +22,27 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationItem.backButtonTitle = " "
+        self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         self.setTabs()
         self.addObserver()
         self.setFloaty()
         self.title = "마이유"
+        if UserDefaults.standard.value(forKey: "authConfirmed") != nil {
+            
+        } else {
+            //print("auth should show")
+            //self.showAuthDialog()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+        self.view.changeStatusBarBgColor(bgColor: UIColor.white)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     func setTabs() {
@@ -202,6 +219,53 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
                 print(err.localizedDescription)
             }
         })
+    }
+    
+    func showAuthDialog() {
+        //show dialog
+        print("auth showing")
+        let view = AuthDialogView.instantiateFromNib()
+        view.titleText.text = "다른 사용자에게 동영상을 받으시려면 본인인증이\n필요합니다."
+        
+        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: false)
+        
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        
+        malert.presentDuration = 1.0
+        
+        view.confirmButton.layer.cornerRadius = 10
+        view.confirmButton.addTarget(self, action: #selector(pressedConfirm), for: .touchUpInside)
+        view.skipButton.layer.cornerRadius = 10
+        view.skipButton.addTarget(self, action: #selector(pressedSkip), for: .touchUpInside)
+        
+        //if user says ok -> AuthViewController
+        //if user says no -> showNextTimeDialog
+        
+        let alert = UIAlertController(title: "마이유", message: "다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다. 본인인증을 진행하시겠습니까?", preferredStyle: .actionSheet)
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { action in
+            //performSegue to AuthorizeViewController
+        }))
+        alert.addAction(UIAlertAction(title: "다음에", style: .cancel, handler: { action in
+            self.pressedSkip()
+        }))
+        DispatchQueue.main.async {
+            self.present(malert, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func pressedConfirm() {
+        
+    }
+    
+    @objc func pressedSkip() {
+        //create nextTimeDialog
     }
 }
 

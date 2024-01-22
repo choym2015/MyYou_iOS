@@ -30,13 +30,13 @@
                                             <constraint firstAttribute="width" secondItem="C1U-GH-89U" secondAttribute="height" multiplier="16:9" id="y2n-4z-Pe3"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9r6-bw-453" customClass="PaddingLabel" customModule="SmartJubo" customModuleProvider="target">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9r6-bw-453" customClass="PaddingLabel" customModule="MyYou" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="225" width="400" height="175"/>
                                         <attributedString key="attributedText">
                                             <fragment content="Label">
                                                 <attributes>
                                                     <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                    <font key="NSFont" size="17" name="NanumSquareB"/>
+                                                    <font key="NSFont" metaFont="system" size="17"/>
                                                     <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineHeightMultiple="1.2" tighteningFactorForTruncation="0.0"/>
                                                 </attributes>
                                             </fragment>
@@ -90,7 +90,7 @@
     </objects>
     <designables>
         <designable name="9r6-bw-453">
-            <size key="intrinsicContentSize" width="41.666666666666664" height="24"/>
+            <size key="intrinsicContentSize" width="41.333333333333336" height="24.666666666666668"/>
         </designable>
     </designables>
     <resources>
