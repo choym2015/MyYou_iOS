@@ -76,13 +76,15 @@ class ViewController: UIViewController {
         
         if let userID = self.userDefaults.string(forKey: "userID") {
             Manager.shared.setUserID(userID: userID)
-            self.loadUserConfigs()
+            self.loadUserConfigs {
+                self.moveToNextScreen()
+            }
         } else {
             self.generateUser()
         }
     }
     
-    private func loadUserConfigs() {
+    private func loadUserConfigs(closure: @escaping () -> Void) {
         let userID = Manager.shared.getUserID()
         let params: Parameters = ["userID" : userID]
         
@@ -98,12 +100,8 @@ class ViewController: UIViewController {
                 guard let user = response.value else { return }
                 
                 user.updateManager()
-                //self.showAuthDialog()
-                //self.moveToNextScreen()
-                if self.userDefaults.value(forKey: "userPhoneNumber") != nil {
-                    print("user has put in number or chose next time.")
-                    self.moveToNextScreen()
-                }
+                closure()
+//                self.moveToNextScreen()
                 
             case .failure(let err):
                 print(err.localizedDescription)
@@ -129,8 +127,9 @@ class ViewController: UIViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                self.showAuthDialog()
-                self.loadUserConfigs()
+                self.loadUserConfigs {
+                    self.showAuthDialog()
+                }
             case .failure(let err):
                 print(err.localizedDescription)
             }
@@ -138,61 +137,85 @@ class ViewController: UIViewController {
     }
     
     func showAuthDialog() {
-        //show dialog
-        popupView = {
-            let view = AuthDialogView.instantiateFromNib()
-            view.titleText.text = "다른 사용자에게 동영상을 받으시려면 본인인증이\n필요합니다."
-            view.confirmButton.layer.cornerRadius = 10
-            view.confirmButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-            view.confirmButton.addTarget(self, action: #selector(pressedConfirm), for: .touchUpInside)
-            view.skipButton.layer.cornerRadius = 10
-            view.skipButton.addTarget(self, action: #selector(pressedSkip), for: .touchUpInside)
-            
-            return view
-        }()
+        let view = AuthDialogView.instantiateFromNib()
         
-        if let window = UIApplication.shared.keyWindow {
-            self.blackView.frame = window.frame
-            self.blackView.alpha = 0
-            self.blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
-            window.addSubview(self.blackView)
-            window.addSubview(popupView)
-            
-            let height: CGFloat = window.frame.height*5/6
-            let y = window.frame.height - height
-            popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
-            
-            //self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-            
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.blackView.alpha = 1
-                self.popupView.frame = CGRect(x: 0, y: y, width: self.popupView.frame.width, height: self.popupView.frame.height)
-            }, completion: nil)
+        let malert = Malert(title: nil, customView: view, tapToDismiss: false, dismissOnActionTapped: true)
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        malert.buttonsHeight = 50
+        malert.presentDuration = 1.0
+        
+        let completeButton = MalertAction(title: "확인") {
+            malert.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
+                    authVC.modalPresentationStyle = .fullScreen
+                    authVC.receiveItem(fromAuthDialog: true)
+                    self.present(authVC, animated: true)
+                }
+            }
         }
-    }
+        
+        completeButton.cornerRadius = 10
+        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#8851f5")
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
+        
+        let cancelButton = MalertAction(title: "다음에") {
+            malert.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    self.showNextTimeDialog()
+                }
+            }
+        }
+
+        cancelButton.cornerRadius = 10
+        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#e5e8f7")
+        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#9c9eaa")
+        cancelButton.borderColor = UIColor().hexStringToUIColor(hex: "#e5e8f7")
+        cancelButton.borderWidth = 1
+        
+        malert.addAction(completeButton)
+        malert.addAction(cancelButton)
     
-    @objc func pressedConfirm() {
         DispatchQueue.main.async {
-            let auth = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
-            
-            self.presentedViewController?.present(auth, animated: true)
-            self.present(auth, animated: true)
+            self.present(malert, animated: true, completion: nil)
         }
     }
     
-    @objc func pressedSkip() {
-        //create nextTimeDialog
-        let alert = UIAlertController(title: "마이유", message: "본인인증은 설정 -> 본인인증 하기에서 진행할 수 있습니다.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: {_ in
-            self.userDefaults.set("010-next-time", forKey: "userPhoneNumber")
+    func showNextTimeDialog() {
+        let view = NextTimeDialogView.instantiateFromNib()
+        
+        let malert = Malert(title: nil, customView: view, tapToDismiss: false, dismissOnActionTapped: true)
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        malert.buttonsHeight = 50
+        malert.presentDuration = 1.0
+        
+        let completeButton = MalertAction(title: "확인") {
             self.moveToNextScreen()
-        }))
+        }
         
+        completeButton.cornerRadius = 10
+        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#8851f5")
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
+        
+        malert.addAction(completeButton)
+    
         DispatchQueue.main.async {
-            self.present(alert, animated: true, completion: nil)
+            self.present(malert, animated: true)
         }
     }
-    
+ 
     func moveToNextScreen() {
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)

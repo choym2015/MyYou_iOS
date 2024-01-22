@@ -10,10 +10,6 @@ import Foundation
 
 class AuthDialogView: UIView {
     
-    @IBOutlet weak var confirmButton: UIButton!
-    
-    @IBOutlet weak var skipButton: UIButton!
-    
     @IBOutlet weak var titleText: UILabel!
     
     override func awakeFromNib() {
@@ -23,5 +19,4 @@ class AuthDialogView: UIView {
     class func instantiateFromNib() -> AuthDialogView {
         return Bundle.main.loadNibNamed("AuthDialogView", owner: nil, options: nil)!.first as! AuthDialogView
     }
-
 }

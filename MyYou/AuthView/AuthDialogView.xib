@@ -12,54 +12,46 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="AuthDialogView" customModule="MyYou" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="393" height="450"/>
+            <rect key="frame" x="0.0" y="0.0" width="393" height="300"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="마이유" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w8D-PC-1Gn">
-                    <rect key="frame" x="29" y="43" width="78" height="28"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="마이유" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w8D-PC-1Gn">
+                    <rect key="frame" x="30" y="30" width="60" height="27.666666666666671"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Qp-yO-3nk">
-                    <rect key="frame" x="29" y="91" width="334" height="48"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Qp-yO-3nk">
+                    <rect key="frame" x="30" y="77.666666666666671" width="333" height="40.666666666666671"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="본인인증을 진행하시겠습니까?" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwY-iw-kp2">
-                    <rect key="frame" x="29" y="147" width="334" height="33"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="본인인증을 진행하시겠습니까?" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FwY-iw-kp2">
+                    <rect key="frame" x="30" y="138.33333333333334" width="333" height="77.666666666666657"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7QV-ls-EJt">
-                    <rect key="frame" x="29" y="245" width="334" height="63"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="tintColor" red="0.38431372549019605" green="0.0" blue="0.93333333333333335" alpha="1" colorSpace="calibratedRGB"/>
-                    <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="filled" title="확인"/>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RdE-uE-xYs">
-                    <rect key="frame" x="29" y="316" width="334" height="63"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="tintColor" red="0.38431372549999998" green="0.0" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
-                    <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="gray" title="다음에"/>
-                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="7Qp-yO-3nk" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="1gT-Yx-oXK"/>
+                <constraint firstItem="w8D-PC-1Gn" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="30" id="5hx-t5-ggF"/>
+                <constraint firstItem="w8D-PC-1Gn" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="30" id="6vQ-lM-gmX"/>
+                <constraint firstItem="FwY-iw-kp2" firstAttribute="top" secondItem="7Qp-yO-3nk" secondAttribute="bottom" constant="20" id="8m1-lR-dKQ"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="7Qp-yO-3nk" secondAttribute="trailing" constant="30" id="AH8-92-krv"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="FwY-iw-kp2" secondAttribute="trailing" constant="30" id="L0A-WK-IJQ"/>
+                <constraint firstItem="FwY-iw-kp2" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="30" id="VOC-mq-lN4"/>
+                <constraint firstItem="7Qp-yO-3nk" firstAttribute="top" secondItem="w8D-PC-1Gn" secondAttribute="bottom" constant="20" id="oIC-uj-vqQ"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="FwY-iw-kp2" secondAttribute="bottom" constant="50" id="vlk-BG-6K5"/>
+            </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="confirmButton" destination="7QV-ls-EJt" id="n3W-Pq-SSd"/>
-                <outlet property="skipButton" destination="RdE-uE-xYs" id="cv2-Qk-4uO"/>
                 <outlet property="titleText" destination="7Qp-yO-3nk" id="hcK-sV-fLs"/>
             </connections>
-            <point key="canvasLocation" x="139.69465648854961" y="19.718309859154932"/>
+            <point key="canvasLocation" x="139.69465648854961" y="32.394366197183103"/>
         </view>
     </objects>
     <resources>

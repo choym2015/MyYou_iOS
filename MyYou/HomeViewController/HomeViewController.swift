@@ -221,52 +221,52 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         })
     }
     
-    func showAuthDialog() {
-        //show dialog
-        print("auth showing")
-        let view = AuthDialogView.instantiateFromNib()
-        view.titleText.text = "다른 사용자에게 동영상을 받으시려면 본인인증이\n필요합니다."
-        
-        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: false)
-        
-        malert.buttonsAxis = .vertical
-        malert.buttonsSpace = 10
-        malert.buttonsSideMargin = 20
-        malert.buttonsBottomMargin = 20
-        malert.cornerRadius = 10
-        malert.separetorColor = .clear
-        malert.animationType = .fadeIn
-        
-        malert.presentDuration = 1.0
-        
-        view.confirmButton.layer.cornerRadius = 10
-        view.confirmButton.addTarget(self, action: #selector(pressedConfirm), for: .touchUpInside)
-        view.skipButton.layer.cornerRadius = 10
-        view.skipButton.addTarget(self, action: #selector(pressedSkip), for: .touchUpInside)
-        
-        //if user says ok -> AuthViewController
-        //if user says no -> showNextTimeDialog
-        
-        let alert = UIAlertController(title: "마이유", message: "다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다. 본인인증을 진행하시겠습니까?", preferredStyle: .actionSheet)
-        
-        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { action in
-            //performSegue to AuthorizeViewController
-        }))
-        alert.addAction(UIAlertAction(title: "다음에", style: .cancel, handler: { action in
-            self.pressedSkip()
-        }))
-        DispatchQueue.main.async {
-            self.present(malert, animated: true, completion: nil)
-        }
-    }
-    
-    @objc func pressedConfirm() {
-        
-    }
-    
-    @objc func pressedSkip() {
-        //create nextTimeDialog
-    }
+//    func showAuthDialog() {
+//        //show dialog
+//        print("auth showing")
+//        let view = AuthDialogView.instantiateFromNib()
+//        view.titleText.text = "다른 사용자에게 동영상을 받으시려면 본인인증이\n필요합니다."
+//        
+//        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: false)
+//        
+//        malert.buttonsAxis = .vertical
+//        malert.buttonsSpace = 10
+//        malert.buttonsSideMargin = 20
+//        malert.buttonsBottomMargin = 20
+//        malert.cornerRadius = 10
+//        malert.separetorColor = .clear
+//        malert.animationType = .fadeIn
+//        
+//        malert.presentDuration = 1.0
+//        
+//        view.confirmButton.layer.cornerRadius = 10
+//        view.confirmButton.addTarget(self, action: #selector(pressedConfirm), for: .touchUpInside)
+//        view.skipButton.layer.cornerRadius = 10
+//        view.skipButton.addTarget(self, action: #selector(pressedSkip), for: .touchUpInside)
+//        
+//        //if user says ok -> AuthViewController
+//        //if user says no -> showNextTimeDialog
+//        
+//        let alert = UIAlertController(title: "마이유", message: "다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다. 본인인증을 진행하시겠습니까?", preferredStyle: .actionSheet)
+//        
+//        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { action in
+//            //performSegue to AuthorizeViewController
+//        }))
+//        alert.addAction(UIAlertAction(title: "다음에", style: .cancel, handler: { action in
+//            self.pressedSkip()
+//        }))
+//        DispatchQueue.main.async {
+//            self.present(malert, animated: true, completion: nil)
+//        }
+//    }
+//    
+//    @objc func pressedConfirm() {
+//        
+//    }
+//    
+//    @objc func pressedSkip() {
+//        //create nextTimeDialog
+//    }
 }
 
 class TabPagerButton: Tabman.TMLabelBarButton {

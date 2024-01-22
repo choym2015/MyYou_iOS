@@ -60,6 +60,8 @@
 		C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */; };
 		C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */; };
 		C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */; };
+		C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */; };
+		C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */; };
 		C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A292B5509560065D2B3 /* Configuration.swift */; };
 		C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */; };
 		C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2F2B5612AF0065D2B3 /* User.swift */; };
@@ -155,6 +157,8 @@
 		C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoEditView.xib; sourceTree = "<group>"; };
 		C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryViewController.swift; sourceTree = "<group>"; };
 		C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryViewController.xib; sourceTree = "<group>"; };
+		C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NextTimeDialogView.xib; sourceTree = "<group>"; };
+		C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextTimeDialogView.swift; sourceTree = "<group>"; };
 		C7DE1A292B5509560065D2B3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		C7DE1A2F2B5612AF0065D2B3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -189,6 +193,8 @@
 				54186D9E2B58FD2D00F2117F /* AuthDialogView.swift */,
 				54186DA02B590E0100F2117F /* AuthUserViewController.swift */,
 				54186DA12B590E0100F2117F /* AuthUserViewController.xib */,
+				C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */,
+				C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */,
 			);
 			path = AuthView;
 			sourceTree = "<group>";
@@ -493,6 +499,7 @@
 				54186DA32B590E0100F2117F /* AuthUserViewController.xib in Resources */,
 				545283562B35552D0017F268 /* Main.storyboard in Resources */,
 				C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */,
+				C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */,
 				54186D9D2B58FD2300F2117F /* AuthDialogView.xib in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
 				5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */,
@@ -574,6 +581,7 @@
 				C75BDEC22B3EA58600AEC760 /* VideoListViewController+Delegates.swift in Sources */,
 				C79DFD7A2B47C0C9004AD425 /* RepeatTableViewCell.swift in Sources */,
 				C79DFD682B463DDB004AD425 /* YoutubeViewController.swift in Sources */,
+				C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */,
 				54186D9F2B58FD2D00F2117F /* AuthDialogView.swift in Sources */,
 				C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */,
 				C7DE1A322B5613A90065D2B3 /* SimpleResponse.swift in Sources */,
