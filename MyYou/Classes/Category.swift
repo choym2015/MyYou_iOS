@@ -7,6 +7,9 @@
 
 import Foundation
 
-public struct Category: Codable {
-    let categories: String
+public struct Category: Decodable {
+    let categoryID: String
+    let ownerID: String
+    let audienceID: String
+    let categoryName: String
 }

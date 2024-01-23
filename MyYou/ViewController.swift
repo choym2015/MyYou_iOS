@@ -75,8 +75,8 @@ class ViewController: UIViewController {
         }
         
         if let userID = self.userDefaults.string(forKey: "userID") {
-            Manager.shared.setUserID(userID: userID)
-            self.loadUserConfigs {
+//            Manager.shared.setUserID(userID: userID)
+            self.loadUserConfigs(userID: userID) {
                 self.moveToNextScreen()
             }
         } else {
@@ -84,27 +84,24 @@ class ViewController: UIViewController {
         }
     }
     
-    private func loadUserConfigs(closure: @escaping () -> Void) {
-        let userID = Manager.shared.getUserID()
+    private func loadUserConfigs(userID: String, closure: @escaping () -> Void) {
         let params: Parameters = ["userID" : userID]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/get_user.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable2/get_user2.php/",
                    method: .get,
                    parameters: params,
                    encoding: URLEncoding.default,
                    headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: User.self, completionHandler: { response in
+        .responseDecodable(of: User2.self, completionHandler: { response in
             switch response.result {
             case .success:
                 guard let user = response.value else { return }
-                
-                user.updateManager()
+                Manager2.shared.setUser(user: user)
                 closure()
-//                self.moveToNextScreen()
                 
             case .failure(let err):
-                print(err.localizedDescription)
+                print(err.localizedDescription) 
             }
         })
     }
@@ -117,7 +114,7 @@ class ViewController: UIViewController {
         
         let params: Parameters = ["os" : "ios", "userID" : userID]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/create_product.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable2/create_product.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -127,7 +124,7 @@ class ViewController: UIViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                self.loadUserConfigs {
+                self.loadUserConfigs(userID: userID) {
                     self.showAuthDialog()
                 }
             case .failure(let err):

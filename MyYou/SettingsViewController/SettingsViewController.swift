@@ -21,7 +21,7 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var proButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
     
-    let userID = Manager.shared.getUserID()
+//    let userID = Manager.shared.getUserID()
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,31 +33,31 @@ class SettingsViewController: UIViewController {
         self.backgroundView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
         DispatchQueue.main.async {
-            if Manager.shared.getUserPhoneNumber().isEmpty {
+            if Manager2.shared.user.userPhoneNumber.isEmpty {
                 self.pushLabelSwitch.isEnabled = false
             } else {
                 self.pushLabelSwitch.isEnabled = true
-                self.pushLabelSwitch.isOn = Manager.shared.isPushEnabled()
+                self.pushLabelSwitch.isOn = Manager2.shared.user.pushEnabled
                 self.registerLabel.text = "본인 인증 완료"
                 self.registerLabel.isUserInteractionEnabled = false
                 self.registerButton.isHidden = true
             }
             
             self.setupSubscriptionUI()
-            self.thumbnailSwitch.isOn = Manager.shared.isShowThumbnail()
-            self.showAllSwitch.isOn = Manager.shared.getCategories()[0] == "전체영상"
-            self.playNextSwitch.isOn = Manager.shared.isPlayNext()
+            self.thumbnailSwitch.isOn = Manager2.shared.user.thumbnail
+            self.showAllSwitch.isOn = Manager2.shared.user.showAll
+            self.playNextSwitch.isOn = Manager2.shared.user.playNext
         }
         
         self.addGestures()
     }
     
     func setupSubscriptionUI() {
-        if Manager.shared.getSubscription() == "pro" {
+        if Manager2.shared.user.subscription == "pro" {
             self.proLabel.text = "마이유 프로 구독중"
             self.proLabel.isUserInteractionEnabled = false
             self.proButton.isHidden = true
-        } else if Manager.shared.getSubscription() == "premium" {
+        } else if Manager2.shared.user.subscription == "premium" {
             self.proLabel.text = "마이유 프리미엄 구독중"
             self.proLabel.isUserInteractionEnabled = false
             self.proButton.isHidden = true

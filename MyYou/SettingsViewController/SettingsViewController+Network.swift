@@ -10,7 +10,7 @@ import Alamofire
 import FirebaseMessaging
 extension SettingsViewController {
     func updateThumbnail(thumbnail: Bool) {
-        let params: Parameters = ["thumbnail" : String(describing: thumbnail), "userID" : userID]
+        let params: Parameters = ["thumbnail" : String(describing: thumbnail), "userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/userTable/update_thumbnail.php/",
                    method: .post,
@@ -32,7 +32,7 @@ extension SettingsViewController {
     
     func updateCategories(categories: [String]) {
         let listString = categories.joined(separator: ",")
-        let params: Parameters = ["categories" : listString, "userID" : userID]
+        let params: Parameters = ["categories" : listString, "userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
                    method: .post,
@@ -53,7 +53,7 @@ extension SettingsViewController {
     }
     
     func updatePlayNext(playNext: Bool) {
-        let params: Parameters = ["playNext" : String(describing: playNext), "userID" : userID]
+        let params: Parameters = ["playNext" : String(describing: playNext), "userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/userTable/update_play_next.php/",
                    method: .post,
@@ -73,7 +73,7 @@ extension SettingsViewController {
     }
     
     func updatePro(subscription: String) {
-        let params: Parameters = ["subscription" : subscription, "userID" : userID]
+        let params: Parameters = ["subscription" : subscription, "userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/userTable/update_subscription.php/",
                    method: .post,
@@ -96,7 +96,7 @@ extension SettingsViewController {
     }
     
     func updatePushEnabled(pushEnabled: Bool) {
-        let params: Parameters = ["pushEnabled" : String(describing: pushEnabled), "userID" : userID]
+        let params: Parameters = ["pushEnabled" : String(describing: pushEnabled), "userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/userTable/update_push_enabled.php/",
                    method: .post,

@@ -23,7 +23,7 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
         cell.contentView.layer.borderColor = UIColor.clear.cgColor
         cell.contentView.layer.masksToBounds = true
         
-        if Manager.shared.isShowThumbnail() {
+        if Manager2.shared.user.thumbnail {
             if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
                 cell.videoImageView.downloadImage(from: url)
             } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/default.jpg") {
@@ -49,7 +49,7 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let videoItem = self.videos[indexPath.row]
         
-        let params: Parameters = ["userID" : userID, "videoID": videoItem.videoID]
+        let params: Parameters = ["userID" : Manager2.shared.getUserID(), "videoID": videoItem.videoID]
         
         AF.request("https://chopas.com/smartappbook/myyou/videoTable/get_videos_by_id.php/",
                    method: .get,
@@ -64,7 +64,7 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
                       let selectedVideoItem = videoItemList.product.first else { return }
                 
                 DispatchQueue.main.async {
-                    let youtubePlayerVC = YoutubeViewController(nibName: "YoutubeViewController", bundle: Bundle.main).receiveItem(index: indexPath.row, videoList: self.videos, time: selectedVideoItem.time)
+                    let youtubePlayerVC = YoutubeViewController(nibName: "YoutubeViewController", bundle: Bundle.main).receiveItem(index: indexPath.row, videoList: self.videos, time: "selectedVideoItem.time")
                     youtubePlayerVC.modalPresentationStyle = .fullScreen
                     
                     self.present(youtubePlayerVC, animated: true)

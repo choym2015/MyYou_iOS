@@ -15,7 +15,6 @@ class VideoListViewController: UIViewController {
     var category: String!
     var videos: [VideoItem]! = []
     var videocurrent : [VideoItem]! = []
-    let userID = Manager.shared.getUserID()
     private var doubleTapGesture: UITapGestureRecognizer!
     let blackView = UIView()
     var popupView = UIView()
@@ -46,39 +45,20 @@ class VideoListViewController: UIViewController {
     }
     
     func loadVideos() {
-        let userID = Manager.shared.getUserID()
-        let params: Parameters = ["userID" : userID]
+        if self.category == "전체영상" {
+            self.videos = Manager2.shared.user.videoItems
+        } else {
+            self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
+                videoItem.categoryName == self.category
+            })
+        }
         
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable/get_videos.php/",
-                   method: .get,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: VideoItemList.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                guard let videoItemList = response.value else { return }
-                
-                let filteredVideos = videoItemList.product.filter { videoItem in
-                    if self.category == "전체영상" {
-                        return true
-                    } else {
-                        return videoItem.category == self.category
-                    }
-                }
-                
-                self.videos = filteredVideos
-                self.reorderVideos()
-                DispatchQueue.main.async {
-                    self.emptyLabel.isHidden = !self.videos.isEmpty
-                }
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
+        DispatchQueue.main.async {
+            self.emptyLabel.isHidden = !self.videos.isEmpty
+            self.setCollectionView()
+        }
     }
-    
+ 
     private func setCollectionView() {
         self.collectionView.register(UINib(nibName: "VideoCollectionViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: "VideoCollectionViewCell")
         
@@ -117,7 +97,7 @@ class VideoListViewController: UIViewController {
             let view = VideoEditView.instantiateFromNib()
             view.videoTitleTextField.text = videoItem.title
             self.categoryButton = view.videoCategoryButton
-            self.selectedCategory = videoItem.category
+//            self.selectedCategory = videoItem.category
 
             if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
                 view.videoImageView.downloadImage(from: url)
@@ -177,7 +157,7 @@ class VideoListViewController: UIViewController {
         view.videoTitleTextField.text = videoItem.title
         
         self.categoryButton = view.videoCategoryButton
-        self.selectedCategory = videoItem.category
+//        self.selectedCategory = videoItem.category
 
         if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
             view.videoImageView.downloadImage(from: url)
@@ -246,8 +226,8 @@ class VideoListViewController: UIViewController {
             dict["category"] = view.videoCategoryButton.titleLabel?.text ?? ""
             dict["videoID"] = videoItem.videoID
             dict["title"] = view.videoTitleTextField.text ?? ""
-            dict["liked"] = videoItem.liked
-            dict["time"] = videoItem.time
+//            dict["liked"] = videoItem.liked
+//            dict["time"] = videoItem.time
             
             if view.videoCategoryButton.titleLabel?.text == "------" {
                 let alert = UIAlertController(title: "", message: "동영상을 수정할 수 없습니다. 카테고리 제목을 다시 확인해주시기 바랍니다.", preferredStyle: .alert)
@@ -270,7 +250,7 @@ class VideoListViewController: UIViewController {
         
         completeButton.cornerRadius = 10
         completeButton.backgroundColor = UIColor.purple
-        completeButton.tintColor = .white
+        completeButton.tintColor = UIColor.white
         malert.addAction(completeButton)
         malert.addAction(deleteButton)
         
@@ -337,9 +317,9 @@ class VideoListViewController: UIViewController {
         DispatchQueue.main.async {
             let selectCategoryVC = SelectCategoryViewController(nibName: "SelectCategoryViewController", bundle: Bundle.main)
             
-            selectCategoryVC.receiveItem(selectedCategory: self.selectedCategory) { newCategory in
-                self.selectedCategory = newCategory
-            }
+//            selectCategoryVC.receiveItem(selectedCategory: self.selectedCategory) { newCategory in
+//                self.selectedCategory = newCategory
+//            }
             
             selectCategoryVC.transitioningDelegate = self
             selectCategoryVC.modalPresentationStyle = .custom
@@ -390,7 +370,6 @@ class VideoListViewController: UIViewController {
 
 extension VideoListViewController: BonsaiControllerDelegate {
     
-    // return the frame of your Bonsai View Controller
     func frameOfPresentedView(in containerViewFrame: CGRect) -> CGRect {
         
         return CGRect(origin: CGPoint(x: 30, y: containerViewFrame.height / 6), size: CGSize(width: containerViewFrame.width-60, height: containerViewFrame.height * (2/3) - 100 ))
@@ -399,21 +378,6 @@ extension VideoListViewController: BonsaiControllerDelegate {
     // return a Bonsai Controller with SlideIn or Bubble transition animator
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         
-        /// With Background Color ///
-        
-        // Slide animation from .left, .right, .top, .bottom
-        //return BonsaiController(fromDirection: .bottom, backgroundColor: UIColor(white: 0, alpha: 0.5), presentedViewController: presented, delegate: self)
-        
-        // or Bubble animation initiated from a view
-        //return BonsaiController(fromView: yourOriginView, backgroundColor: UIColor(white: 0, alpha: 0.5), presentedViewController: presented, delegate: self)
-        
-        
-        /// With Blur Style ///
-        
-        // Slide animation from .left, .right, .top, .bottom
         return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
-        
-        // or Bubble animation initiated from a view
-        //return BonsaiController(fromView: yourOriginView, blurEffectStyle: .dark,  presentedViewController: presented, delegate: self)
     }
 }

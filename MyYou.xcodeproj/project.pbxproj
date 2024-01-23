@@ -62,6 +62,9 @@
 		C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */; };
 		C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */; };
 		C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */; };
+		C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */; };
+		C7DC8F252B5E8C9800FA10A9 /* NewVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DC8F242B5E8C9800FA10A9 /* NewVideoView.xib */; };
+		C7DC8F272B5E8CC500FA10A9 /* NewVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F262B5E8CC500FA10A9 /* NewVideoView.swift */; };
 		C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A292B5509560065D2B3 /* Configuration.swift */; };
 		C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */; };
 		C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2F2B5612AF0065D2B3 /* User.swift */; };
@@ -159,6 +162,9 @@
 		C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryViewController.xib; sourceTree = "<group>"; };
 		C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NextTimeDialogView.xib; sourceTree = "<group>"; };
 		C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextTimeDialogView.swift; sourceTree = "<group>"; };
+		C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager2.swift; sourceTree = "<group>"; };
+		C7DC8F242B5E8C9800FA10A9 /* NewVideoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewVideoView.xib; sourceTree = "<group>"; };
+		C7DC8F262B5E8CC500FA10A9 /* NewVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVideoView.swift; sourceTree = "<group>"; };
 		C7DE1A292B5509560065D2B3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		C7DE1A2F2B5612AF0065D2B3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -243,6 +249,7 @@
 				545283622B3558240017F268 /* GoogleService-Info.plist */,
 				C75BDEB92B3E949800AEC760 /* Manager.swift */,
 				C75BDEC32B3EA5C200AEC760 /* VideoItem.swift */,
+				C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -266,6 +273,8 @@
 				545283642B3562530017F268 /* HomeViewController.swift */,
 				545283722B3A5F520017F268 /* HomeViewController+Delegate.swift */,
 				545283742B3A8AB40017F268 /* VideoAddLauncher.swift */,
+				C7DC8F242B5E8C9800FA10A9 /* NewVideoView.xib */,
+				C7DC8F262B5E8CC500FA10A9 /* NewVideoView.swift */,
 			);
 			path = HomeViewController;
 			sourceTree = "<group>";
@@ -502,6 +511,7 @@
 				C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */,
 				54186D9D2B58FD2300F2117F /* AuthDialogView.xib in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
+				C7DC8F252B5E8C9800FA10A9 /* NewVideoView.xib in Resources */,
 				5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */,
 				C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */,
 			);
@@ -594,7 +604,9 @@
 				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
 				C79DFD762B47B934004AD425 /* RepeatViewController.swift in Sources */,
+				C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */,
 				C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */,
+				C7DC8F272B5E8CC500FA10A9 /* NewVideoView.swift in Sources */,
 				545283752B3A8AB40017F268 /* VideoAddLauncher.swift in Sources */,
 				5465C27E2B58B285003F53E9 /* CategoryListViewCell.swift in Sources */,
 				C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */,

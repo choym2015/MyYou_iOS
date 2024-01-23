@@ -16,13 +16,13 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     @IBOutlet weak var categoryTableView: ContentSizedTableView!
     @IBOutlet weak var cancelImage: UIImageView!
     
+    var categories = Manager2.shared.getCategories()
     
-    var categories = Manager.shared.getCategories()
+//    var categories = Manager.shared.getCategories()
 //    let database = Manager.shared.getDB()
-    let userID = Manager.shared.getUserID()
-    var selectedCategory: String!
-    var showAll = false
-    var closure: ((String) -> Void)!
+//    let userID = Manager.shared.getUserID()
+    var selectedCategory: Category?
+    var closure: ((Category) -> Void)!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,26 +36,26 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         
         self.loadCategories()
         self.setupUI()
-        
     }
     
-    func receiveItem(selectedCategory: String, closure: @escaping (String) -> Void) {
+    func receiveItem(selectedCategory: Category?, closure: @escaping (Category) -> Void) {
         self.selectedCategory = selectedCategory
         self.closure = closure
     }
     
     func loadCategories() {
-        self.showAll = self.categories.first == "전체영상"
-        
-        self.categories.removeAll { category in
-            category == "전체영상" || category == "설정"
-        }
+        self.categories.removeAll(where: { category in
+            category.categoryName == "전체영상" || category.categoryName == "설정"
+        })
         
         self.categoryTableView.delegate = self
         self.categoryTableView.dataSource = self
         self.categoryTableView.delegate = self
         
-        guard let index = self.categories.firstIndex(of: self.selectedCategory) else { return }
+        guard self.selectedCategory != nil,
+              let index = self.categories.firstIndex(where: { category in
+                  category.categoryID == self.selectedCategory?.categoryID
+              }) else { return }
         self.categoryTableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .none)
     }
 
@@ -107,13 +107,13 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
             return
         }
         
-        var updatedCategories = self.categories
-        updatedCategories.insert(category, at: 0)
-        updatedCategories.append("설정")
-        
-        if showAll {
-            self.categories.insert("전체영상", at: 0)
-        }
+//        var updatedCategories = self.categories
+//        updatedCategories.insert(category, at: 0)
+//        updatedCategories.append("설정")
+//        
+//        if showAll {
+//            self.categories.insert("전체영상", at: 0)
+//        }
         
 //        let documentReference = self.database.collection(userID).document("categories")
 //        documentReference.updateData(["order": updatedCategories]) { error in
@@ -136,15 +136,15 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.selectedCategory = self.categories[indexPath.row]
-        if ((categoryTextField.text?.isEmpty) != nil) {
-            self.dismiss(animated: true) {
-                self.closure(self.selectedCategory)
-            }
-        } else {
-            let alert = UIAlertController(title: "", message: "카테고리 제목을 입력해주세요", preferredStyle: .alert)
-            self.present(alert, animated: true, completion: nil)
-        }
+//        self.selectedCategory = self.categories[indexPath.row]
+//        if ((categoryTextField.text?.isEmpty) != nil) {
+//            self.dismiss(animated: true) {
+//                self.closure(self.selectedCategory)
+//            }
+//        } else {
+//            let alert = UIAlertController(title: "", message: "카테고리 제목을 입력해주세요", preferredStyle: .alert)
+//            self.present(alert, animated: true, completion: nil)
+//        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -154,7 +154,7 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RepeatTableViewCell", for: indexPath) as? RepeatTableViewCell else { return UITableViewCell() }
         
-        cell.repeatLabel.text = self.categories[indexPath.row]
+        cell.repeatLabel.text = self.categories[indexPath.row].categoryName
         
         return cell
     }
