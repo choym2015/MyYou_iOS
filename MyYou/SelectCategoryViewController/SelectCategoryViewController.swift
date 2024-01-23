@@ -7,6 +7,7 @@
 
 import UIKit
 import JDStatusBarNotification
+import Alamofire
 
 class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
@@ -17,10 +18,6 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     @IBOutlet weak var cancelImage: UIImageView!
     
     var categories = Manager2.shared.getCategories()
-    
-//    var categories = Manager.shared.getCategories()
-//    let database = Manager.shared.getDB()
-//    let userID = Manager.shared.getUserID()
     var selectedCategory: Category?
     var closure: ((Category) -> Void)!
     
@@ -98,14 +95,60 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func addCategory() {
-        if self.categoryTextField.text == "" {
+        guard let category = self.categoryTextField.text,
+                !category.isEmpty else {
             NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
             return
         }
-        guard let category = self.categoryTextField.text else {
-            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
+        
+        if self.getCategory(categoryName: category) != nil {
+            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error)
             return
         }
+        
+        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: category)
+        Manager2.shared.user.categories.insert(newCategory, at: 0)
+        
+        if let firstItem = Manager2.shared.user.categoryIDs.first, firstItem.isEmpty {
+            Manager2.shared.user.categoryIDs[0] = newCategory.categoryID
+        } else {
+            Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 0)
+        }
+        
+        let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
+        
+        let params: Parameters = [
+            "userID" : Manager2.shared.getUserID(),
+            "ownerID" : newCategory.ownerID,
+            "audienceID" : "",
+            "categoryName" : newCategory.categoryName,
+            "categoryID" : newCategory.categoryID,
+            "categoryIDs" : listString
+        ]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/create_category.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    self.categoryTextField.text = ""
+                    self.categoryTextField.resignFirstResponder()
+                    self.categories.insert(newCategory, at: 0)
+                    self.categoryTableView.reloadData()
+                }
+               
+            case .failure(let err):
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+            }
+        })
+        
+        
         
 //        var updatedCategories = self.categories
 //        updatedCategories.insert(category, at: 0)
@@ -136,15 +179,10 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        self.selectedCategory = self.categories[indexPath.row]
-//        if ((categoryTextField.text?.isEmpty) != nil) {
-//            self.dismiss(animated: true) {
-//                self.closure(self.selectedCategory)
-//            }
-//        } else {
-//            let alert = UIAlertController(title: "", message: "카테고리 제목을 입력해주세요", preferredStyle: .alert)
-//            self.present(alert, animated: true, completion: nil)
-//        }
+        let selectedCategory = self.categories[indexPath.row]
+        self.dismiss(animated: true) {
+            self.closure(selectedCategory)
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -186,5 +224,12 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     
     @objc func handleDismiss() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func getCategory(categoryName: String?) -> Category? {
+        guard let categoryName = categoryName else { return nil }
+        return Manager2.shared.user.categories.first { category in
+            category.categoryName == categoryName
+        }
     }
 }

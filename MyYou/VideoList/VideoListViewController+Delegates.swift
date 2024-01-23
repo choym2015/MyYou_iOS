@@ -16,7 +16,8 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
         
         let videoItem = self.videos[indexPath.row]
         
-        cell.videoTitle.text = videoItem.title
+//        let titleData = Data(videoItem.title.da)
+        cell.videoTitle.text = videoItem.title.removingPercentEncoding
         
         cell.contentView.layer.cornerRadius = 10
         cell.contentView.layer.borderWidth = 1.0

@@ -11,10 +11,11 @@ import Tabman
 import Floaty
 import JDStatusBarNotification
 import BonsaiController
+import Alamofire
 
-extension HomeViewController: PageboyViewControllerDataSource {    
+extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerDelegate {
     func numberOfViewControllers(in pageboyViewController: PageboyViewController) -> Int {
-        return self.viewControllers.count
+        return self.tabNames.count
     }
     
     func viewController(for pageboyViewController: PageboyViewController, at index: PageboyViewController.PageIndex) -> UIViewController? {
@@ -88,31 +89,34 @@ extension HomeViewController: PageboyViewControllerDataSource {
     
     func addVideoDialog(title: String, videoID: String) {
         self.popupView = {
-            let view = NewVideoView.instantiateFromNib()
-            view.titleTextField.text = title
-            view.receiveItem(videoID: videoID)
+            self.newVideoView = NewVideoView.instantiateFromNib()
+            self.newVideoView?.receiveItem(videoID: videoID)
+            self.newVideoView?.titleTextField.text = title
             
-            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/maxresdefault.jpg") {
-                view.thumbnailView.downloadImage(from: url)
-            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/default.jpg") {
-                view.thumbnailView.downloadImage(from: url)
-            } else {
-                view.thumbnailView.isHidden = true
+            if let lastCategory = Helper.getCategory(categoryID: Manager2.shared.user.lastCategory) {
+                self.newVideoView?.categoryButton.setTitle(lastCategory.categoryName, for: .normal)
             }
             
-            self.categoryButton = view.categoryButton
-            self.categoryButton.layer.borderWidth = 0.5
-            self.categoryButton.layer.cornerRadius = 10
-            self.categoryButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
+            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/maxresdefault.jpg") {
+                self.newVideoView?.thumbnailView.downloadImage(from: url)
+            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/default.jpg") {
+                self.newVideoView?.thumbnailView.downloadImage(from: url)
+            } else {
+                self.newVideoView?.thumbnailView.isHidden = true
+            }
             
-            view.addButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-            view.addButton.layer.cornerRadius = 10
+            self.newVideoView?.categoryButton.layer.borderWidth = 0.5
+            self.newVideoView?.categoryButton.layer.cornerRadius = 10
+            self.newVideoView?.categoryButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
             
-//            view.addButton.addTarget(self, action: #selector(addItem), for: .touchUpInside)
-            view.cancelImageView.isUserInteractionEnabled = true
-            view.cancelImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+            self.newVideoView?.addButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+            self.newVideoView?.addButton.layer.cornerRadius = 10
+            self.newVideoView?.addButton.addTarget(self, action: #selector(addItem), for: .touchUpInside)
             
-            return view
+            self.newVideoView?.cancelImageView.isUserInteractionEnabled = true
+            self.newVideoView?.cancelImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+            
+            return self.newVideoView!
         }()
         
         if let window = UIApplication.shared.keyWindow {
@@ -141,47 +145,98 @@ extension HomeViewController: PageboyViewControllerDataSource {
             if let window = UIApplication.shared.keyWindow {
                 self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
             }
+            
+            if self.needsReload {
+                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+            }
         }
     }
     
-    @objc func addItem(sender: UIButton) {
-    
+    @objc func addItem() {
+        self.needsReload = true
+        
+        guard let newVideoView = self.newVideoView else { return }
+        var videoIDs = Manager2.shared.getVideoIDs()
+        
+        guard let firstItem = videoIDs.first,
+              let videoID = newVideoView.videoID,
+              let title = newVideoView.titleTextField.text.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        
+        if firstItem.isEmpty {
+            videoIDs[0] = videoID
+        } else {
+            videoIDs.insert(videoID, at: 0)
+        }
+        
+        let listString = videoIDs.joined(separator: ",")
+        let selectedCategory = Helper.getCategory(categoryName: newVideoView.categoryButton.titleLabel?.text)
+        
+        let params: Parameters = [
+            "userID" : Manager2.shared.getUserID(),
+            "videoID" : videoID,
+            "title" : title,
+            "categoryName" : selectedCategory?.categoryName ?? "",
+            "categoryID" : selectedCategory?.categoryID ?? "",
+            "videoIDs" : listString
+        ]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/videoTable2/create_product.php/",
+                   method: .post,
+                   parameters: params,
+                   encoding: URLEncoding.default,
+                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        
+        .validate(statusCode: 200..<300)
+        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                    UIView.animate(withDuration: 0.5) {
+                        self.blackView.alpha = 0
+                        if let window = UIApplication.shared.keyWindow {
+                            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
+                        }
+                    }
+                }
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        })
     }
     
     @objc func showCategories() {
         DispatchQueue.main.async {
             let selectCategoryVC = SelectCategoryViewController(nibName: "SelectCategoryViewController", bundle: Bundle.main)
+            let selectedCategory = Helper.getCategory(categoryName: self.newVideoView?.categoryButton.titleLabel?.text)
             
-            selectCategoryVC.receiveItem(selectedCategory: nil) { newCategory in
+            selectCategoryVC.receiveItem(selectedCategory: selectedCategory) { newCategory in
+                guard let categoryButton = self.newVideoView?.categoryButton else { return }
                 
+                if let selectedCategory = categoryButton.titleLabel?.text {
+                    if selectedCategory == newCategory.categoryName {
+                        categoryButton.setTitle("------", for: .normal)
+                    } else {
+                        categoryButton.setTitle(newCategory.categoryName, for: .normal)
+                    }
+                } else {
+                    categoryButton.setTitle(newCategory.categoryName, for: .normal)
+                }
             }
             
             selectCategoryVC.transitioningDelegate = self
             selectCategoryVC.modalPresentationStyle = .custom
-            self.presentedViewController?.present(selectCategoryVC, animated: true)
             self.present(selectCategoryVC, animated: true)
         }
     }
     
-    func getCategory(categoryID: String) -> Category? {
-        guard let index = Manager2.shared.user.categoryIDs.firstIndex(of: categoryID) else {
-            return nil
-        }
-        
-        return Manager2.shared.user.categories[index]
-    }
-}
-
-extension HomeViewController: BonsaiControllerDelegate {
-    
     func frameOfPresentedView(in containerViewFrame: CGRect) -> CGRect {
-        
         return CGRect(origin: CGPoint(x: 30, y: containerViewFrame.height / 6), size: CGSize(width: containerViewFrame.width-60, height: containerViewFrame.height * (2/3) - 100 ))
     }
     
-    // return a Bonsai Controller with SlideIn or Bubble transition animator
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        
         return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
     }
 }
+
+

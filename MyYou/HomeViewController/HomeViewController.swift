@@ -20,10 +20,8 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     var tabBar: TMBarView<TMHorizontalBarLayout, TabPagerButton, TMBarIndicator.None>!
     var popupView = UIView()
     var blackView = UIView()
-    var categoryButton: UIButton!
-    var newVideoVideoID: String?
-    var newVideoTitle: String?
-
+    var needsReload: Bool = false
+    var newVideoView: NewVideoView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,10 +64,25 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
-    @objc private func updateCategory(closure: @escaping () -> Void) {
+    @objc public func updateCategory(notification: Notification) {
         self.viewControllers.removeAll()
         self.reloadUser {
-            closure()
+            self.tabNames = Manager2.shared.getCategoryNames()
+            for tabName in self.tabNames {
+                var viewController: UIViewController!
+                if tabName == "설정" {
+                    viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
+                } else {
+                    viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
+                }
+                
+                self.viewControllers.append(viewController)
+            }
+            
+            self.reloadData()
+            self.tabBar.buttons.customize { (button) in
+                button.update(for: .unselected)
+            }
         }
     }
     
@@ -108,7 +121,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         }
     }
     
-    private func populateViewControllers() {
+    public func populateViewControllers() {
         for tabName in tabNames {
             var viewController: UIViewController!
             if tabName == "설정" {
@@ -168,57 +181,11 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
                 return
             }
 
-//            self.addVideoFromShare(title: title, videoID: id)
             DispatchQueue.main.async {
                 self.addVideoDialog(title: title, videoID: id)
             }
         }
         task.resume()
-    }
-    
-    private func addVideoFromShare(title: String, videoID: String) {
-        var videoIDs = Manager2.shared.getVideoIDs()
-        
-        guard let firstItem = videoIDs.first else { return }
-        
-        if firstItem.isEmpty {
-            videoIDs[0] = videoID
-        } else {
-            videoIDs.insert(videoID, at: 0)
-        }
-        
-        let listString = videoIDs.joined(separator: ",")
-        
-        let params: Parameters = [
-            "userID" : Manager2.shared.getUserID(),
-            "videoID" : videoID,
-            "title" : title,
-            "categoryName" : "",
-            "categoryID" : "",
-            "videoIDs" : listString
-        ]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable2/create_product.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                self.updateCategory {
-                    self.tabNames = Manager2.shared.getCategoryNames()
-                    
-                    DispatchQueue.main.async {
-                        self.populateViewControllers()
-                    }
-                }
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
     }
 }
 

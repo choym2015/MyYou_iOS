@@ -33,6 +33,7 @@
 		5452839B2B3AAACB0017F268 /* share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 545283912B3AAACA0017F268 /* share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5465C27E2B58B285003F53E9 /* CategoryListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5465C27C2B58B285003F53E9 /* CategoryListViewCell.swift */; };
 		5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5465C27D2B58B285003F53E9 /* CategoryListViewCell.xib */; };
+		C72FE02C2B5F5ED7009C68FC /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE02B2B5F5ED7009C68FC /* Helper.swift */; };
 		C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739B3892B4FBEE700694D5B /* String+youtube.swift */; };
 		C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEB92B3E949800AEC760 /* Manager.swift */; };
 		C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */; };
@@ -133,6 +134,7 @@
 		973DA66DA115EEAAF5C5F181 /* Pods-MyYou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyYou.debug.xcconfig"; path = "Target Support Files/Pods-MyYou/Pods-MyYou.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF7973D3F65161CB6AC0919 /* Pods-MyYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyYou.release.xcconfig"; path = "Target Support Files/Pods-MyYou/Pods-MyYou.release.xcconfig"; sourceTree = "<group>"; };
 		AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyYou.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C72FE02B2B5F5ED7009C68FC /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		C739B3892B4FBEE700694D5B /* String+youtube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+youtube.swift"; sourceTree = "<group>"; };
 		C75BDEB92B3E949800AEC760 /* Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager.swift; sourceTree = "<group>"; };
 		C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 				C75BDEB92B3E949800AEC760 /* Manager.swift */,
 				C75BDEC32B3EA5C200AEC760 /* VideoItem.swift */,
 				C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */,
+				C72FE02B2B5F5ED7009C68FC /* Helper.swift */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 				C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */,
 				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
+				C72FE02C2B5F5ED7009C68FC /* Helper.swift in Sources */,
 				C79DFD762B47B934004AD425 /* RepeatViewController.swift in Sources */,
 				C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */,
 				C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */,
