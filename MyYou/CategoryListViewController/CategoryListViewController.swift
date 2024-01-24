@@ -14,7 +14,7 @@ class CategoryListViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var emptyCategoryLabel: UILabel!
     var categories: [Category] = Manager2.shared.user.categories
-    var videoCategories: [Category]!
+//    var videoCategories: [Category]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,9 +37,9 @@ class CategoryListViewController: UIViewController {
             navigationBar.standardAppearance = appearance
         }
         
-        self.videoCategories = self.categories.filter({ category in
-            category.categoryName != "전체영상" && category.categoryName != "설정"
-        })
+//        self.videoCategories = self.categories.filter({ category in
+//            category.categoryName != "전체영상" && category.categoryName != "설정"
+//        })
 
         self.setCollectionView()
         self.addRightButton()
@@ -58,7 +58,7 @@ class CategoryListViewController: UIViewController {
         
         self.collectionView.collectionViewLayout = layout
         
-        self.emptyCategoryLabel.isHidden = !self.videoCategories.isEmpty
+        self.emptyCategoryLabel.isHidden = !self.categories.isEmpty
     }
     
     func addRightButton() {
@@ -99,13 +99,8 @@ class CategoryListViewController: UIViewController {
             }
             
             let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: categoryName)
-            Manager2.shared.user.categories.insert(newCategory, at: 0)
-            
-            if let firstItem = Manager2.shared.user.categoryIDs.first, firstItem.isEmpty {
-                Manager2.shared.user.categoryIDs[0] = newCategory.categoryID
-            } else {
-                Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 0)
-            }
+            Manager2.shared.user.categories.insert(newCategory, at: 1)
+            Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
             
             let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
             
@@ -210,9 +205,7 @@ class CategoryListViewController: UIViewController {
             
             view.categoryTextField.resignFirstResponder()
             
-            if self.videoCategories.contains(where: { category in
-                category.categoryName == newCategoryName
-            }) {
+            if Helper.getCategory(categoryName: newCategoryName) != nil {
                 NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error)
                 return
             }
@@ -357,10 +350,10 @@ class CategoryListViewController: UIViewController {
     
     func updateVideoCategories() {
         self.categories = Manager2.shared.user.categories
-        self.videoCategories = self.categories.filter({ category in
-            category.categoryName != "전체영상" && category.categoryName != "설정"
-        })
+//        self.videoCategories = self.categories.filter({ category in
+//            category.categoryName != "전체영상" && category.categoryName != "설정"
+//        })
         self.collectionView.reloadData()
-        self.emptyCategoryLabel.isHidden = !self.videoCategories.isEmpty
+        self.emptyCategoryLabel.isHidden = !self.categories.isEmpty
     }
 }

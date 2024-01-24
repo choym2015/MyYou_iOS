@@ -49,6 +49,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     
     func setTabs() {
         self.tabNames = Manager2.shared.getCategoryNames()
+        self.tabNames.append("설정")
         
         DispatchQueue.main.async {
             self.populateViewControllers()
@@ -80,25 +81,27 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     }
     
    @objc public func reloadCategory(notification: Notification) {
-        self.viewControllers.removeAll()
-        
-        self.tabNames = Manager2.shared.getCategoryNames()
-        for tabName in self.tabNames {
-            var viewController: UIViewController!
-            if tabName == "설정" {
-                viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
-            } else {
-                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
-            }
-            
-            self.viewControllers.append(viewController)
-        }
-        
-        self.reloadData()
-        self.tabBar.buttons.customize { (button) in
-            button.update(for: .unselected)
-        }
-    }
+       self.viewControllers.removeAll()
+       
+       self.tabNames = Manager2.shared.getCategoryNames()
+       self.tabNames.append("설정")
+       
+       for tabName in self.tabNames {
+           var viewController: UIViewController!
+           if tabName == "설정" {
+               viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
+           } else {
+               viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
+           }
+           
+           self.viewControllers.append(viewController)
+       }
+       
+       self.reloadData()
+       self.tabBar.buttons.customize { (button) in
+           button.update(for: .unselected)
+       }
+   }
     
     private static func reloadUser(closure: @escaping () -> Void) {
         let params: Parameters = ["userID" : Manager2.shared.getUserID()]
@@ -196,7 +199,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
 
             DispatchQueue.main.async {
-                self.addVideoDialog(title: title, videoID: id)
+                self.addVideoFromShare(title: title, videoID: id)
             }
         }
         task.resume()
@@ -216,7 +219,7 @@ class TabPagerButton: Tabman.TMLabelBarButton {
         
         switch selectionState {
         case .selected:
-            backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
+            backgroundColor = UIColor().hexStringToUIColor(hex: "#8851F5")
             tintColor = .white
             selectedTintColor = .white
         default:

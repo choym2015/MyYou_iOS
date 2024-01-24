@@ -22,6 +22,7 @@ class VideoListViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     var editVideoView: VideoEditView?
     var needsReload: Bool = false
+    var textHeightConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,8 +84,14 @@ class VideoListViewController: UIViewController {
         self.popupView = {
             self.editVideoView = VideoEditView.instantiateFromNib()
             self.editVideoView?.receiveItem(videoID: videoItem.videoID)
-            self.editVideoView?.videoTitleTextField.text = videoItem.title.removingPercentEncoding
-            self.editVideoView?.videoCategoryButton.setTitle(videoItem.categoryName.isEmpty ? "------" : videoItem.categoryName, for: .normal)
+            self.editVideoView?.titleTextView.text = videoItem.title.removingPercentEncoding
+            self.editVideoView?.titleTextView.delegate = self
+
+            self.textHeightConstraint = self.editVideoView?.titleTextView.heightAnchor.constraint(equalToConstant: 40)
+            self.textHeightConstraint.isActive = true
+            self.adjustTextViewHeight(textView: self.editVideoView!.titleTextView)
+
+            self.editVideoView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
             if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
                 self.editVideoView?.videoImageView.downloadImage(from: url)
@@ -94,15 +101,14 @@ class VideoListViewController: UIViewController {
                 self.editVideoView?.videoImageView.isHidden = true
             }
             
+            self.editVideoView?.videoCategoryButton.setTitle(videoItem.categoryName, for: .normal)
             self.editVideoView?.videoCategoryButton.layer.borderWidth = 0.5
             self.editVideoView?.videoCategoryButton.addTarget(self, action: #selector(self.showCategories), for: .touchUpInside)
             self.editVideoView?.videoCategoryButton.layer.cornerRadius = 10
             
-            self.editVideoView?.videoAddButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-            self.editVideoView?.videoAddButton.layer.cornerRadius = 10
-            self.editVideoView?.videoAddButton.addTarget(self, action: #selector(self.editItem), for: .touchUpInside)
+            self.editVideoView?.videoEditButton.layer.cornerRadius = 10
+            self.editVideoView?.videoEditButton.addTarget(self, action: #selector(self.editItem), for: .touchUpInside)
             
-            self.editVideoView?.videoDeleteButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#DC5C60")
             self.editVideoView?.videoDeleteButton.layer.cornerRadius = 10
             self.editVideoView?.videoDeleteButton.addTarget(self, action: #selector(self.deleteItem), for: .touchUpInside)
             
@@ -112,16 +118,17 @@ class VideoListViewController: UIViewController {
             return editVideoView!
         }()
         
-        if let window = UIApplication.shared.keyWindow {
+        if let window = self.view.window {
             self.blackView.frame = window.frame
             self.blackView.alpha = 0
             self.blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
             window.addSubview(self.blackView)
             window.addSubview(self.popupView)
             
-            let height: CGFloat = window.frame.height*5/6
-            let y = window.frame.height - height
-            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
+            let newHeight = 650 - 72.67 + self.textHeightConstraint.constant
+            self.editVideoView?.heightConstraint.constant = newHeight
+            let y = window.frame.height - newHeight
+            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: newHeight)
             
             self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
             
@@ -135,7 +142,7 @@ class VideoListViewController: UIViewController {
     @objc func handleDismiss() {
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow {
+            if let window = self.view.window {
                 self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
             }
             
@@ -144,6 +151,12 @@ class VideoListViewController: UIViewController {
                     NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)                    
                 }
             }
+        }
+    }
+    
+    @objc func dismissKeyboard() {
+        if self.editVideoView?.titleTextView.isFirstResponder != nil {
+            self.editVideoView?.titleTextView.resignFirstResponder()
         }
     }
     
@@ -187,7 +200,7 @@ class VideoListViewController: UIViewController {
         self.needsReload = true
         
         guard let videoID = self.editVideoView?.videoID,
-              let title = self.editVideoView?.videoTitleTextField.text?.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+              let title = self.editVideoView?.titleTextView.text?.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         
         let updatedCategory = Helper.getCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text)
         
@@ -224,17 +237,12 @@ class VideoListViewController: UIViewController {
             let selectCategoryVC = SelectCategoryViewController(nibName: "SelectCategoryViewController", bundle: Bundle.main)
             let selectedCategory = Helper.getCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text)
             
-            selectCategoryVC.receiveItem(selectedCategory: selectedCategory) { newCategory in
+            selectCategoryVC.receiveItem(selectedCategory: selectedCategory) { newCategory, updateRequired in
+                self.needsReload = updateRequired
                 guard let categoryButton = self.editVideoView?.videoCategoryButton else { return }
-                
-                if let selectedCategory = categoryButton.titleLabel?.text {
-                    if selectedCategory == newCategory.categoryName {
-                        categoryButton.setTitle("------", for: .normal)
-                    } else {
-                        categoryButton.setTitle(newCategory.categoryName, for: .normal)
-                    }
-                } else {
-                    categoryButton.setTitle(newCategory.categoryName, for: .normal)
+
+                if let selectedCategory = newCategory {
+                    categoryButton.setTitle(selectedCategory.categoryName, for: .normal)
                 }
             }
             

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import Alamofire
 
-extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITextViewDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "VideoCollectionViewCell", for: indexPath) as! VideoCollectionViewCell
@@ -74,5 +74,16 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
                 print(err.localizedDescription)
             }
         })
+    }
+    
+    func adjustTextViewHeight(textView: UITextView) {
+        let fixedWidth = textView.frame.size.width
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        self.textHeightConstraint.constant = newSize.height
+        self.view.layoutIfNeeded()
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        self.adjustTextViewHeight(textView: textView)
     }
 }

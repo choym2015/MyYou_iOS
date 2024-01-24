@@ -107,8 +107,5 @@ public class User2: Decodable {
         if let categoryIDsString = try? container.decode(String.self, forKey: .categoryIDs) {
             self.categoryIDs = categoryIDsString.components(separatedBy: ",")
         }
-        
-        let settingsCategory = Category(categoryID: "settings", ownerID: self.userID, audienceID: "", categoryName: "설정")
-        self.categories.append(settingsCategory)
     }
 }

@@ -10,13 +10,13 @@ import UIKit
 
 class VideoEditView: UIView {
     @IBOutlet weak var videoImageView: UIImageView!
-    @IBOutlet weak var videoTitleTextField: UITextField!
-    @IBOutlet weak var videoCategoryButton: UIButton!
-    
-    @IBOutlet weak var videoAddButton: UIButton!
-    @IBOutlet weak var videoDeleteButton: UIButton!
+    @IBOutlet weak var titleTextView: UITextView!
     @IBOutlet weak var cancelImage: UIImageView!
-    
+    @IBOutlet weak var videoCategoryButton: UIButton!
+    @IBOutlet weak var videoEditButton: UIButton!
+    @IBOutlet weak var videoDeleteButton: UIButton!
+    @IBOutlet weak var contentView: UIView!
+    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     var videoID: String!
     
     func receiveItem(videoID: String) {

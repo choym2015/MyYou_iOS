@@ -13,7 +13,7 @@ import JDStatusBarNotification
 import BonsaiController
 import Alamofire
 
-extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerDelegate, UITextViewDelegate {
+extension HomeViewController: PageboyViewControllerDataSource, UITextViewDelegate {
     func numberOfViewControllers(in pageboyViewController: PageboyViewController) -> Int {
         return self.tabNames.count
     }
@@ -54,7 +54,7 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         let messageListItem = FloatyItem()
         messageListItem.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         messageListItem.icon = UIImage(named: "link")
-        messageListItem.title = "동영상 불러오기"
+        messageListItem.title = "카테고리 불러오기"
         messageListItem.handler = { item in
             DispatchQueue.main.async {
                 if Manager2.shared.user.userPhoneNumber.isEmpty {
@@ -67,7 +67,7 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         let sendVideoItem = FloatyItem()
         sendVideoItem.buttonColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         sendVideoItem.icon = UIImage(named: "premium")
-        sendVideoItem.title = "동영상 보내기"
+        sendVideoItem.title = "카테고리 보내기"
         sendVideoItem.handler = { item in
             DispatchQueue.main.async {
                 if Manager2.shared.user.subscription != "pro" {
@@ -87,99 +87,13 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         }
     }
     
-    func addVideoDialog(title: String, videoID: String) {
-        self.popupView = {
-            self.newVideoView = NewVideoView.instantiateFromNib()
-            self.newVideoView?.receiveItem(videoID: videoID)
-            self.newVideoView?.titleTextView.text = title
-            self.newVideoView?.titleTextView.delegate = self
-
-            self.textHeightConstraint = self.newVideoView?.titleTextView.heightAnchor.constraint(equalToConstant: 40)
-            self.textHeightConstraint.isActive = true
-            self.adjustTextViewHeight(textView: self.newVideoView!.titleTextView)
-            
-            self.newVideoView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
-            
-            if let lastCategory = Helper.getCategory(categoryID: Manager2.shared.user.lastCategory) {
-                self.newVideoView?.categoryButton.setTitle(lastCategory.categoryName, for: .normal)
-                self.newVideoView?.categoryButton.semanticContentAttribute = UIApplication.shared
-                    .userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
-            }
-            
-            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/maxresdefault.jpg") {
-                self.newVideoView?.thumbnailImageView.downloadImage(from: url)
-            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/default.jpg") {
-                self.newVideoView?.thumbnailImageView.downloadImage(from: url)
-            } else {
-                self.newVideoView?.thumbnailImageView.isHidden = true
-            }
-            
-            self.newVideoView?.categoryButton.layer.borderWidth = 0.5
-            self.newVideoView?.categoryButton.layer.cornerRadius = 10
-            self.newVideoView?.categoryButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
-            
-            self.newVideoView?.addButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-            self.newVideoView?.addButton.layer.cornerRadius = 10
-            self.newVideoView?.addButton.addTarget(self, action: #selector(addItem), for: .touchUpInside)
-            
-            self.newVideoView?.cancelImageView.isUserInteractionEnabled = true
-            self.newVideoView?.cancelImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-            
-            return self.newVideoView!
-        }()
-        
-        if let window = self.view.window {
-            self.blackView.frame = window.frame
-            self.blackView.alpha = 0
-            self.blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
-            window.addSubview(self.blackView)
-            window.addSubview(self.popupView)
-            
-            
-            let newHeight = 600 - 82.67 + self.textHeightConstraint.constant
-            self.newVideoView?.heightConstraint.constant = newHeight
-            let y = window.frame.height - newHeight
-            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: newHeight)
-            
-            self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-            
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.blackView.alpha = 1
-                self.popupView.frame = CGRect(x: 0, y: y, width: self.popupView.frame.width, height: self.popupView.frame.height)
-            }, completion: nil)
-        }
-    }
-    
-    @objc func handleDismiss() {
-        UIView.animate(withDuration: 0.5) {
-            self.blackView.alpha = 0
-            if let window = self.view.window {
-                self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
-            }
-            
-            if self.needsReload {
-                HomeViewController.reload {
-                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
-                }
-            }
-        }
-    }
-    
-    @objc func dismissKeyboard() {
-        if self.newVideoView?.titleTextView.isFirstResponder != nil {
-            self.newVideoView?.titleTextView.resignFirstResponder()
-        }
-    }
-    
-    @objc func addItem() {
+    func addVideoFromShare(title: String, videoID: String) {
         self.needsReload = true
         
-        guard let newVideoView = self.newVideoView else { return }
         var videoIDs = Manager2.shared.getVideoIDs()
         
         guard let firstItem = videoIDs.first,
-              let videoID = newVideoView.videoID,
-              let title = newVideoView.titleTextView.text.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+              let title = title.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         
         if firstItem.isEmpty {
             videoIDs[0] = videoID
@@ -188,7 +102,7 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         }
         
         let listString = videoIDs.joined(separator: ",")
-        let selectedCategory = Helper.getCategory(categoryName: newVideoView.categoryButton.titleLabel?.text)
+        let selectedCategory = Helper.getCategory(categoryName: "임시")
         
         let params: Parameters = [
             "userID" : Manager2.shared.getUserID(),
@@ -226,49 +140,14 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         })
     }
     
-    @objc func showCategories() {
-        DispatchQueue.main.async {
-            let selectCategoryVC = SelectCategoryViewController(nibName: "SelectCategoryViewController", bundle: Bundle.main)
-            let selectedCategory = Helper.getCategory(categoryName: self.newVideoView?.categoryButton.titleLabel?.text)
-            
-            selectCategoryVC.receiveItem(selectedCategory: selectedCategory) { newCategory in
-                guard let categoryButton = self.newVideoView?.categoryButton else { return }
-                
-                if let selectedCategory = categoryButton.titleLabel?.text {
-                    if selectedCategory == newCategory.categoryName {
-                        categoryButton.setTitle("------", for: .normal)
-                    } else {
-                        categoryButton.setTitle(newCategory.categoryName, for: .normal)
-                    }
-                } else {
-                    categoryButton.setTitle(newCategory.categoryName, for: .normal)
-                }
-            }
-            
-            selectCategoryVC.transitioningDelegate = self
-            selectCategoryVC.modalPresentationStyle = .custom
-            self.present(selectCategoryVC, animated: true)
-        }
-    }
+//    func frameOfPresentedView(in containerViewFrame: CGRect) -> CGRect {
+//        return CGRect(origin: CGPoint(x: 30, y: containerViewFrame.height / 6), size: CGSize(width: containerViewFrame.width-60, height: containerViewFrame.height * (2/3) - 100 ))
+//    }
+//    
+//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+//        return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
+//    }
     
-    func frameOfPresentedView(in containerViewFrame: CGRect) -> CGRect {
-        return CGRect(origin: CGPoint(x: 30, y: containerViewFrame.height / 6), size: CGSize(width: containerViewFrame.width-60, height: containerViewFrame.height * (2/3) - 100 ))
-    }
-    
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
-    }
-    
-    func adjustTextViewHeight(textView: UITextView) {
-        let fixedWidth = textView.frame.size.width
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        self.textHeightConstraint.constant = newSize.height
-        self.view.layoutIfNeeded()
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        self.adjustTextViewHeight(textView: textView)
-    }
 }
 
 

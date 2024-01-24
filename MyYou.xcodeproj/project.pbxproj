@@ -36,6 +36,7 @@
 		54F5F6562B5F9C210054B092 /* NewVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54F5F6552B5F9C210054B092 /* NewVideoView.xib */; };
 		54F5F6582B5F9C890054B092 /* NewVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F5F6572B5F9C890054B092 /* NewVideoView.swift */; };
 		C72FE02C2B5F5ED7009C68FC /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE02B2B5F5ED7009C68FC /* Helper.swift */; };
+		C72FE02E2B60EA9A009C68FC /* MessageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE02D2B60EA9A009C68FC /* MessageItem.swift */; };
 		C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739B3892B4FBEE700694D5B /* String+youtube.swift */; };
 		C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEB92B3E949800AEC760 /* Manager.swift */; };
 		C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */; };
@@ -137,6 +138,7 @@
 		9FF7973D3F65161CB6AC0919 /* Pods-MyYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyYou.release.xcconfig"; path = "Target Support Files/Pods-MyYou/Pods-MyYou.release.xcconfig"; sourceTree = "<group>"; };
 		AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyYou.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C72FE02B2B5F5ED7009C68FC /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		C72FE02D2B60EA9A009C68FC /* MessageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageItem.swift; sourceTree = "<group>"; };
 		C739B3892B4FBEE700694D5B /* String+youtube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+youtube.swift"; sourceTree = "<group>"; };
 		C75BDEB92B3E949800AEC760 /* Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager.swift; sourceTree = "<group>"; };
 		C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 				C7DE1A2F2B5612AF0065D2B3 /* User.swift */,
 				C7DE1A312B5613A90065D2B3 /* SimpleResponse.swift */,
 				C7DE1A352B563ED70065D2B3 /* Category.swift */,
+				C72FE02D2B60EA9A009C68FC /* MessageItem.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -602,6 +605,7 @@
 				C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */,
 				54186DA52B5A3A9300F2117F /* MyUserDefaults.swift in Sources */,
 				C79DFD8A2B4B88AC004AD425 /* CategoryListViewController.swift in Sources */,
+				C72FE02E2B60EA9A009C68FC /* MessageItem.swift in Sources */,
 				C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */,
 				C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */,
 				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,

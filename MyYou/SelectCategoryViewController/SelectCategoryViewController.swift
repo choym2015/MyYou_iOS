@@ -19,7 +19,8 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     
     var categories = Manager2.shared.getCategories()
     var selectedCategory: Category?
-    var closure: ((Category) -> Void)!
+    var closure: ((Category?, Bool) -> Void)!
+    var updateRequired: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,16 +35,12 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         self.setupUI()
     }
     
-    func receiveItem(selectedCategory: Category?, closure: @escaping (Category) -> Void) {
+    func receiveItem(selectedCategory: Category?, closure: @escaping (Category?, Bool) -> Void) {
         self.selectedCategory = selectedCategory
         self.closure = closure
     }
     
     func loadCategories() {
-//        self.categories.removeAll(where: { category in
-//            category.categoryName == "사용법" || category.categoryName == "설정"
-//        })
-        
         self.categoryTableView.delegate = self
         self.categoryTableView.dataSource = self
         self.categoryTableView.delegate = self
@@ -82,13 +79,8 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: category)
-        Manager2.shared.user.categories.insert(newCategory, at: 0)
-        
-        if let firstItem = Manager2.shared.user.categoryIDs.first, firstItem.isEmpty {
-            Manager2.shared.user.categoryIDs[0] = newCategory.categoryID
-        } else {
-            Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 0)
-        }
+        Manager2.shared.user.categories.insert(newCategory, at: 1)
+        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
         
         let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
         
@@ -111,10 +103,11 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
+                self.updateRequired = true
                 DispatchQueue.main.async {
                     self.categoryTextField.text = ""
                     self.categoryTextField.resignFirstResponder()
-                    self.categories.insert(newCategory, at: 0)
+                    self.categories.insert(newCategory, at: 1)
                     self.categoryTableView.reloadData()
                 }
                
@@ -125,9 +118,12 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RepeatTableViewCell", for: indexPath) as? RepeatTableViewCell else { return }
+        
         let selectedCategory = self.categories[indexPath.row]
+        
         self.dismiss(animated: true) {
-            self.closure(selectedCategory)
+            self.closure(selectedCategory, self.updateRequired)
         }
     }
     
@@ -138,7 +134,19 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RepeatTableViewCell", for: indexPath) as? RepeatTableViewCell else { return UITableViewCell() }
         
-        cell.repeatLabel.text = self.categories[indexPath.row].categoryName
+        let category = self.categories[indexPath.row]
+        
+        cell.repeatLabel.text = category.categoryName
+        
+        if category.categoryName == "사용법" || category.categoryName == "설정" || !category.isOwner() {
+            cell.selectionStyle = .none
+            cell.repeatLabel.textColor = .lightGray
+            cell.isUserInteractionEnabled = false
+        } else {
+            cell.selectionStyle = .default
+            cell.repeatLabel.textColor = .black
+            cell.isUserInteractionEnabled = true
+        }
         
         return cell
     }
@@ -160,6 +168,8 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     @objc func handleDismiss() {
-        self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true) {
+            self.closure(nil, self.updateRequired)
+        }
     }
 }
