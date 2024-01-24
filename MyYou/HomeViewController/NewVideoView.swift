@@ -1,23 +1,24 @@
 //
-//  NewVideoView.swift
+//  NewVideoView2.swift
 //  MyYou
 //
-//  Created by Youngmin Cho on 1/22/24.
+//  Created by SOO HYUN CHO on 1/23/24.
 //
 
 import UIKit
-import Alamofire
 
 class NewVideoView: UIView {
 
+    @IBOutlet weak var contentView: UIView!
+    @IBOutlet weak var titleTextView: UITextView!
     @IBOutlet weak var cancelImageView: UIImageView!
-    @IBOutlet weak var thumbnailView: UIImageView!
-    @IBOutlet weak var categoryButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var titleTextField: UITextView!
+    @IBOutlet weak var categoryButton: UIButton!
+    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var thumbnailImageView: UIImageView!
     
     var videoID: String!
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }

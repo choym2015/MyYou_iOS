@@ -22,6 +22,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     var blackView = UIView()
     var needsReload: Bool = false
     var newVideoView: NewVideoView?
+    var textHeightConstraint: NSLayoutConstraint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +58,8 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     private func addObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCategory), name: Notification.Name("reloadCategory"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.checkForYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     deinit {
@@ -64,7 +67,19 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
-    @objc public func reloadCategory(notification: Notification) {
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.newVideoView?.frame.origin.y -= keyboardSize.height
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.newVideoView?.frame.origin.y += keyboardSize.height
+        }
+    }
+    
+   @objc public func reloadCategory(notification: Notification) {
         self.viewControllers.removeAll()
         
         self.tabNames = Manager2.shared.getCategoryNames()
