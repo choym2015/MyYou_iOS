@@ -36,13 +36,9 @@ class VideoListViewController: UIViewController {
     }
     
     func loadVideos() {
-        if self.category == "전체영상" {
-            self.videos = Manager2.shared.user.videoItems
-        } else {
-            self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
-                videoItem.categoryName == self.category
-            })
-        }
+        self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
+            videoItem.categoryName == self.category
+        })
         
         DispatchQueue.main.async {
             self.emptyLabel.isHidden = !self.videos.isEmpty
@@ -144,7 +140,9 @@ class VideoListViewController: UIViewController {
             }
             
             if self.needsReload {
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                HomeViewController.reload {
+                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)                    
+                }
             }
         }
     }

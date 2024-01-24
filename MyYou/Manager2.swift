@@ -30,8 +30,16 @@ public class Manager2 {
         })
     }
     
+    public func getCategoryIDs() -> [String] {
+        return Manager2.shared.user.categoryIDs
+    }
+    
     public func getCategories() -> [Category] {
         return Manager2.shared.user.categories
+    }
+    
+    public func getUserPhoneNumber() -> String {
+        return Manager2.shared.user.userPhoneNumber
     }
 }
 
@@ -40,7 +48,7 @@ public class User2: Decodable {
     var playNext: Bool!
     var pushEnabled: Bool!
     var newMessage: Bool!
-    var showAll: Bool!
+//    var showAll: Bool!
     var selectedRepeatSelection: String!
     var userPhoneNumber: String!
     var lastCategory: String!
@@ -58,7 +66,7 @@ public class User2: Decodable {
         case playNext
         case pushEnabled
         case newMessage
-        case showAll
+//        case showAll
         case selectedRepeatSelection
         case userPhoneNumber
         case lastCategory
@@ -78,7 +86,7 @@ public class User2: Decodable {
         self.playNext = try container.decode(String.self, forKey: .playNext) == "true" ? true : false
         self.pushEnabled = try container.decode(String.self, forKey: .pushEnabled) == "true" ? true : false
         self.newMessage = try container.decode(String.self, forKey: .newMessage) == "true" ? true : false
-        self.showAll = try container.decode(String.self, forKey: .showAll) == "true" ? true : false
+//        self.showAll = try container.decode(String.self, forKey: .showAll) == "true" ? true : false
         self.selectedRepeatSelection = try container.decodeIfPresent(String.self, forKey: .selectedRepeatSelection)
         self.userPhoneNumber = try container.decodeIfPresent(String.self, forKey: .userPhoneNumber)
         self.lastCategory = try container.decodeIfPresent(String.self, forKey: .lastCategory)
@@ -98,11 +106,6 @@ public class User2: Decodable {
         
         if let categoryIDsString = try? container.decode(String.self, forKey: .categoryIDs) {
             self.categoryIDs = categoryIDsString.components(separatedBy: ",")
-        }
-        
-        if self.showAll {
-            let showAllCategory = Category(categoryID: "showAll", ownerID: self.userID, audienceID: "", categoryName: "전체영상")
-            self.categories.insert(showAllCategory, at: 0)
         }
         
         let settingsCategory = Category(categoryID: "settings", ownerID: self.userID, audienceID: "", categoryName: "설정")

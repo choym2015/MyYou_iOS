@@ -158,7 +158,9 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
             }
             
             if self.needsReload {
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                HomeViewController.reload {
+                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                }
             }
         }
     }
@@ -208,7 +210,9 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
             switch response.result {
             case .success:
                 DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                    HomeViewController.reload {
+                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                    }
                     UIView.animate(withDuration: 0.5) {
                         self.blackView.alpha = 0
                         if let window = self.view.window {
