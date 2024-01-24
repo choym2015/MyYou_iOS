@@ -8,7 +8,9 @@
 import UIKit
 import Malert
 class SettingsViewController: UIViewController {
+    @IBOutlet weak var authBackView: UIView!
     @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var proBackView: UIView!
     @IBOutlet weak var proLabel: UILabel!
     @IBOutlet weak var repeatLabel: UILabel!
     @IBOutlet weak var registerLabel: UILabel!
@@ -27,6 +29,13 @@ class SettingsViewController: UIViewController {
     }
     
     func setupUI() {
+        self.authBackView.layer.borderColor = UIColor.lightGray.cgColor
+        self.authBackView.layer.borderWidth = 1
+        self.authBackView.layer.cornerRadius = 3
+        self.proBackView.layer.cornerRadius = 3
+        self.playNextSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        self.pushLabelSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        self.thumbnailSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         self.backgroundView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
         DispatchQueue.main.async {
