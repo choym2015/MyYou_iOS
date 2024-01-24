@@ -24,6 +24,7 @@
                 <outlet property="registerLabel" destination="e60-jl-uuw" id="jsM-Mm-hBH"/>
                 <outlet property="repeatLabel" destination="Ezz-8x-q5v" id="QNE-7F-l1V"/>
                 <outlet property="thumbnailSwitch" destination="abq-Gr-0jy" id="Bp7-ds-iDe"/>
+                <outlet property="view" destination="ySz-49-vEh" id="Te1-Ge-K9g"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
