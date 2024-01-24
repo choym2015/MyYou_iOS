@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CategoryListViewController" customModule="MyYou" customModuleProvider="target">
             <connections>
                 <outlet property="collectionView" destination="qn9-16-ZaB" id="o9U-wh-Bvl"/>
+                <outlet property="emptyCategoryLabel" destination="0vS-zc-Oka" id="WnT-ok-ykG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -30,6 +31,12 @@
                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                     </collectionViewFlowLayout>
                 </collectionView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="카테고리가 없습니다" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0vS-zc-Oka">
+                    <rect key="frame" x="138.5" y="444.5" width="137" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -37,6 +44,8 @@
                 <constraint firstItem="qn9-16-ZaB" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Wkx-bF-B5r"/>
                 <constraint firstItem="qn9-16-ZaB" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="ay7-Ro-OnF"/>
                 <constraint firstItem="qn9-16-ZaB" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="eu2-a9-u91"/>
+                <constraint firstItem="0vS-zc-Oka" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="ihX-eW-Rtp"/>
+                <constraint firstItem="0vS-zc-Oka" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="j7V-hq-kwo"/>
                 <constraint firstItem="qn9-16-ZaB" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="pIR-n5-i29"/>
             </constraints>
             <point key="canvasLocation" x="130.43478260869566" y="-11.383928571428571"/>

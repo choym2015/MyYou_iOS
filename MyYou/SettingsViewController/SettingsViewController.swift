@@ -16,13 +16,10 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var appAgreeLabel: UILabel!
     @IBOutlet weak var pushLabelSwitch: UISwitch!
     @IBOutlet weak var playNextSwitch: UISwitch!
-    @IBOutlet weak var showAllSwitch: UISwitch!
     @IBOutlet weak var thumbnailSwitch: UISwitch!
     @IBOutlet weak var proButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
-    
-//    let userID = Manager.shared.getUserID()
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -45,7 +42,6 @@ class SettingsViewController: UIViewController {
             
             self.setupSubscriptionUI()
             self.thumbnailSwitch.isOn = Manager2.shared.user.thumbnail
-            self.showAllSwitch.isOn = Manager2.shared.user.showAll
             self.playNextSwitch.isOn = Manager2.shared.user.playNext
         }
         
@@ -79,23 +75,15 @@ class SettingsViewController: UIViewController {
     }
 
     @IBAction func registerButtonPressed(_ sender: UIButton) {
-        //move to auth
+        DispatchQueue.main.async {
+            let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
+            authVC.modalPresentationStyle = .fullScreen
+            self.present(authVC, animated: true)
+        }
     }
     
     @IBAction func thumbnailSwitchChanged(_ sender: UISwitch) {
         self.updateThumbnail(thumbnail: sender.isOn)
-    }
-    
-    @IBAction func showAllSwitchChanged(_ sender: UISwitch) {
-        var categories = Manager.shared.getCategories()
-        if sender.isOn {
-            categories.insert("전체영상", at: 0)
-        } else {
-            guard let index = categories.firstIndex(of: "전체영상") else { return }
-            categories.remove(at: index)
-        }
-        
-        self.updateCategories(categories: categories)
     }
     
     @IBAction func playNextSwitchChanged(_ sender: UISwitch) {

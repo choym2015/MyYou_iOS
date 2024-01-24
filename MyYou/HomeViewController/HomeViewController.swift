@@ -55,38 +55,37 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     }
     
     private func addObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCategory), name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCategory), name: Notification.Name("reloadCategory"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.checkForYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("reloadCategory"), object: nil)
         NotificationCenter.default.removeObserver(self, name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
-    @objc public func updateCategory(notification: Notification) {
+    @objc public func reloadCategory(notification: Notification) {
         self.viewControllers.removeAll()
-        self.reloadUser {
-            self.tabNames = Manager2.shared.getCategoryNames()
-            for tabName in self.tabNames {
-                var viewController: UIViewController!
-                if tabName == "설정" {
-                    viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
-                } else {
-                    viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
-                }
-                
-                self.viewControllers.append(viewController)
+        
+        self.tabNames = Manager2.shared.getCategoryNames()
+        for tabName in self.tabNames {
+            var viewController: UIViewController!
+            if tabName == "설정" {
+                viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
+            } else {
+                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
             }
             
-            self.reloadData()
-            self.tabBar.buttons.customize { (button) in
-                button.update(for: .unselected)
-            }
+            self.viewControllers.append(viewController)
+        }
+        
+        self.reloadData()
+        self.tabBar.buttons.customize { (button) in
+            button.update(for: .unselected)
         }
     }
     
-    private func reloadUser(closure: @escaping () -> Void) {
+    private static func reloadUser(closure: @escaping () -> Void) {
         let params: Parameters = ["userID" : Manager2.shared.getUserID()]
         
         AF.request("https://chopas.com/smartappbook/myyou/userTable2/get_user2.php/",
@@ -186,6 +185,12 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
         }
         task.resume()
+    }
+    
+    public static func reload(closure: @escaping () -> Void) {
+        HomeViewController.reloadUser {
+            closure()
+        }
     }
 }
 

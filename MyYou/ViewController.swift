@@ -112,9 +112,17 @@ class ViewController: UIViewController {
         self.userDefaults.setValue(self.userID, forKey: "userID")
         Manager.shared.setUserID(userID: self.userID)
         
-        let params: Parameters = ["os" : "ios", "userID" : userID]
+        let tempCategoryID = UUID().uuidString
+        let manualCategoryID = UUID().uuidString
+        let categoryIDs = [tempCategoryID, manualCategoryID]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable2/create_product.php/",
+        let params: Parameters = ["os" : "ios", 
+                                  "userID" : userID,
+                                  "tempCategoryID": tempCategoryID,
+                                  "manualCategoryID": manualCategoryID,
+                                  "categoryIDs": categoryIDs.joined(separator: ",")]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/userTable2/create_product2.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,

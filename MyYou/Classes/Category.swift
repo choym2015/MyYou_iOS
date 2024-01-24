@@ -12,4 +12,8 @@ public struct Category: Decodable {
     let ownerID: String
     let audienceID: String
     let categoryName: String
+    
+    public func isOwner() -> Bool {
+        return self.ownerID == Manager2.shared.getUserID()
+    }
 }
