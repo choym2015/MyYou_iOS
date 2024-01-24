@@ -13,7 +13,7 @@ import JDStatusBarNotification
 import BonsaiController
 import Alamofire
 
-extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerDelegate {
+extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerDelegate, UITextViewDelegate {
     func numberOfViewControllers(in pageboyViewController: PageboyViewController) -> Int {
         return self.tabNames.count
     }
@@ -91,18 +91,27 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         self.popupView = {
             self.newVideoView = NewVideoView.instantiateFromNib()
             self.newVideoView?.receiveItem(videoID: videoID)
-            self.newVideoView?.titleTextField.text = title
+            self.newVideoView?.titleTextView.text = title
+            self.newVideoView?.titleTextView.delegate = self
+
+            self.textHeightConstraint = self.newVideoView?.titleTextView.heightAnchor.constraint(equalToConstant: 40)
+            self.textHeightConstraint.isActive = true
+            self.adjustTextViewHeight(textView: self.newVideoView!.titleTextView)
+            
+            self.newVideoView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
             
             if let lastCategory = Helper.getCategory(categoryID: Manager2.shared.user.lastCategory) {
                 self.newVideoView?.categoryButton.setTitle(lastCategory.categoryName, for: .normal)
+                self.newVideoView?.categoryButton.semanticContentAttribute = UIApplication.shared
+                    .userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
             }
             
             if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/maxresdefault.jpg") {
-                self.newVideoView?.thumbnailView.downloadImage(from: url)
+                self.newVideoView?.thumbnailImageView.downloadImage(from: url)
             } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoID))/default.jpg") {
-                self.newVideoView?.thumbnailView.downloadImage(from: url)
+                self.newVideoView?.thumbnailImageView.downloadImage(from: url)
             } else {
-                self.newVideoView?.thumbnailView.isHidden = true
+                self.newVideoView?.thumbnailImageView.isHidden = true
             }
             
             self.newVideoView?.categoryButton.layer.borderWidth = 0.5
@@ -119,16 +128,18 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
             return self.newVideoView!
         }()
         
-        if let window = UIApplication.shared.keyWindow {
+        if let window = self.view.window {
             self.blackView.frame = window.frame
             self.blackView.alpha = 0
             self.blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
             window.addSubview(self.blackView)
             window.addSubview(self.popupView)
             
-            let height: CGFloat = window.frame.height * 0.7
-            let y = window.frame.height - height
-            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
+            
+            let newHeight = 600 - 82.67 + self.textHeightConstraint.constant
+            self.newVideoView?.heightConstraint.constant = newHeight
+            let y = window.frame.height - newHeight
+            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: newHeight)
             
             self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
             
@@ -142,13 +153,19 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
     @objc func handleDismiss() {
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow {
+            if let window = self.view.window {
                 self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
             }
             
             if self.needsReload {
                 NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
             }
+        }
+    }
+    
+    @objc func dismissKeyboard() {
+        if self.newVideoView?.titleTextView.isFirstResponder != nil {
+            self.newVideoView?.titleTextView.resignFirstResponder()
         }
     }
     
@@ -160,7 +177,7 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
         
         guard let firstItem = videoIDs.first,
               let videoID = newVideoView.videoID,
-              let title = newVideoView.titleTextField.text.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+              let title = newVideoView.titleTextView.text.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         
         if firstItem.isEmpty {
             videoIDs[0] = videoID
@@ -194,7 +211,7 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
                     NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
                     UIView.animate(withDuration: 0.5) {
                         self.blackView.alpha = 0
-                        if let window = UIApplication.shared.keyWindow {
+                        if let window = self.view.window {
                             self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
                         }
                     }
@@ -236,6 +253,17 @@ extension HomeViewController: PageboyViewControllerDataSource, BonsaiControllerD
     
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
+    }
+    
+    func adjustTextViewHeight(textView: UITextView) {
+        let fixedWidth = textView.frame.size.width
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        self.textHeightConstraint.constant = newSize.height
+        self.view.layoutIfNeeded()
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        self.adjustTextViewHeight(textView: textView)
     }
 }
 
