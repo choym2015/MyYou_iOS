@@ -9,7 +9,13 @@ import Foundation
 import UIKit
 
 class CategoryAlertView: UIView {
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var categoryTextField: UITextField!
+    @IBOutlet weak var cancelButton: UIButton!
+    
+    @IBOutlet weak var completeButton: UIButton!
+    @IBOutlet weak var deleteButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
