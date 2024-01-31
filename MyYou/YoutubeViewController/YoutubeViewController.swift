@@ -15,10 +15,9 @@ class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
     var index: Int!
     var videoList: [VideoItem]!
     var time: String!
-    let userID = Manager.shared.getUserID()
     var currentVideo: VideoItem!
     var repeatIndex: Int!
-    let selectedRepeat = Manager.shared.getSelectedRepeatSelection()
+    let selectedRepeat = Manager2.shared.user.selectedRepeatSelection
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +33,9 @@ class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
         
         if !self.time.isEmpty {
             let timeFloat = (self.time as NSString).floatValue
-            self.youtubePlayerView.load(withVideoId: currentVideo.videoID, playerVars: ["start": timeFloat])
+            self.youtubePlayerView.load(withVideoId: currentVideo.youtubeID, playerVars: ["start": timeFloat])
         } else {
-            self.youtubePlayerView.load(withVideoId: currentVideo.videoID)
+            self.youtubePlayerView.load(withVideoId: currentVideo.youtubeID)
         }
         
     }
@@ -50,26 +49,7 @@ class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
                 return
             } else {
                 self.youtubePlayerView.duration { duration, error in
-                    let params: Parameters = [
-                        "videoID" : self.currentVideo.videoID,
-                        "userID" : self.userID,
-                        "time" : String(format: "%.0f", time)]
-                    
-                    AF.request("https://chopas.com/smartappbook/myyou/videoTable/update_video_time.php/",
-                               method: .post,
-                               parameters: params,
-                               encoding: URLEncoding.default,
-                               headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-                    
-                    .validate(statusCode: 200..<300)
-                    .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-                        switch response.result {
-                        case .success:
-                            print("updated time")
-                        case .failure(let err):
-                            print(err.localizedDescription)
-                        }
-                    })
+                    MyUserDefaults.saveString(with: "video_\(self.currentVideo.youtubeID)_time", value: String(describing: duration))
                 }
             }
         }
@@ -96,10 +76,16 @@ class YoutubeViewController: UIViewController, YTPlayerViewDelegate {
             self.repeatIndex -= 1
             self.repeatVideo()
         } else {
-            self.repeatIndex = (self.selectedRepeat as NSString).integerValue
-            self.playNextVideo()
+            if Manager2.shared.user.playNext {
+                self.repeatIndex = (self.selectedRepeat as NSString).integerValue
+                self.playNextVideo()
+            } else {
+                self.dismiss(animated: true)
+            }
         }
     }
+    
+
     
     func repeatVideo() {
         self.youtubePlayerView.load(withVideoId: currentVideo.videoID)

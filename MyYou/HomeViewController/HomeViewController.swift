@@ -31,6 +31,12 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
         self.setTabs()
         self.addObserver()
         self.setFloaty()
+        
+        if Manager2.shared.user.newMessage {
+            DispatchQueue.main.async {
+                self.showNewMessage()
+            }
+        }
     }
     
     func setupNavigation() {
@@ -86,15 +92,17 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
        self.tabNames = Manager2.shared.getCategoryNames()
        self.tabNames.append("설정")
        
-       for tabName in self.tabNames {
+       for (index, tabName) in self.tabNames.enumerated() {
            var viewController: UIViewController!
            if tabName == "설정" {
                viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
            } else {
-               viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
+               let category = Manager2.shared.user.categories[index]
+
+               viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: category)
            }
            
-           self.viewControllers.append(viewController)
+           viewControllers.append(viewController)
        }
        
        self.reloadData()
@@ -106,7 +114,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     private static func reloadUser(closure: @escaping () -> Void) {
         let params: Parameters = ["userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable2/get_user2.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/get_user3.php/",
                    method: .get,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -139,12 +147,14 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     }
     
     public func populateViewControllers() {
-        for tabName in tabNames {
+        for (index, tabName) in self.tabNames.enumerated() {
             var viewController: UIViewController!
             if tabName == "설정" {
                 viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
             } else {
-                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
+                let category = Manager2.shared.user.categories[index]
+
+                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: category)
             }
             
             viewControllers.append(viewController)
@@ -199,7 +209,7 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             }
 
             DispatchQueue.main.async {
-                self.addVideoFromShare(title: title, videoID: id)
+                self.addVideoFromShare(title: title, youtubeID: id)
             }
         }
         task.resume()

@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import JDStatusBarNotification
+import FirebaseMessaging
 
 class AuthUserViewController: UIViewController, UITextFieldDelegate {
 
@@ -35,6 +36,30 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
                                   for: .editingChanged)
         
         self.skipButton.isHidden = !self.fromAuthDialog
+        
+        if !self.fromAuthDialog {
+            self.setupNavigationBar()
+        }
+    }
+    
+    func setupNavigationBar() {
+        self.title = "본인 인증"
+        navigationItem.backButtonTitle = " "
+        self.view.changeStatusBarBgColor(bgColor: UIColor().hexStringToUIColor(hex: "#6200EE"))
+        navigationController?.navigationBar.tintColor = UIColor.white
+        
+        if let navigationBar = navigationController?.navigationBar {
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            let barAppearence = UIBarButtonItemAppearance()
+            barAppearence.normal.titleTextAttributes = [.foregroundColor: UIColor.yellow]
+            appearance.buttonAppearance = barAppearence
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.standardAppearance = appearance
+        }
     }
     
     func receiveItem(fromAuthDialog: Bool) {
@@ -102,18 +127,19 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
         Auth.auth().signIn(with: credential) { (authResult, error) in
             if let error = error {
                 let authError = error as NSError
-                NotificationPresenter.shared.present(authError.localizedDescription, includedStyle: .error)
+                NotificationPresenter.shared.present(authError.localizedDescription, includedStyle: .error, duration: 2.0)
                 return
             }
             
             MyUserDefaults.saveString(with: "userPhoneNumber", value: phoneNumber)
-            DispatchQueue.main.async {
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
-                let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
-                navigationController.modalPresentationStyle = .fullScreen
-                
-                self.present(navigationController, animated: true, completion: nil)
+            
+            NetworkManager.updateUserPhoneNumber(userPhoneNumber: phoneNumber) { response in
+                switch response.result {
+                case .success:
+                    self.requestNotificationPermission(userPhoneNumber: phoneNumber)
+                case .failure:
+                    NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
+                }
             }
         }
     }
@@ -126,5 +152,50 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
         self.view.endEditing(true)
         
         return true
+    }
+    
+    func requestNotificationPermission(userPhoneNumber: String){
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: { value, _ in
+            NetworkManager.updatePushNotification(pushEnabled: value) { response in
+                switch response.result {
+                case .success:
+                    if self.fromAuthDialog {
+                        Manager2.shared.user.userPhoneNumber = userPhoneNumber
+                        Manager2.shared.user.pushEnabled = value
+                        
+                        if value {
+                            Messaging.messaging().subscribe(toTopic: "myyou_pro_\(Manager2.shared.getUserPhoneNumber())")
+                            print("SUBSCRIBED TO TOPIC SUCCESSFULLY")
+                        }
+                        
+                        DispatchQueue.main.async {
+                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                            let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
+                            let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
+                            navigationController.modalPresentationStyle = .fullScreen
+                            
+                            self.present(navigationController, animated: true, completion: nil)
+                        }
+                    } else {
+                        HomeViewController.reload {
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    }
+                case .failure:
+                    NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
+                }
+            }
+        })
+    }
+    
+    @IBAction func skipButtonPressed(_ sender: UIButton) {
+        DispatchQueue.main.async {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let homeTabBarViewController = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
+            let navigationController = UINavigationController(rootViewController: homeTabBarViewController)
+            navigationController.modalPresentationStyle = .fullScreen
+            
+            self.present(navigationController, animated: true, completion: nil)
+        }
     }
 }

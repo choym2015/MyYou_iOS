@@ -68,53 +68,53 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func addCategory() {
-        guard let category = self.categoryTextField.text, !category.isEmpty else {
-            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
-            return
-        }
-        
-        if Helper.getCategory(categoryName: category) != nil {
-            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error)
-            return
-        }
-        
-        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: category)
-        Manager2.shared.user.categories.insert(newCategory, at: 1)
-        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
-        
-        let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
-        
-        let params: Parameters = [
-            "userID" : Manager2.shared.getUserID(),
-            "ownerID" : newCategory.ownerID,
-            "audienceID" : "",
-            "categoryName" : newCategory.categoryName,
-            "categoryID" : newCategory.categoryID,
-            "categoryIDs" : listString
-        ]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/create_category.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                self.updateRequired = true
-                DispatchQueue.main.async {
-                    self.categoryTextField.text = ""
-                    self.categoryTextField.resignFirstResponder()
-                    self.categories.insert(newCategory, at: 1)
-                    self.categoryTableView.reloadData()
-                }
-               
-            case .failure(let err):
-                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
-            }
-        })
+//        guard let category = self.categoryTextField.text, !category.isEmpty else {
+//            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
+//            return
+//        }
+//        
+//        if Helper.getCategory(categoryName: category) != nil {
+//            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error)
+//            return
+//        }
+//        
+//        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: category)
+//        Manager2.shared.user.categories.insert(newCategory, at: 1)
+//        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
+//        
+//        let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
+//        
+//        let params: Parameters = [
+//            "userID" : Manager2.shared.getUserID(),
+//            "ownerID" : newCategory.ownerID,
+//            "audienceID" : "",
+//            "categoryName" : newCategory.categoryName,
+//            "categoryID" : newCategory.categoryID,
+//            "categoryIDs" : listString
+//        ]
+//        
+//        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/create_category.php/",
+//                   method: .post,
+//                   parameters: params,
+//                   encoding: URLEncoding.default,
+//                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+//        
+//        .validate(statusCode: 200..<300)
+//        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+//            switch response.result {
+//            case .success:
+//                self.updateRequired = true
+//                DispatchQueue.main.async {
+//                    self.categoryTextField.text = ""
+//                    self.categoryTextField.resignFirstResponder()
+//                    self.categories.insert(newCategory, at: 1)
+//                    self.categoryTableView.reloadData()
+//                }
+//               
+//            case .failure(let err):
+//                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+//            }
+//        })
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -7,12 +7,22 @@
 
 import Foundation
 
-public struct VideoItem: Decodable {
+public class VideoItem: Decodable {
     let ownerID: String
     let videoID: String
-    let title: String
-    let categoryName: String
-    let categoryID: String
+    var title: String
+    let youtubeID: String
+    
+    enum CodingKeys: CodingKey {
+        case ownerID
+        case videoID
+        case title
+        case youtubeID
+    }
+    
+    public func isOwner() -> Bool {
+        return self.ownerID == Manager2.shared.getUserID()
+    }
 }
 
 

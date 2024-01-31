@@ -16,11 +16,7 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
         
         let videoItem = self.videos[indexPath.row]
         
-
-        let utf8data = videoItem.title
-        
-         /*           */
-        cell.videoTitle.text = videoItem.title.removingPercentEncoding?.replacingOccurrences(of: "+", with: " ")
+        cell.videoTitle.text = videoItem.title.removingPercentEncoding
         
         cell.contentView.layer.cornerRadius = 10
         cell.contentView.layer.borderWidth = 1.0
@@ -28,9 +24,9 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
         cell.contentView.layer.masksToBounds = true
         
         if Manager2.shared.user.thumbnail {
-            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
+            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/maxresdefault.jpg") {
                 cell.videoImageView.downloadImage(from: url)
-            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/default.jpg") {
+            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/default.jpg") {
                 cell.videoImageView.downloadImage(from: url)
             } else {
                 cell.videoImageView.isHidden = true
@@ -52,31 +48,16 @@ extension VideoListViewController: UICollectionViewDelegate, UICollectionViewDat
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let videoItem = self.videos[indexPath.row]
+        let time = MyUserDefaults.getString(with: "video_\(videoItem.youtubeID)_time")
         
-        let params: Parameters = ["userID" : Manager2.shared.getUserID(), "videoID": videoItem.videoID]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable/get_videos_by_id.php/",
-                   method: .get,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: VideoItemList.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                guard let videoItemList = response.value,
-                      let selectedVideoItem = videoItemList.product.first else { return }
-                
-                DispatchQueue.main.async {
-                    let youtubePlayerVC = YoutubeViewController(nibName: "YoutubeViewController", bundle: Bundle.main).receiveItem(index: indexPath.row, videoList: self.videos, time: "selectedVideoItem.time")
-                    youtubePlayerVC.modalPresentationStyle = .fullScreen
-                    
-                    self.present(youtubePlayerVC, animated: true)
-                }
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
+        DispatchQueue.main.async {
+            let youtubePlayerVC = YoutubeViewController(nibName: "YoutubeViewController", bundle: Bundle.main).receiveItem(index: indexPath.row, videoList: self.videos, time: time ?? "")
+            youtubePlayerVC.modalPresentationStyle = .fullScreen
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.myOrientation = .landscape
+            
+            self.present(youtubePlayerVC, animated: true)
+        }
     }
     
     func adjustTextViewHeight(textView: UITextView) {

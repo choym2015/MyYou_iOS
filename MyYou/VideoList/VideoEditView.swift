@@ -17,11 +17,6 @@ class VideoEditView: UIView {
     @IBOutlet weak var videoDeleteButton: UIButton!
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
-    var videoID: String!
-    
-    func receiveItem(videoID: String) {
-        self.videoID = videoID
-    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

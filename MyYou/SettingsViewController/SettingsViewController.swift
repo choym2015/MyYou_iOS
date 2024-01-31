@@ -7,6 +7,8 @@
 
 import UIKit
 import Malert
+import JDStatusBarNotification
+
 class SettingsViewController: UIViewController {
     @IBOutlet weak var authBackView: UIView!
     @IBOutlet weak var backgroundView: UIView!
@@ -38,13 +40,17 @@ class SettingsViewController: UIViewController {
         self.thumbnailSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         self.backgroundView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
+        self.addGestures()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         DispatchQueue.main.async {
             if Manager2.shared.user.userPhoneNumber.isEmpty {
                 self.pushLabelSwitch.isEnabled = false
             } else {
                 self.pushLabelSwitch.isEnabled = true
                 self.pushLabelSwitch.isOn = Manager2.shared.user.pushEnabled
-                self.registerLabel.text = "본인 인증 완료"
+                self.registerLabel.text = "  본인 인증 완료"
                 self.registerLabel.isUserInteractionEnabled = false
                 self.registerButton.isHidden = true
             }
@@ -53,8 +59,6 @@ class SettingsViewController: UIViewController {
             self.thumbnailSwitch.isOn = Manager2.shared.user.thumbnail
             self.playNextSwitch.isOn = Manager2.shared.user.playNext
         }
-        
-        self.addGestures()
     }
     
     func setupSubscriptionUI() {
@@ -87,7 +91,7 @@ class SettingsViewController: UIViewController {
         DispatchQueue.main.async {
             let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
             authVC.modalPresentationStyle = .fullScreen
-            self.present(authVC, animated: true)
+            self.navigationController?.pushViewController(authVC, animated: true)
         }
     }
     
@@ -111,7 +115,15 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func pushSwitchChanged(_ sender: UISwitch) {
-        self.updatePushEnabled(pushEnabled: sender.isOn)
+//        self.updatePushEnabled(pushEnabled: sender.isOn)
+        NetworkManager.updatePushNotification(pushEnabled: sender.isOn) { response in
+            switch response.result {
+            case .success:
+                Manager2.shared.user.pushEnabled = sender.isOn
+            case .failure(let error):
+                NotificationPresenter.shared.present(error.localizedDescription, includedStyle: .error, duration: 2.0)
+            }
+        }
     }
     
     @IBAction func appAgreeButtonPressed(_ sender: UIButton) {

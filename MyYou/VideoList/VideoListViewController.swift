@@ -12,17 +12,20 @@ import Alamofire
 import BonsaiController
 
 class VideoListViewController: UIViewController {    
-    var category: String!
-    var videos: [VideoItem]! = []
-    var videocurrent : [VideoItem]! = []
-    private var doubleTapGesture: UITapGestureRecognizer!
-    let blackView = UIView()
-    var popupView = UIView()
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
+
+    let blackView = UIView()
+    var popupView: UIView!
+    var textHeightConstraint: NSLayoutConstraint!
+
+    var category: Category!
+    var videos: [VideoItem] = []
+    var selectedVideo: VideoItem?
     var editVideoView: VideoEditView?
     var needsReload: Bool = false
-    var textHeightConstraint: NSLayoutConstraint!
+    var doubleTapGesture: UITapGestureRecognizer!
+    private let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,14 +34,14 @@ class VideoListViewController: UIViewController {
         self.loadVideos()
     }
     
-    public func receiveCategory(category: String) -> UIViewController {
+    public func receiveCategory(category: Category) -> UIViewController {
         self.category = category
         return self
     }
     
     func loadVideos() {
         self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
-            videoItem.categoryName == self.category
+            self.category.videoIDs.contains(videoItem.videoID)
         })
         
         DispatchQueue.main.async {
@@ -62,6 +65,10 @@ class VideoListViewController: UIViewController {
         
         self.collectionView.collectionViewLayout = layout
         self.setUpDoubleTap()
+        
+        self.refreshControl.addTarget(self, action: #selector(self.didPullToRefresh(_:)), for: .valueChanged)
+        self.collectionView.alwaysBounceVertical = true
+        self.collectionView.refreshControl = self.refreshControl
     }
     
     func setUpDoubleTap() {
@@ -75,17 +82,18 @@ class VideoListViewController: UIViewController {
         let pointInCollectionView = self.doubleTapGesture.location(in: self.collectionView)
         if let selectedIndexPath = self.collectionView.indexPathForItem(at: pointInCollectionView) {
             let videoItem = self.videos[selectedIndexPath.row]
-            videocurrent = [videoItem]
             self.showVideoEdit(videoItem: videoItem)
         }
     }
     
     func showVideoEdit(videoItem: VideoItem) {
         self.popupView = {
+            self.selectedVideo = videoItem
+            
             self.editVideoView = VideoEditView.instantiateFromNib()
-            self.editVideoView?.receiveItem(videoID: videoItem.videoID)
-            self.editVideoView?.titleTextView.text = videoItem.title.removingPercentEncoding
+            self.editVideoView?.titleTextView.text = videoItem.title.decodeUrl()
             self.editVideoView?.titleTextView.delegate = self
+            self.editVideoView?.titleTextView.isUserInteractionEnabled = videoItem.isOwner()
 
             self.textHeightConstraint = self.editVideoView?.titleTextView.heightAnchor.constraint(equalToConstant: 40)
             self.textHeightConstraint.isActive = true
@@ -93,15 +101,25 @@ class VideoListViewController: UIViewController {
 
             self.editVideoView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
-            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
+            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/maxresdefault.jpg") {
                 self.editVideoView?.videoImageView.downloadImage(from: url)
-            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/default.jpg") {
+            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/default.jpg") {
                 self.editVideoView?.videoImageView.downloadImage(from: url)
             } else {
                 self.editVideoView?.videoImageView.isHidden = true
             }
             
-            self.editVideoView?.videoCategoryButton.setTitle(videoItem.categoryName, for: .normal)
+            if self.category.categoryName == "임시" && !Manager2.shared.user.lastCategoryID.isEmpty {
+                if let lastCategory = Helper.getCategoryForCategoryID(categoryID: Manager2.shared.user.lastCategoryID),
+                   lastCategory.isOwner() {
+                    self.editVideoView?.videoCategoryButton.setTitle(lastCategory.categoryName, for: .normal)
+                } else {
+                    self.editVideoView?.videoCategoryButton.setTitle(category.categoryName, for: .normal)
+                }
+            } else {
+                self.editVideoView?.videoCategoryButton.setTitle(category.categoryName, for: .normal)
+            }
+            
             self.editVideoView?.videoCategoryButton.layer.borderWidth = 0.5
             self.editVideoView?.videoCategoryButton.addTarget(self, action: #selector(self.showCategories), for: .touchUpInside)
             self.editVideoView?.videoCategoryButton.layer.cornerRadius = 10
@@ -125,7 +143,7 @@ class VideoListViewController: UIViewController {
             window.addSubview(self.blackView)
             window.addSubview(self.popupView)
             
-            let newHeight = 650 - 72.67 + self.textHeightConstraint.constant
+            let newHeight = 650 - 42.67 + self.textHeightConstraint.constant
             self.editVideoView?.heightConstraint.constant = newHeight
             let y = window.frame.height - newHeight
             self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: newHeight)
@@ -148,7 +166,7 @@ class VideoListViewController: UIViewController {
             
             if self.needsReload {
                 HomeViewController.reload {
-                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)                    
+                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)              
                 }
             }
         }
@@ -163,73 +181,50 @@ class VideoListViewController: UIViewController {
     @objc func deleteItem() {
         self.needsReload = true
         
-        guard let videoIDToDelete = self.editVideoView?.videoID,
-              var videoIDs = Manager2.shared.user.videoIDs else { return }
+        guard var videoItem = self.selectedVideo else { return }
         
-        videoIDs.removeAll(where: { videoID in
-            videoID == videoIDToDelete
-        })
+        self.category.removeVideoID(videoID: videoItem.videoID)
         
-        let params: Parameters = [
-            "userID" : Manager2.shared.getUserID(),
-            "videoID" : videoIDToDelete,
-            "videoIDs" : videoIDs.joined(separator: ",")
-        ]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable2/delete_video.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+        Manager2.shared.user.lastCategoryID = self.category.categoryID
+        NetworkManager.updateLastCategory(lastCategoryID: self.category.categoryID)
+
+        NetworkManager.deleteVideo(videoItem: videoItem, category: self.category) { response in
             switch response.result {
             case .success:
                 DispatchQueue.main.async {
                     self.handleDismiss()
                 }
-               
-            case .failure(let err):
-                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+            case .failure:
+                NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
             }
-        })
+        }
     }
     
     @objc func editItem() {
         self.needsReload = true
         
-        guard let videoID = self.editVideoView?.videoID,
-              let title = self.editVideoView?.titleTextView.text?.replacingOccurrences(of: "'", with: "").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        guard var videoItem = self.selectedVideo,
+              let title = self.editVideoView?.titleTextView.text.encodeUrl(),
+              let updatedCategory = Helper.getMyCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text) else { return }
         
-        let updatedCategory = Helper.getCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text)
+        updatedCategory.addVideoID(videoID: videoItem.videoID)
+        self.category.removeVideoID(videoID: videoItem.videoID)
         
-        let params: Parameters = [
-            "userID" : Manager2.shared.getUserID(),
-            "title" : title,
-            "videoID" : videoID,
-            "categoryID" : updatedCategory?.categoryID ?? "",
-            "categoryName" : updatedCategory?.categoryName ?? ""
-        ]
+        Manager2.shared.user.lastCategoryID = updatedCategory.categoryID
+        NetworkManager.updateLastCategory(lastCategoryID: updatedCategory.categoryID)
+    
+        videoItem.title = title
         
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable2/update_video.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+        NetworkManager.updateVideoCategory(videoItem: videoItem, oldCategory: self.category, newCategory: updatedCategory) { response in
             switch response.result {
             case .success:
                 DispatchQueue.main.async {
                     self.handleDismiss()
                 }
-               
-            case .failure(let err):
-                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+            case .failure:
+                NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
             }
-        })
+        }
     }
     
     @objc func showCategories() {
@@ -253,9 +248,22 @@ class VideoListViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
         segue.destination.transitioningDelegate = self
         segue.destination.modalPresentationStyle = .custom
+    }
+    
+    @objc private func didPullToRefresh(_ sender: Any) {
+        HomeViewController.reload {
+            self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
+                self.category.videoIDs.contains(videoItem.videoID)
+            })
+            
+            DispatchQueue.main.async {
+                self.emptyLabel.isHidden = !self.videos.isEmpty
+                self.collectionView.reloadData()
+            }
+        }
+        self.refreshControl.endRefreshing()
     }
 }
 
