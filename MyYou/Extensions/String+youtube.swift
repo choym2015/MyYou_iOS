@@ -20,4 +20,12 @@ extension String {
         
         return (self as NSString).substring(with: result.range)
     }
+    
+    func encodeUrl() -> String {
+        return self.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+    }
+    
+    func decodeUrl() -> String {
+        return self.removingPercentEncoding ?? ""
+    }
 }

@@ -10,9 +10,9 @@ import Alamofire
 import FirebaseMessaging
 extension SettingsViewController {
     func updateThumbnail(thumbnail: Bool) {
-        let params: Parameters = ["thumbnail" : String(describing: thumbnail), "userID" : userID]
+        let params: Parameters = ["thumbnail" : String(describing: thumbnail), "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_thumbnail.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_thumbnail.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -22,30 +22,8 @@ extension SettingsViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setShouldShowThumbnail(shouldShowThumbnail: thumbnail)
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
-    }
-    
-    func updateCategories(categories: [String]) {
-        let listString = categories.joined(separator: ",")
-        let params: Parameters = ["categories" : listString, "userID" : userID]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                Manager.shared.setCategories(categories: categories)
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                Manager2.shared.user.thumbnail = thumbnail
+                NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
             case .failure(let err):
                 print(err.localizedDescription)
             }
@@ -53,9 +31,9 @@ extension SettingsViewController {
     }
     
     func updatePlayNext(playNext: Bool) {
-        let params: Parameters = ["playNext" : String(describing: playNext), "userID" : userID]
+        let params: Parameters = ["playNext" : String(describing: playNext), "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_play_next.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_play_next.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -65,7 +43,7 @@ extension SettingsViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setShouldPlayNext(shouldPlayNext: playNext)
+                Manager2.shared.user.playNext = playNext
             case .failure(let err):
                 print(err.localizedDescription)
             }
@@ -73,9 +51,9 @@ extension SettingsViewController {
     }
     
     func updatePro(subscription: String) {
-        let params: Parameters = ["subscription" : subscription, "userID" : userID]
+        let params: Parameters = ["subscription" : subscription, "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_subscription.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_subscription.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -85,7 +63,7 @@ extension SettingsViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setSubscription(subscription: subscription)
+                Manager2.shared.user.subscription = subscription
                 DispatchQueue.main.async {
                     self.setupSubscriptionUI()
                 }
@@ -96,9 +74,9 @@ extension SettingsViewController {
     }
     
     func updatePushEnabled(pushEnabled: Bool) {
-        let params: Parameters = ["pushEnabled" : String(describing: pushEnabled), "userID" : userID]
+        let params: Parameters = ["pushEnabled" : String(describing: pushEnabled), "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_push_enabled.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_push_enabled.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -108,14 +86,21 @@ extension SettingsViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setPushEnabled(pushEnabled: pushEnabled)
-                let userPhoneNumber = Manager.shared.getUserPhoneNumber()
+                Manager2.shared.user.pushEnabled = pushEnabled
+                let userPhoneNumber = Manager2.shared.getUserPhoneNumber()
                 if pushEnabled {
-                    Messaging.messaging().subscribe(toTopic: "myyou_pro_\(userPhoneNumber)")
+                    Messaging.messaging().subscribe(toTopic: "myyou_pro_\(Manager2.shared.getUserPhoneNumber())") { error in
+                        guard error == nil else { 
+                            print(error?.localizedDescription)
+                            return }
+                        print("SUBSCRIBED TO TOPIC")
+                    }
                 } else {
                     Messaging.messaging().unsubscribe(fromTopic: "myyou_pro_\(userPhoneNumber)")
                 }
-                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                
+                NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+
             case .failure(let err):
                 print(err.localizedDescription)
             }

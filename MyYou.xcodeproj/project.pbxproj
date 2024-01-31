@@ -33,8 +33,28 @@
 		5452839B2B3AAACB0017F268 /* share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 545283912B3AAACA0017F268 /* share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5465C27E2B58B285003F53E9 /* CategoryListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5465C27C2B58B285003F53E9 /* CategoryListViewCell.swift */; };
 		5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5465C27D2B58B285003F53E9 /* CategoryListViewCell.xib */; };
+		54B709DF2B622AAE00E7063B /* CategoryListAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B709DE2B622AAE00E7063B /* CategoryListAddView.swift */; };
+		54B709E12B622AC700E7063B /* CategoryListAddView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54B709E02B622AC700E7063B /* CategoryListAddView.xib */; };
+		54F5F6562B5F9C210054B092 /* NewVideoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 54F5F6552B5F9C210054B092 /* NewVideoView.xib */; };
+		54F5F6582B5F9C890054B092 /* NewVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F5F6572B5F9C890054B092 /* NewVideoView.swift */; };
+		C72FE02C2B5F5ED7009C68FC /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE02B2B5F5ED7009C68FC /* Helper.swift */; };
+		C72FE02E2B60EA9A009C68FC /* MessageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE02D2B60EA9A009C68FC /* MessageItem.swift */; };
+		C72FE0322B60F332009C68FC /* MessageListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0302B60F332009C68FC /* MessageListViewController.swift */; };
+		C72FE0332B60F332009C68FC /* MessageListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE0312B60F332009C68FC /* MessageListViewController.xib */; };
+		C72FE0352B60F412009C68FC /* MessageListViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0342B60F412009C68FC /* MessageListViewController+Delegates.swift */; };
+		C72FE0382B60F45F009C68FC /* MessageItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0362B60F45F009C68FC /* MessageItemCollectionViewCell.swift */; };
+		C72FE0392B60F45F009C68FC /* MessageItemCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE0372B60F45F009C68FC /* MessageItemCollectionViewCell.xib */; };
+		C72FE03D2B60F9EB009C68FC /* DownloadMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE03B2B60F9EB009C68FC /* DownloadMessageViewController.swift */; };
+		C72FE03E2B60F9EB009C68FC /* DownloadMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE03C2B60F9EB009C68FC /* DownloadMessageViewController.xib */; };
+		C72FE0402B60FCFF009C68FC /* DownloadMessageViewController+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE03F2B60FCFF009C68FC /* DownloadMessageViewController+Delegate.swift */; };
+		C72FE0442B6120DF009C68FC /* SendVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0422B6120DF009C68FC /* SendVideoViewController.swift */; };
+		C72FE0452B6120DF009C68FC /* SendVideoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE0432B6120DF009C68FC /* SendVideoViewController.xib */; };
+		C72FE0472B612334009C68FC /* SendVideoViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0462B612334009C68FC /* SendVideoViewController+Delegates.swift */; };
+		C72FE04A2B61238A009C68FC /* SendVideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0482B61238A009C68FC /* SendVideoCollectionViewCell.swift */; };
+		C72FE04B2B61238A009C68FC /* SendVideoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE0492B61238A009C68FC /* SendVideoCollectionViewCell.xib */; };
+		C72FE04D2B612B63009C68FC /* SelectCategoryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72FE04C2B612B63009C68FC /* SelectCategoryView.xib */; };
+		C72FE0512B61320B009C68FC /* SelectCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72FE0502B61320B009C68FC /* SelectCategoryView.swift */; };
 		C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */ = {isa = PBXBuildFile; fileRef = C739B3892B4FBEE700694D5B /* String+youtube.swift */; };
-		C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEB92B3E949800AEC760 /* Manager.swift */; };
 		C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */; };
 		C75BDEBE2B3EA4E000AEC760 /* VideoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C75BDEBC2B3EA4E000AEC760 /* VideoCollectionViewCell.xib */; };
 		C75BDEC02B3EA53900AEC760 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BDEBF2B3EA53900AEC760 /* PaddingLabel.swift */; };
@@ -60,8 +80,19 @@
 		C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */; };
 		C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */; };
 		C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */; };
+		C7A072472B677E4300359F91 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072462B677E4300359F91 /* NetworkManager.swift */; };
+		C7A072492B67822300359F91 /* Audience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072482B67822300359F91 /* Audience.swift */; };
+		C7A072552B68BEC200359F91 /* SelectCategoryToSendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072532B68BEC200359F91 /* SelectCategoryToSendViewController.swift */; };
+		C7A072562B68BEC200359F91 /* SelectCategoryToSendViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A072542B68BEC200359F91 /* SelectCategoryToSendViewController.xib */; };
+		C7A072582B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072572B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift */; };
+		C7A072602B68C1C700359F91 /* SelectVideoToSendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0725E2B68C1C700359F91 /* SelectVideoToSendViewController.swift */; };
+		C7A072612B68C1C700359F91 /* SelectVideoToSendViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A0725F2B68C1C700359F91 /* SelectVideoToSendViewController.xib */; };
+		C7A072632B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072622B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift */; };
+		C7A072652B6A0BB400359F91 /* NewMessageDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072642B6A0BB400359F91 /* NewMessageDialogView.swift */; };
+		C7A072672B6A0BCC00359F91 /* NewMessageDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A072662B6A0BCC00359F91 /* NewMessageDialogView.xib */; };
 		C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */; };
 		C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */; };
+		C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */; };
 		C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A292B5509560065D2B3 /* Configuration.swift */; };
 		C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */; };
 		C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DE1A2F2B5612AF0065D2B3 /* User.swift */; };
@@ -127,11 +158,31 @@
 		5452839F2B3AAB0E0017F268 /* share.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = share.entitlements; sourceTree = "<group>"; };
 		5465C27C2B58B285003F53E9 /* CategoryListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListViewCell.swift; sourceTree = "<group>"; };
 		5465C27D2B58B285003F53E9 /* CategoryListViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryListViewCell.xib; sourceTree = "<group>"; };
+		54B709DE2B622AAE00E7063B /* CategoryListAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListAddView.swift; sourceTree = "<group>"; };
+		54B709E02B622AC700E7063B /* CategoryListAddView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoryListAddView.xib; sourceTree = "<group>"; };
+		54F5F6552B5F9C210054B092 /* NewVideoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewVideoView.xib; sourceTree = "<group>"; };
+		54F5F6572B5F9C890054B092 /* NewVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVideoView.swift; sourceTree = "<group>"; };
 		973DA66DA115EEAAF5C5F181 /* Pods-MyYou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyYou.debug.xcconfig"; path = "Target Support Files/Pods-MyYou/Pods-MyYou.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF7973D3F65161CB6AC0919 /* Pods-MyYou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyYou.release.xcconfig"; path = "Target Support Files/Pods-MyYou/Pods-MyYou.release.xcconfig"; sourceTree = "<group>"; };
 		AA2487C24C9D89E77AF86EA9 /* Pods_MyYou.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyYou.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C72FE02B2B5F5ED7009C68FC /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		C72FE02D2B60EA9A009C68FC /* MessageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageItem.swift; sourceTree = "<group>"; };
+		C72FE0302B60F332009C68FC /* MessageListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageListViewController.swift; sourceTree = "<group>"; };
+		C72FE0312B60F332009C68FC /* MessageListViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageListViewController.xib; sourceTree = "<group>"; };
+		C72FE0342B60F412009C68FC /* MessageListViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageListViewController+Delegates.swift"; sourceTree = "<group>"; };
+		C72FE0362B60F45F009C68FC /* MessageItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageItemCollectionViewCell.swift; sourceTree = "<group>"; };
+		C72FE0372B60F45F009C68FC /* MessageItemCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageItemCollectionViewCell.xib; sourceTree = "<group>"; };
+		C72FE03B2B60F9EB009C68FC /* DownloadMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMessageViewController.swift; sourceTree = "<group>"; };
+		C72FE03C2B60F9EB009C68FC /* DownloadMessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DownloadMessageViewController.xib; sourceTree = "<group>"; };
+		C72FE03F2B60FCFF009C68FC /* DownloadMessageViewController+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadMessageViewController+Delegate.swift"; sourceTree = "<group>"; };
+		C72FE0422B6120DF009C68FC /* SendVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendVideoViewController.swift; sourceTree = "<group>"; };
+		C72FE0432B6120DF009C68FC /* SendVideoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendVideoViewController.xib; sourceTree = "<group>"; };
+		C72FE0462B612334009C68FC /* SendVideoViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SendVideoViewController+Delegates.swift"; sourceTree = "<group>"; };
+		C72FE0482B61238A009C68FC /* SendVideoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendVideoCollectionViewCell.swift; sourceTree = "<group>"; };
+		C72FE0492B61238A009C68FC /* SendVideoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendVideoCollectionViewCell.xib; sourceTree = "<group>"; };
+		C72FE04C2B612B63009C68FC /* SelectCategoryView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryView.xib; sourceTree = "<group>"; };
+		C72FE0502B61320B009C68FC /* SelectCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryView.swift; sourceTree = "<group>"; };
 		C739B3892B4FBEE700694D5B /* String+youtube.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+youtube.swift"; sourceTree = "<group>"; };
-		C75BDEB92B3E949800AEC760 /* Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager.swift; sourceTree = "<group>"; };
 		C75BDEBB2B3EA4E000AEC760 /* VideoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollectionViewCell.swift; sourceTree = "<group>"; };
 		C75BDEBC2B3EA4E000AEC760 /* VideoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoCollectionViewCell.xib; sourceTree = "<group>"; };
 		C75BDEBF2B3EA53900AEC760 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
@@ -157,8 +208,19 @@
 		C79DFD9F2B4BABC2004AD425 /* VideoEditView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoEditView.xib; sourceTree = "<group>"; };
 		C79DFDA22B4BB786004AD425 /* SelectCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryViewController.swift; sourceTree = "<group>"; };
 		C79DFDA32B4BB786004AD425 /* SelectCategoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryViewController.xib; sourceTree = "<group>"; };
+		C7A072462B677E4300359F91 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		C7A072482B67822300359F91 /* Audience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audience.swift; sourceTree = "<group>"; };
+		C7A072532B68BEC200359F91 /* SelectCategoryToSendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCategoryToSendViewController.swift; sourceTree = "<group>"; };
+		C7A072542B68BEC200359F91 /* SelectCategoryToSendViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectCategoryToSendViewController.xib; sourceTree = "<group>"; };
+		C7A072572B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCategoryToSendViewController+Delegate.swift"; sourceTree = "<group>"; };
+		C7A0725E2B68C1C700359F91 /* SelectVideoToSendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoToSendViewController.swift; sourceTree = "<group>"; };
+		C7A0725F2B68C1C700359F91 /* SelectVideoToSendViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoToSendViewController.xib; sourceTree = "<group>"; };
+		C7A072622B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectVideoToSendViewController+Delegates.swift"; sourceTree = "<group>"; };
+		C7A072642B6A0BB400359F91 /* NewMessageDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageDialogView.swift; sourceTree = "<group>"; };
+		C7A072662B6A0BCC00359F91 /* NewMessageDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewMessageDialogView.xib; sourceTree = "<group>"; };
 		C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NextTimeDialogView.xib; sourceTree = "<group>"; };
 		C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextTimeDialogView.swift; sourceTree = "<group>"; };
+		C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager2.swift; sourceTree = "<group>"; };
 		C7DE1A292B5509560065D2B3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C7DE1A2B2B5509DE0065D2B3 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		C7DE1A2F2B5612AF0065D2B3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -222,6 +284,8 @@
 		5452834D2B35552D0017F268 /* MyYou */ = {
 			isa = PBXGroup;
 			children = (
+				C72FE0412B6120C6009C68FC /* SendVideoViewController */,
+				C72FE02F2B60F318009C68FC /* MessageListViewController */,
 				C7DE1A282B55094D0065D2B3 /* Classes */,
 				C79DFDA12B4BB76B004AD425 /* SelectCategoryViewController */,
 				C79DFD922B4B8BFB004AD425 /* VideoList */,
@@ -241,8 +305,10 @@
 				545283592B35552E0017F268 /* LaunchScreen.storyboard */,
 				5452835C2B35552E0017F268 /* Info.plist */,
 				545283622B3558240017F268 /* GoogleService-Info.plist */,
-				C75BDEB92B3E949800AEC760 /* Manager.swift */,
 				C75BDEC32B3EA5C200AEC760 /* VideoItem.swift */,
+				C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */,
+				C72FE02B2B5F5ED7009C68FC /* Helper.swift */,
+				C7A072462B677E4300359F91 /* NetworkManager.swift */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -266,6 +332,10 @@
 				545283642B3562530017F268 /* HomeViewController.swift */,
 				545283722B3A5F520017F268 /* HomeViewController+Delegate.swift */,
 				545283742B3A8AB40017F268 /* VideoAddLauncher.swift */,
+				54F5F6552B5F9C210054B092 /* NewVideoView.xib */,
+				54F5F6572B5F9C890054B092 /* NewVideoView.swift */,
+				C7A072642B6A0BB400359F91 /* NewMessageDialogView.swift */,
+				C7A072662B6A0BCC00359F91 /* NewMessageDialogView.xib */,
 			);
 			path = HomeViewController;
 			sourceTree = "<group>";
@@ -298,6 +368,45 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		C72FE02F2B60F318009C68FC /* MessageListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C72FE03A2B60F9D0009C68FC /* DownloadMessageViewController */,
+				C72FE0302B60F332009C68FC /* MessageListViewController.swift */,
+				C72FE0312B60F332009C68FC /* MessageListViewController.xib */,
+				C72FE0342B60F412009C68FC /* MessageListViewController+Delegates.swift */,
+				C72FE0362B60F45F009C68FC /* MessageItemCollectionViewCell.swift */,
+				C72FE0372B60F45F009C68FC /* MessageItemCollectionViewCell.xib */,
+			);
+			path = MessageListViewController;
+			sourceTree = "<group>";
+		};
+		C72FE03A2B60F9D0009C68FC /* DownloadMessageViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C72FE03B2B60F9EB009C68FC /* DownloadMessageViewController.swift */,
+				C72FE03C2B60F9EB009C68FC /* DownloadMessageViewController.xib */,
+				C72FE03F2B60FCFF009C68FC /* DownloadMessageViewController+Delegate.swift */,
+			);
+			path = DownloadMessageViewController;
+			sourceTree = "<group>";
+		};
+		C72FE0412B6120C6009C68FC /* SendVideoViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7A0725D2B68C1B300359F91 /* SelectVideoViewController */,
+				C7A0724A2B68BC9C00359F91 /* SelectCategoryViewController */,
+				C72FE0422B6120DF009C68FC /* SendVideoViewController.swift */,
+				C72FE0432B6120DF009C68FC /* SendVideoViewController.xib */,
+				C72FE0462B612334009C68FC /* SendVideoViewController+Delegates.swift */,
+				C72FE0482B61238A009C68FC /* SendVideoCollectionViewCell.swift */,
+				C72FE0492B61238A009C68FC /* SendVideoCollectionViewCell.xib */,
+				C72FE04C2B612B63009C68FC /* SelectCategoryView.xib */,
+				C72FE0502B61320B009C68FC /* SelectCategoryView.swift */,
+			);
+			path = SendVideoViewController;
+			sourceTree = "<group>";
+		};
 		C79DFD8C2B4B8B67004AD425 /* CategoryListViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -305,6 +414,8 @@
 				C79DFD892B4B88AC004AD425 /* CategoryListViewController.xib */,
 				C79DFD972B4B8EB8004AD425 /* CategoryAlertView.swift */,
 				C79DFD992B4B8EC0004AD425 /* CategoryAlertView.xib */,
+				54B709DE2B622AAE00E7063B /* CategoryListAddView.swift */,
+				54B709E02B622AC700E7063B /* CategoryListAddView.xib */,
 				C79DFD9B2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift */,
 				5465C27C2B58B285003F53E9 /* CategoryListViewCell.swift */,
 				5465C27D2B58B285003F53E9 /* CategoryListViewCell.xib */,
@@ -385,6 +496,26 @@
 			path = SelectCategoryViewController;
 			sourceTree = "<group>";
 		};
+		C7A0724A2B68BC9C00359F91 /* SelectCategoryViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7A072532B68BEC200359F91 /* SelectCategoryToSendViewController.swift */,
+				C7A072542B68BEC200359F91 /* SelectCategoryToSendViewController.xib */,
+				C7A072572B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift */,
+			);
+			path = SelectCategoryViewController;
+			sourceTree = "<group>";
+		};
+		C7A0725D2B68C1B300359F91 /* SelectVideoViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7A0725E2B68C1C700359F91 /* SelectVideoToSendViewController.swift */,
+				C7A0725F2B68C1C700359F91 /* SelectVideoToSendViewController.xib */,
+				C7A072622B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift */,
+			);
+			path = SelectVideoViewController;
+			sourceTree = "<group>";
+		};
 		C7DE1A282B55094D0065D2B3 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -393,6 +524,8 @@
 				C7DE1A2F2B5612AF0065D2B3 /* User.swift */,
 				C7DE1A312B5613A90065D2B3 /* SimpleResponse.swift */,
 				C7DE1A352B563ED70065D2B3 /* Category.swift */,
+				C72FE02D2B60EA9A009C68FC /* MessageItem.swift */,
+				C7A072482B67822300359F91 /* Audience.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -485,21 +618,32 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C72FE03E2B60F9EB009C68FC /* DownloadMessageViewController.xib in Resources */,
 				C79DFD7B2B47C0C9004AD425 /* RepeatTableViewCell.xib in Resources */,
 				5452835B2B35552E0017F268 /* LaunchScreen.storyboard in Resources */,
 				C79DFD832B47D29B004AD425 /* AppAgreeViewController.xib in Resources */,
+				C72FE04D2B612B63009C68FC /* SelectCategoryView.xib in Resources */,
 				54158BD12B3D1B5600E7B218 /* SettingsViewController.xib in Resources */,
+				C7A072612B68C1C700359F91 /* SelectVideoToSendViewController.xib in Resources */,
 				C79DFDA02B4BABC2004AD425 /* VideoEditView.xib in Resources */,
+				54B709E12B622AC700E7063B /* CategoryListAddView.xib in Resources */,
+				C7A072562B68BEC200359F91 /* SelectCategoryToSendViewController.xib in Resources */,
 				C79DFD8B2B4B88AC004AD425 /* CategoryListViewController.xib in Resources */,
 				54158BCD2B3D1A3E00E7B218 /* VideoListViewController.xib in Resources */,
 				545283632B3558240017F268 /* GoogleService-Info.plist in Resources */,
 				C75BDEBE2B3EA4E000AEC760 /* VideoCollectionViewCell.xib in Resources */,
+				C72FE04B2B61238A009C68FC /* SendVideoCollectionViewCell.xib in Resources */,
 				545283582B35552E0017F268 /* Assets.xcassets in Resources */,
 				C79DFD692B463DDB004AD425 /* YoutubeViewController.xib in Resources */,
+				C72FE0452B6120DF009C68FC /* SendVideoViewController.xib in Resources */,
 				54186DA32B590E0100F2117F /* AuthUserViewController.xib in Resources */,
 				545283562B35552D0017F268 /* Main.storyboard in Resources */,
 				C79DFDA52B4BB786004AD425 /* SelectCategoryViewController.xib in Resources */,
+				54F5F6562B5F9C210054B092 /* NewVideoView.xib in Resources */,
 				C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */,
+				C7A072672B6A0BCC00359F91 /* NewMessageDialogView.xib in Resources */,
+				C72FE0332B60F332009C68FC /* MessageListViewController.xib in Resources */,
+				C72FE0392B60F45F009C68FC /* MessageItemCollectionViewCell.xib in Resources */,
 				54186D9D2B58FD2300F2117F /* AuthDialogView.xib in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
 				5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */,
@@ -564,10 +708,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7A072472B677E4300359F91 /* NetworkManager.swift in Sources */,
 				C7DE1A342B5636D30065D2B3 /* SettingsViewController+Network.swift in Sources */,
 				C75BDEC42B3EA5C200AEC760 /* VideoItem.swift in Sources */,
+				54B709DF2B622AAE00E7063B /* CategoryListAddView.swift in Sources */,
 				54158BCC2B3D1A3E00E7B218 /* VideoListViewController.swift in Sources */,
 				C79DFDA42B4BB786004AD425 /* SelectCategoryViewController.swift in Sources */,
+				C72FE04A2B61238A009C68FC /* SendVideoCollectionViewCell.swift in Sources */,
+				C7A072492B67822300359F91 /* Audience.swift in Sources */,
+				C7A072552B68BEC200359F91 /* SelectCategoryToSendViewController.swift in Sources */,
 				545283732B3A5F520017F268 /* HomeViewController+Delegate.swift in Sources */,
 				C7DE1A302B5612AF0065D2B3 /* User.swift in Sources */,
 				C7DE1A362B563ED70065D2B3 /* Category.swift in Sources */,
@@ -575,6 +724,8 @@
 				54186DA22B590E0100F2117F /* AuthUserViewController.swift in Sources */,
 				C75BDEC82B3EA69600AEC760 /* UIImage+resizeImage.swift in Sources */,
 				C7DE1A2A2B5509560065D2B3 /* Configuration.swift in Sources */,
+				C72FE0382B60F45F009C68FC /* MessageItemCollectionViewCell.swift in Sources */,
+				C7A072602B68C1C700359F91 /* SelectVideoToSendViewController.swift in Sources */,
 				54158BD32B3D1C0300E7B218 /* UIView+roundCorners.swift in Sources */,
 				545283532B35552D0017F268 /* ViewController.swift in Sources */,
 				54158BD02B3D1B5600E7B218 /* SettingsViewController.swift in Sources */,
@@ -583,26 +734,39 @@
 				C79DFD682B463DDB004AD425 /* YoutubeViewController.swift in Sources */,
 				C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */,
 				54186D9F2B58FD2D00F2117F /* AuthDialogView.swift in Sources */,
+				C72FE0442B6120DF009C68FC /* SendVideoViewController.swift in Sources */,
 				C79DFD822B47D29B004AD425 /* AppAgreeViewController.swift in Sources */,
 				C7DE1A322B5613A90065D2B3 /* SimpleResponse.swift in Sources */,
 				5452836B2B3A5B2E0017F268 /* UIColor.swift in Sources */,
+				C72FE0322B60F332009C68FC /* MessageListViewController.swift in Sources */,
+				C7A072652B6A0BB400359F91 /* NewMessageDialogView.swift in Sources */,
+				C72FE0472B612334009C68FC /* SendVideoViewController+Delegates.swift in Sources */,
 				C75BDEBD2B3EA4E000AEC760 /* VideoCollectionViewCell.swift in Sources */,
+				C72FE0402B60FCFF009C68FC /* DownloadMessageViewController+Delegate.swift in Sources */,
 				54186DA52B5A3A9300F2117F /* MyUserDefaults.swift in Sources */,
 				C79DFD8A2B4B88AC004AD425 /* CategoryListViewController.swift in Sources */,
+				C7A072632B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift in Sources */,
+				C72FE02E2B60EA9A009C68FC /* MessageItem.swift in Sources */,
+				C72FE0512B61320B009C68FC /* SelectCategoryView.swift in Sources */,
 				C739B38A2B4FBEE700694D5B /* String+youtube.swift in Sources */,
 				C7DE1A2C2B5509DE0065D2B3 /* Reachability.swift in Sources */,
 				C79DFD9C2B4B94CB004AD425 /* CategoryListViewController+Delegates.swift in Sources */,
 				5452834F2B35552D0017F268 /* AppDelegate.swift in Sources */,
+				C72FE02C2B5F5ED7009C68FC /* Helper.swift in Sources */,
 				C79DFD762B47B934004AD425 /* RepeatViewController.swift in Sources */,
-				C75BDEBA2B3E949800AEC760 /* Manager.swift in Sources */,
+				C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */,
+				C72FE0352B60F412009C68FC /* MessageListViewController+Delegates.swift in Sources */,
 				545283752B3A8AB40017F268 /* VideoAddLauncher.swift in Sources */,
 				5465C27E2B58B285003F53E9 /* CategoryListViewCell.swift in Sources */,
 				C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */,
+				C72FE03D2B60F9EB009C68FC /* DownloadMessageViewController.swift in Sources */,
 				C75BDEC62B3EA67200AEC760 /* UIImageView+downloadImage.swift in Sources */,
 				C79DFD9E2B4BAB99004AD425 /* VideoEditView.swift in Sources */,
 				C75BDEC02B3EA53900AEC760 /* PaddingLabel.swift in Sources */,
+				C7A072582B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift in Sources */,
 				545283512B35552D0017F268 /* SceneDelegate.swift in Sources */,
 				545283652B3562530017F268 /* HomeViewController.swift in Sources */,
+				54F5F6582B5F9C890054B092 /* NewVideoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

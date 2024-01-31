@@ -15,25 +15,33 @@ import Malert
 
 class HomeViewController: TabmanViewController, TMBarDataSource {
     
-    let userID = Manager.shared.getUserID()
     var viewControllers: [UIViewController] = []
     var tabNames = [String]()
     var tabBar: TMBarView<TMHorizontalBarLayout, TabPagerButton, TMBarIndicator.None>!
-    
+    var popupView = UIView()
+    var blackView = UIView()
+    var needsReload: Bool = false
+    var newVideoView: NewVideoView?
+    var textHeightConstraint: NSLayoutConstraint!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonTitle = " "
-        self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        
+        self.setupNavigation()
         self.setTabs()
         self.addObserver()
         self.setFloaty()
-        self.title = "마이유"
-        if UserDefaults.standard.value(forKey: "authConfirmed") != nil {
-            
-        } else {
-            //print("auth should show")
-            //self.showAuthDialog()
+        
+        if Manager2.shared.user.newMessage {
+            DispatchQueue.main.async {
+                self.showNewMessage()
+            }
         }
+    }
+    
+    func setupNavigation() {
+        self.navigationItem.backButtonTitle = " "
+        self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,7 +54,8 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     }
     
     func setTabs() {
-        self.tabNames = Manager.shared.getCategories()
+        self.tabNames = Manager2.shared.getCategoryNames()
+        self.tabNames.append("설정")
         
         DispatchQueue.main.async {
             self.populateViewControllers()
@@ -54,40 +63,69 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
     }
     
     private func addObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateCategory), name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadCategory), name: Notification.Name("reloadCategory"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.checkForYoutubeShare), name: Notification.Name("receivedYoutubeShare"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: Notification.Name("updateCategory"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("reloadCategory"), object: nil)
         NotificationCenter.default.removeObserver(self, name: Notification.Name("receivedYoutubeShare"), object: nil)
     }
     
-    @objc private func updateCategory() {
-        self.viewControllers.removeAll()
-        self.reloadCategories()
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.newVideoView?.frame.origin.y -= keyboardSize.height
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.newVideoView?.frame.origin.y += keyboardSize.height
+        }
     }
     
-    private func reloadCategories() {
-        let params: Parameters = ["userID" : self.userID]
+   @objc public func reloadCategory(notification: Notification) {
+       self.viewControllers.removeAll()
+       
+       self.tabNames = Manager2.shared.getCategoryNames()
+       self.tabNames.append("설정")
+       
+       for (index, tabName) in self.tabNames.enumerated() {
+           var viewController: UIViewController!
+           if tabName == "설정" {
+               viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
+           } else {
+               let category = Manager2.shared.user.categories[index]
+
+               viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: category)
+           }
+           
+           viewControllers.append(viewController)
+       }
+       
+       self.reloadData()
+       self.tabBar.buttons.customize { (button) in
+           button.update(for: .unselected)
+       }
+   }
+    
+    private static func reloadUser(closure: @escaping () -> Void) {
+        let params: Parameters = ["userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/get_categories.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/get_user3.php/",
                    method: .get,
                    parameters: params,
                    encoding: URLEncoding.default,
                    headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: Category.self, completionHandler: { response in
+        .responseDecodable(of: User2.self, completionHandler: { response in
             switch response.result {
             case .success:
-                guard let categories = response.value?.categories.components(separatedBy: ",") else { return }
-                
-                self.tabNames = categories
-                Manager.shared.setCategories(categories: categories)
-                
-                DispatchQueue.main.async {
-                    self.populateViewControllers()
-                }
+                guard let user = response.value else { return }
+                Manager2.shared.setUser(user: user)
+                closure()
                 
             case .failure(let err):
                 print(err.localizedDescription)
@@ -103,29 +141,20 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
             saveData?.set(nil, forKey: "urlData")
         }
         
-        
-        let id = url.youtubeID!
-        getVideoInfo(videoID: id)
+        if let id = url.youtubeID {
+            self.getVideoInfo(videoID: id)
+        }
     }
     
-    @IBAction func addList(_ sender: Any) {
-        createNewList()
-    }
-    
-    let videoAddLauncher = VideoAddLauncher()
-    private func createNewList() {
-        // Pop-up view should take place above. 
-        videoAddLauncher.showSettings()
-    }
-    
-    private func populateViewControllers() {
-        //populate view controllers here
-        for tabName in tabNames {
+    public func populateViewControllers() {
+        for (index, tabName) in self.tabNames.enumerated() {
             var viewController: UIViewController!
             if tabName == "설정" {
                 viewController = SettingsViewController(nibName: "SettingsViewController", bundle: Bundle.main)
             } else {
-                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: tabName)
+                let category = Manager2.shared.user.categories[index]
+
+                viewController = VideoListViewController(nibName: "VideoListViewController", bundle: Bundle.main).receiveCategory(category: category)
             }
             
             viewControllers.append(viewController)
@@ -179,94 +208,18 @@ class HomeViewController: TabmanViewController, TMBarDataSource {
                 return
             }
 
-            self.addVideoFromShare(title: title, videoID: id)
+            DispatchQueue.main.async {
+                self.addVideoFromShare(title: title, youtubeID: id)
+            }
         }
         task.resume()
     }
     
-    private func addVideoFromShare(title: String, videoID: String) {
-        var videoOrder = Manager.shared.getVideoOrderList()
-        
-        guard let firstItem = videoOrder.first else { return }
-        
-        if firstItem.isEmpty {
-            videoOrder[0] = videoID
-        } else {
-            videoOrder.insert(videoID, at: 0)
+    public static func reload(closure: @escaping () -> Void) {
+        HomeViewController.reloadUser {
+            closure()
         }
-        
-        let listString = videoOrder.joined(separator: ",")
-        
-        let params: Parameters = [
-            "videoID" : videoID,
-            "userID" : self.userID,
-            "title" : title,
-            "videoOrder" : listString]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable/create_product.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
-                self.updateCategory()
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
     }
-    
-//    func showAuthDialog() {
-//        //show dialog
-//        print("auth showing")
-//        let view = AuthDialogView.instantiateFromNib()
-//        view.titleText.text = "다른 사용자에게 동영상을 받으시려면 본인인증이\n필요합니다."
-//        
-//        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: false)
-//        
-//        malert.buttonsAxis = .vertical
-//        malert.buttonsSpace = 10
-//        malert.buttonsSideMargin = 20
-//        malert.buttonsBottomMargin = 20
-//        malert.cornerRadius = 10
-//        malert.separetorColor = .clear
-//        malert.animationType = .fadeIn
-//        
-//        malert.presentDuration = 1.0
-//        
-//        view.confirmButton.layer.cornerRadius = 10
-//        view.confirmButton.addTarget(self, action: #selector(pressedConfirm), for: .touchUpInside)
-//        view.skipButton.layer.cornerRadius = 10
-//        view.skipButton.addTarget(self, action: #selector(pressedSkip), for: .touchUpInside)
-//        
-//        //if user says ok -> AuthViewController
-//        //if user says no -> showNextTimeDialog
-//        
-//        let alert = UIAlertController(title: "마이유", message: "다른 사용자에게 동영상을 받으시려면 본인인증이 필요합니다. 본인인증을 진행하시겠습니까?", preferredStyle: .actionSheet)
-//        
-//        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { action in
-//            //performSegue to AuthorizeViewController
-//        }))
-//        alert.addAction(UIAlertAction(title: "다음에", style: .cancel, handler: { action in
-//            self.pressedSkip()
-//        }))
-//        DispatchQueue.main.async {
-//            self.present(malert, animated: true, completion: nil)
-//        }
-//    }
-//    
-//    @objc func pressedConfirm() {
-//        
-//    }
-//    
-//    @objc func pressedSkip() {
-//        //create nextTimeDialog
-//    }
 }
 
 class TabPagerButton: Tabman.TMLabelBarButton {
@@ -276,7 +229,7 @@ class TabPagerButton: Tabman.TMLabelBarButton {
         
         switch selectionState {
         case .selected:
-            backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
+            backgroundColor = UIColor().hexStringToUIColor(hex: "#8851F5")
             tintColor = .white
             selectedTintColor = .white
         default:

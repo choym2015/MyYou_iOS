@@ -12,26 +12,20 @@ import Alamofire
 import BonsaiController
 
 class VideoListViewController: UIViewController {    
-    var category: String!
-    var videos: [VideoItem]! = []
-    var videocurrent : [VideoItem]! = []
-    let userID = Manager.shared.getUserID()
-    private var doubleTapGesture: UITapGestureRecognizer!
-    let blackView = UIView()
-    var popupView = UIView()
-
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
-    var categoryButton: UIButton!
-    
-    var selectedCategory: String! {
-        didSet {
-            categoryButton.layer.borderWidth = 0.5
-            categoryButton.layer.borderColor = UIColor.gray.cgColor
-            categoryButton.layer.cornerRadius = 10
-            selectedCategory.isEmpty ? categoryButton.setTitle("------ ⌄", for: .normal) : categoryButton.setTitle(selectedCategory + " ⌄", for: .normal)
-        }
-    }
+
+    let blackView = UIView()
+    var popupView: UIView!
+    var textHeightConstraint: NSLayoutConstraint!
+
+    var category: Category!
+    var videos: [VideoItem] = []
+    var selectedVideo: VideoItem?
+    var editVideoView: VideoEditView?
+    var needsReload: Bool = false
+    var doubleTapGesture: UITapGestureRecognizer!
+    private let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,45 +34,22 @@ class VideoListViewController: UIViewController {
         self.loadVideos()
     }
     
-    public func receiveCategory(category: String) -> UIViewController {
+    public func receiveCategory(category: Category) -> UIViewController {
         self.category = category
         return self
     }
     
     func loadVideos() {
-        let userID = Manager.shared.getUserID()
-        let params: Parameters = ["userID" : userID]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable/get_videos.php/",
-                   method: .get,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: VideoItemList.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                guard let videoItemList = response.value else { return }
-                
-                let filteredVideos = videoItemList.product.filter { videoItem in
-                    if self.category == "전체영상" {
-                        return true
-                    } else {
-                        return videoItem.category == self.category
-                    }
-                }
-                
-                self.videos = filteredVideos
-                self.reorderVideos()
-                DispatchQueue.main.async {
-                    self.emptyLabel.isHidden = !self.videos.isEmpty
-                }
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
+        self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
+            self.category.videoIDs.contains(videoItem.videoID)
         })
+        
+        DispatchQueue.main.async {
+            self.emptyLabel.isHidden = !self.videos.isEmpty
+            self.setCollectionView()
+        }
     }
-    
+ 
     private func setCollectionView() {
         self.collectionView.register(UINib(nibName: "VideoCollectionViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: "VideoCollectionViewCell")
         
@@ -94,6 +65,10 @@ class VideoListViewController: UIViewController {
         
         self.collectionView.collectionViewLayout = layout
         self.setUpDoubleTap()
+        
+        self.refreshControl.addTarget(self, action: #selector(self.didPullToRefresh(_:)), for: .valueChanged)
+        self.collectionView.alwaysBounceVertical = true
+        self.collectionView.refreshControl = self.refreshControl
     }
     
     func setUpDoubleTap() {
@@ -107,50 +82,71 @@ class VideoListViewController: UIViewController {
         let pointInCollectionView = self.doubleTapGesture.location(in: self.collectionView)
         if let selectedIndexPath = self.collectionView.indexPathForItem(at: pointInCollectionView) {
             let videoItem = self.videos[selectedIndexPath.row]
-            videocurrent = [videoItem]
             self.showVideoEdit(videoItem: videoItem)
         }
     }
     
     func showVideoEdit(videoItem: VideoItem) {
-        popupView = {
-            let view = VideoEditView.instantiateFromNib()
-            view.videoTitleTextField.text = videoItem.title
-            self.categoryButton = view.videoCategoryButton
-            self.selectedCategory = videoItem.category
+        self.popupView = {
+            self.selectedVideo = videoItem
+            
+            self.editVideoView = VideoEditView.instantiateFromNib()
+            self.editVideoView?.titleTextView.text = videoItem.title.decodeUrl()
+            self.editVideoView?.titleTextView.delegate = self
+            self.editVideoView?.titleTextView.isUserInteractionEnabled = videoItem.isOwner()
 
-            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
-                view.videoImageView.downloadImage(from: url)
-            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/default.jpg") {
-                view.videoImageView.downloadImage(from: url)
+            self.textHeightConstraint = self.editVideoView?.titleTextView.heightAnchor.constraint(equalToConstant: 40)
+            self.textHeightConstraint.isActive = true
+            self.adjustTextViewHeight(textView: self.editVideoView!.titleTextView)
+
+            self.editVideoView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+
+            if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/maxresdefault.jpg") {
+                self.editVideoView?.videoImageView.downloadImage(from: url)
+            } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.youtubeID))/default.jpg") {
+                self.editVideoView?.videoImageView.downloadImage(from: url)
             } else {
-                view.videoImageView.isHidden = true
+                self.editVideoView?.videoImageView.isHidden = true
             }
             
-            view.videoCategoryButton.layer.borderWidth = 0.5
-            view.videoCategoryButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
-            view.videoAddButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-            view.videoDeleteButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#DC5C60")
-            view.videoAddButton.layer.cornerRadius = 10
-            view.videoDeleteButton.layer.cornerRadius = 10
-            view.videoAddButton.addTarget(self, action: #selector(addItem), for: .touchUpInside)
-            view.videoDeleteButton.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
-            view.cancelImage.isUserInteractionEnabled = true
-            view.cancelImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+            if self.category.categoryName == "임시" && !Manager2.shared.user.lastCategoryID.isEmpty {
+                if let lastCategory = Helper.getCategoryForCategoryID(categoryID: Manager2.shared.user.lastCategoryID),
+                   lastCategory.isOwner() {
+                    self.editVideoView?.videoCategoryButton.setTitle(lastCategory.categoryName, for: .normal)
+                } else {
+                    self.editVideoView?.videoCategoryButton.setTitle(category.categoryName, for: .normal)
+                }
+            } else {
+                self.editVideoView?.videoCategoryButton.setTitle(category.categoryName, for: .normal)
+            }
             
-            return view
+            self.editVideoView?.videoCategoryButton.layer.borderWidth = 0.5
+            self.editVideoView?.videoCategoryButton.addTarget(self, action: #selector(self.showCategories), for: .touchUpInside)
+            self.editVideoView?.videoCategoryButton.layer.cornerRadius = 10
+            
+            self.editVideoView?.videoEditButton.layer.cornerRadius = 10
+            self.editVideoView?.videoEditButton.addTarget(self, action: #selector(self.editItem), for: .touchUpInside)
+            
+            self.editVideoView?.videoDeleteButton.layer.cornerRadius = 10
+            self.editVideoView?.videoDeleteButton.addTarget(self, action: #selector(self.deleteItem), for: .touchUpInside)
+            
+            self.editVideoView?.cancelImage.isUserInteractionEnabled = true
+            self.editVideoView?.cancelImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+            
+            return editVideoView!
         }()
         
-        if let window = UIApplication.shared.keyWindow {
+        if let window = self.view.window {
             self.blackView.frame = window.frame
             self.blackView.alpha = 0
             self.blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
             window.addSubview(self.blackView)
-            window.addSubview(popupView)
+            window.addSubview(self.popupView)
             
-            let height: CGFloat = window.frame.height*5/6
-            let y = window.frame.height - height
-            popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
+            let newHeight = 650 - 42.67 + self.textHeightConstraint.constant
+            self.editVideoView?.heightConstraint.constant = newHeight
+            let y = window.frame.height - newHeight
+            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: newHeight)
             
             self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
             
@@ -164,256 +160,122 @@ class VideoListViewController: UIViewController {
     @objc func handleDismiss() {
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            if let window = UIApplication.shared.keyWindow {
+            if let window = self.view.window {
                 self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
+            }
+            
+            if self.needsReload {
+                HomeViewController.reload {
+                    NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)              
+                }
             }
         }
     }
     
-    
-    
-    func showVideoEdit2(videoItem: VideoItem) {
-        let view = VideoEditView.instantiateFromNib()
-        view.videoTitleTextField.text = videoItem.title
-        
-        self.categoryButton = view.videoCategoryButton
-        self.selectedCategory = videoItem.category
-
-        if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/maxresdefault.jpg") {
-            view.videoImageView.downloadImage(from: url)
-        } else if let url = URL(string: "https://img.youtube.com/vi/\(String(describing: videoItem.videoID))/default.jpg") {
-            view.videoImageView.downloadImage(from: url)
-        } else {
-            view.videoImageView.isHidden = true
-        }
-        
-        view.videoCategoryButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
-        //view.cancelButton.addTarget(self, action: #selector(showDismiss), for: .touchUpInside)
-        
-        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: true)
-        
-        malert.buttonsAxis = .vertical
-        malert.buttonsSpace = 10
-        malert.buttonsSideMargin = 20
-        malert.buttonsBottomMargin = 20
-        malert.cornerRadius = 10
-        malert.separetorColor = .clear
-        malert.animationType = .fadeIn
-        
-        malert.presentDuration = 1.0
-        
- /*       let cancelButton = MalertAction(title: "취소") {}
-
-        cancelButton.cornerRadius = 10
-        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
-        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderWidth = 1 */
-        
-        let deleteButton = MalertAction(title: "삭제") {
-//            let documentReference = self.database.collection(self.userID).document("video_" + videoItem.videoID)
-//            documentReference.delete { error in
-//                guard error == nil else { return }
-//                
-//                NotificationPresenter.shared.present("동영상을 삭제했습니다", includedStyle: .success)
-//                
-//                var videoOrder = Manager.shared.getVideoOrderList()
-//                videoOrder.removeAll { videoID in
-//                    videoID == videoItem.videoID
-//                }
-//                
-//                let videoOrderReference = self.database.collection(self.userID).document("videoOrder")
-//                videoOrderReference.updateData(["order": videoOrder]) { error in
-//                    guard error == nil else { return }
-//                    
-//                    Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
-//                    let configurationsReference = self.database.collection(self.userID).document("configurations")
-//                    configurationsReference.updateData(["lastCategoryIndex": self.category!])
-//                    
-//                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-//                }
-//
-//            }
-           
-        }
-        
-        deleteButton.cornerRadius = 10
-        deleteButton.backgroundColor = .systemPink
-        deleteButton.tintColor = .white
-    
-        let completeButton = MalertAction(title: "수정") {
-            var dict: [String: Any] = [:]
-            dict["category"] = view.videoCategoryButton.titleLabel?.text ?? ""
-            dict["videoID"] = videoItem.videoID
-            dict["title"] = view.videoTitleTextField.text ?? ""
-            dict["liked"] = videoItem.liked
-            dict["time"] = videoItem.time
-            
-            if view.videoCategoryButton.titleLabel?.text == "------" {
-                let alert = UIAlertController(title: "", message: "동영상을 수정할 수 없습니다. 카테고리 제목을 다시 확인해주시기 바랍니다.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                DispatchQueue.main.async{
-                    self.present(alert, animated: true)
-                }
-            } else {
-//                self.database.collection(self.userID).document("video_" + videoItem.videoID).setData(dict)
-//                let configurationsReference = self.database.collection(self.userID).document("configurations")
-//                configurationsReference.updateData(["lastCategoryIndex": self.category!])
-//                
-//                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-            }
-
-//            self.database.collection(self.userID).document("video_" + videoItem.videoID).setData(dict)
-//            let configurationsReference = self.database.collection(self.userID).document("configurations")
-//            configurationsReference.updateData(["lastCategoryIndex": self.category!])
-        }
-        
-        completeButton.cornerRadius = 10
-        completeButton.backgroundColor = UIColor.purple
-        completeButton.tintColor = .white
-        malert.addAction(completeButton)
-        malert.addAction(deleteButton)
-        
-        DispatchQueue.main.async {
-            self.present(malert, animated: true, completion: nil)
+    @objc func dismissKeyboard() {
+        if self.editVideoView?.titleTextView.isFirstResponder != nil {
+            self.editVideoView?.titleTextView.resignFirstResponder()
         }
     }
     
     @objc func deleteItem() {
-//        let item = videocurrent[0]
-//        let documentReference = self.database.collection(self.userID).document("video_" + item.videoID)
-//        documentReference.delete { error in
-//            guard error == nil else { return }
-//            
-//            NotificationPresenter.shared.present("동영상을 삭제했습니다", includedStyle: .success)
-//            
-//            var videoOrder = Manager.shared.getVideoOrderList()
-//            videoOrder.removeAll { videoID in
-//                videoID == item.videoID
-//            }
-//            
-//            let videoOrderReference = self.database.collection(self.userID).document("videoOrder")
-//            videoOrderReference.updateData(["order": videoOrder]) { error in
-//                guard error == nil else { return }
-//                
-//                Manager.shared.setVideoOrderList(videoOrderList: videoOrder)
-//                let configurationsReference = self.database.collection(self.userID).document("configurations")
-//                configurationsReference.updateData(["lastCategoryIndex": self.category!])
-//                
-//                NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-//            }
-//            self.handleDismiss()
-//        }
+        self.needsReload = true
         
+        guard var videoItem = self.selectedVideo else { return }
+        
+        self.category.removeVideoID(videoID: videoItem.videoID)
+        
+        Manager2.shared.user.lastCategoryID = self.category.categoryID
+        NetworkManager.updateLastCategory(lastCategoryID: self.category.categoryID)
+
+        NetworkManager.deleteVideo(videoItem: videoItem, category: self.category) { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    self.handleDismiss()
+                }
+            case .failure:
+                NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
+            }
+        }
     }
     
-    @objc func addItem() {
-     /*   let item = videocurrent[0]
-        var dict: [String: Any] = [:]
-        dict["category"] = self.videoCategoryButton.titleLabel?.text ?? ""
-        dict["videoID"] = item.videoID
-        dict["title"] = self.videoTitleTextField.text ?? ""
-        dict["liked"] = item.liked
-        dict["time"] = item.time
+    @objc func editItem() {
+        self.needsReload = true
         
-        if view.videoCategoryButton.titleLabel?.text == "------" {
-            let alert = UIAlertController(title: "", message: "동영상을 수정할 수 없습니다. 카테고리 제목을 다시 확인해주시기 바랍니다.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-            DispatchQueue.main.async{
-                self.present(alert, animated: true)
+        guard var videoItem = self.selectedVideo,
+              let title = self.editVideoView?.titleTextView.text.encodeUrl(),
+              let updatedCategory = Helper.getMyCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text) else { return }
+        
+        updatedCategory.addVideoID(videoID: videoItem.videoID)
+        self.category.removeVideoID(videoID: videoItem.videoID)
+        
+        Manager2.shared.user.lastCategoryID = updatedCategory.categoryID
+        NetworkManager.updateLastCategory(lastCategoryID: updatedCategory.categoryID)
+    
+        videoItem.title = title
+        
+        NetworkManager.updateVideoCategory(videoItem: videoItem, oldCategory: self.category, newCategory: updatedCategory) { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    self.handleDismiss()
+                }
+            case .failure:
+                NotificationPresenter.shared.present(response.error?.localizedDescription ?? "FAIL", includedStyle: .error, duration: 2.0)
             }
-        } else {
-            self.database.collection(self.userID).document("video_" + item.videoID).setData(dict)
-            let configurationsReference = self.database.collection(self.userID).document("configurations")
-            configurationsReference.updateData(["lastCategoryIndex": self.category!])
->>>>>>> Stashed changes
-            
-            NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-        } */
-
+        }
     }
     
     @objc func showCategories() {
         DispatchQueue.main.async {
             let selectCategoryVC = SelectCategoryViewController(nibName: "SelectCategoryViewController", bundle: Bundle.main)
+            let selectedCategory = Helper.getCategory(categoryName: self.editVideoView?.videoCategoryButton.titleLabel?.text)
             
-            selectCategoryVC.receiveItem(selectedCategory: self.selectedCategory) { newCategory in
-                self.selectedCategory = newCategory
+            selectCategoryVC.receiveItem(selectedCategory: selectedCategory) { newCategory, updateRequired in
+                self.needsReload = updateRequired
+                guard let categoryButton = self.editVideoView?.videoCategoryButton else { return }
+
+                if let selectedCategory = newCategory {
+                    categoryButton.setTitle(selectedCategory.categoryName, for: .normal)
+                }
             }
             
             selectCategoryVC.transitioningDelegate = self
             selectCategoryVC.modalPresentationStyle = .custom
-            self.presentedViewController?.present(selectCategoryVC, animated: true)
             self.present(selectCategoryVC, animated: true)
         }
     }
     
-    func reorderVideos() {
-        let videoOrderList = Manager.shared.getVideoOrderList()
-        var orderedVideoList: [VideoItem] = []
-        let videoItemIds: [String] = self.videos.map { videoItem in
-            videoItem.videoID
-        }
-        
-        for videoOrder in videoOrderList {
-            if let index = videoItemIds.firstIndex(of: videoOrder) {
-                orderedVideoList.append(self.videos[index])
-            }
-            
-            if orderedVideoList.count == self.videos.count {
-                break
-            }
-        }
-        
-        self.videos = orderedVideoList
-        
-        DispatchQueue.main.async {
-            self.setCollectionView()
-//            self.presentedViewController?.present(selectCategoryVC, animated: true)
-//            self.present(selectCategoryVC, animated: true)
-            //let smallVC = self.storyboard!.instantiateViewController(withIdentifier: "SelectCategoryViewController")
-            
-            
-//            
-//            self.present(selectCategoryVC, animated: true, completion:  nil)
-        }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        segue.destination.transitioningDelegate = self
+        segue.destination.modalPresentationStyle = .custom
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
-        //if segue.destination is YourViewController {
-            segue.destination.transitioningDelegate = self
-            segue.destination.modalPresentationStyle = .custom
-        //}
+    @objc private func didPullToRefresh(_ sender: Any) {
+        HomeViewController.reload {
+            self.videos = Manager2.shared.user.videoItems.filter({ videoItem in
+                self.category.videoIDs.contains(videoItem.videoID)
+            })
+            
+            DispatchQueue.main.async {
+                self.emptyLabel.isHidden = !self.videos.isEmpty
+                self.collectionView.reloadData()
+            }
+        }
+        self.refreshControl.endRefreshing()
     }
 }
 
 extension VideoListViewController: BonsaiControllerDelegate {
     
-    // return the frame of your Bonsai View Controller
     func frameOfPresentedView(in containerViewFrame: CGRect) -> CGRect {
         
         return CGRect(origin: CGPoint(x: 30, y: containerViewFrame.height / 6), size: CGSize(width: containerViewFrame.width-60, height: containerViewFrame.height * (2/3) - 100 ))
     }
     
-    // return a Bonsai Controller with SlideIn or Bubble transition animator
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         
-        /// With Background Color ///
-        
-        // Slide animation from .left, .right, .top, .bottom
-        //return BonsaiController(fromDirection: .bottom, backgroundColor: UIColor(white: 0, alpha: 0.5), presentedViewController: presented, delegate: self)
-        
-        // or Bubble animation initiated from a view
-        //return BonsaiController(fromView: yourOriginView, backgroundColor: UIColor(white: 0, alpha: 0.5), presentedViewController: presented, delegate: self)
-        
-        
-        /// With Blur Style ///
-        
-        // Slide animation from .left, .right, .top, .bottom
         return BonsaiController(fromDirection: .bottom, blurEffectStyle: .dark, presentedViewController: presented, delegate: self)
-        
-        // or Bubble animation initiated from a view
-        //return BonsaiController(fromView: yourOriginView, blurEffectStyle: .dark,  presentedViewController: presented, delegate: self)
     }
 }

@@ -7,8 +7,12 @@
 
 import UIKit
 import Malert
+import JDStatusBarNotification
+
 class SettingsViewController: UIViewController {
+    @IBOutlet weak var authBackView: UIView!
     @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var proBackView: UIView!
     @IBOutlet weak var proLabel: UILabel!
     @IBOutlet weak var repeatLabel: UILabel!
     @IBOutlet weak var registerLabel: UILabel!
@@ -16,13 +20,10 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var appAgreeLabel: UILabel!
     @IBOutlet weak var pushLabelSwitch: UISwitch!
     @IBOutlet weak var playNextSwitch: UISwitch!
-    @IBOutlet weak var showAllSwitch: UISwitch!
     @IBOutlet weak var thumbnailSwitch: UISwitch!
     @IBOutlet weak var proButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
-    
-    let userID = Manager.shared.getUserID()
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -30,34 +31,42 @@ class SettingsViewController: UIViewController {
     }
     
     func setupUI() {
+        self.authBackView.layer.borderColor = UIColor.lightGray.cgColor
+        self.authBackView.layer.borderWidth = 1
+        self.authBackView.layer.cornerRadius = 3
+        self.proBackView.layer.cornerRadius = 3
+        self.playNextSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        self.pushLabelSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        self.thumbnailSwitch.onTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
         self.backgroundView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
+        self.addGestures()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         DispatchQueue.main.async {
-            if Manager.shared.getUserPhoneNumber().isEmpty {
+            if Manager2.shared.user.userPhoneNumber.isEmpty {
                 self.pushLabelSwitch.isEnabled = false
             } else {
                 self.pushLabelSwitch.isEnabled = true
-                self.pushLabelSwitch.isOn = Manager.shared.isPushEnabled()
-                self.registerLabel.text = "본인 인증 완료"
+                self.pushLabelSwitch.isOn = Manager2.shared.user.pushEnabled
+                self.registerLabel.text = "  본인 인증 완료"
                 self.registerLabel.isUserInteractionEnabled = false
                 self.registerButton.isHidden = true
             }
             
             self.setupSubscriptionUI()
-            self.thumbnailSwitch.isOn = Manager.shared.isShowThumbnail()
-            self.showAllSwitch.isOn = Manager.shared.getCategories()[0] == "전체영상"
-            self.playNextSwitch.isOn = Manager.shared.isPlayNext()
+            self.thumbnailSwitch.isOn = Manager2.shared.user.thumbnail
+            self.playNextSwitch.isOn = Manager2.shared.user.playNext
         }
-        
-        self.addGestures()
     }
     
     func setupSubscriptionUI() {
-        if Manager.shared.getSubscription() == "pro" {
+        if Manager2.shared.user.subscription == "pro" {
             self.proLabel.text = "마이유 프로 구독중"
             self.proLabel.isUserInteractionEnabled = false
             self.proButton.isHidden = true
-        } else if Manager.shared.getSubscription() == "premium" {
+        } else if Manager2.shared.user.subscription == "premium" {
             self.proLabel.text = "마이유 프리미엄 구독중"
             self.proLabel.isUserInteractionEnabled = false
             self.proButton.isHidden = true
@@ -79,23 +88,15 @@ class SettingsViewController: UIViewController {
     }
 
     @IBAction func registerButtonPressed(_ sender: UIButton) {
-        //move to auth
+        DispatchQueue.main.async {
+            let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
+            authVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(authVC, animated: true)
+        }
     }
     
     @IBAction func thumbnailSwitchChanged(_ sender: UISwitch) {
         self.updateThumbnail(thumbnail: sender.isOn)
-    }
-    
-    @IBAction func showAllSwitchChanged(_ sender: UISwitch) {
-        var categories = Manager.shared.getCategories()
-        if sender.isOn {
-            categories.insert("전체영상", at: 0)
-        } else {
-            guard let index = categories.firstIndex(of: "전체영상") else { return }
-            categories.remove(at: index)
-        }
-        
-        self.updateCategories(categories: categories)
     }
     
     @IBAction func playNextSwitchChanged(_ sender: UISwitch) {
@@ -114,7 +115,15 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func pushSwitchChanged(_ sender: UISwitch) {
-        self.updatePushEnabled(pushEnabled: sender.isOn)
+//        self.updatePushEnabled(pushEnabled: sender.isOn)
+        NetworkManager.updatePushNotification(pushEnabled: sender.isOn) { response in
+            switch response.result {
+            case .success:
+                Manager2.shared.user.pushEnabled = sender.isOn
+            case .failure(let error):
+                NotificationPresenter.shared.present(error.localizedDescription, includedStyle: .error, duration: 2.0)
+            }
+        }
     }
     
     @IBAction func appAgreeButtonPressed(_ sender: UIButton) {

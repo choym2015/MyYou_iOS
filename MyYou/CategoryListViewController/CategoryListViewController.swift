@@ -10,14 +10,17 @@ import Malert
 import JDStatusBarNotification
 import Alamofire
 
-class CategoryListViewController: UIViewController {
-    //@IBOutlet weak var categoryTableView: UITableView!
-    
+class CategoryListViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var emptyCategoryLabel: UILabel!
     
-    let userID = Manager.shared.getUserID()
-    var categories: [String] = Manager.shared.getCategories()
-    var videoCategories: [String] = []
+    var blackView = UIView()
+    var popupView: UIView!
+    
+    var categories: [Category] = Manager2.shared.user.categories
+    
+    var selectedCategory: Category?
+    var categoryTextField: UITextField?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,34 +29,23 @@ class CategoryListViewController: UIViewController {
         navigationItem.backButtonTitle = " "
         self.view.changeStatusBarBgColor(bgColor: UIColor().hexStringToUIColor(hex: "#6200EE"))
         navigationController?.navigationBar.tintColor = UIColor.white
-//        self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "6200EE")
-        //self.navigationController?.navigationBar.barTintColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-//        self.categoryTableView.register(UINib(nibName: "CategoryListTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: "CategoryListTableViewCell")
         
-        if  let navigationBar = navigationController?.navigationBar {
-                let appearance = UINavigationBarAppearance()
-                appearance.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-                appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-                let barAppearence = UIBarButtonItemAppearance()
-                barAppearence.normal.titleTextAttributes = [.foregroundColor: UIColor.yellow]
-                appearance.buttonAppearance = barAppearence
-                navigationBar.scrollEdgeAppearance = appearance
-                navigationBar.compactAppearance = appearance
-                navigationBar.standardAppearance = appearance
-                // Do any additional setup after loading the view.
-            }
-        
-        self.videoCategories = self.categories
-        self.videoCategories.removeAll { category in
-            category == "전체영상" || category == "설정"
+        if let navigationBar = navigationController?.navigationBar {
+            let appearance = UINavigationBarAppearance()
+            appearance.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            let barAppearence = UIBarButtonItemAppearance()
+            barAppearence.normal.titleTextAttributes = [.foregroundColor: UIColor.yellow]
+            appearance.buttonAppearance = barAppearence
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.compactAppearance = appearance
+            navigationBar.standardAppearance = appearance
         }
-
         
-//        self.categoryTableView.dataSource = self
-//        self.categoryTableView.delegate = self
-//        self.categoryTableView.dragInteractionEnabled = true
-//        self.categoryTableView.dragDelegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+
         self.setCollectionView()
         self.addRightButton()
     }
@@ -62,6 +54,8 @@ class CategoryListViewController: UIViewController {
         self.collectionView.register(UINib(nibName: "CategoryListViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: "CategoryListViewCell")
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
+        self.collectionView.dragDelegate = self
+        self.collectionView.dropDelegate = self
         self.collectionView.backgroundColor = UIColor().hexStringToUIColor(hex: "#eef1f6")
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -70,6 +64,8 @@ class CategoryListViewController: UIViewController {
         layout.estimatedItemSize = CGSize(width: collectionView.frame.width, height: 50)
         
         self.collectionView.collectionViewLayout = layout
+        
+        self.emptyCategoryLabel.isHidden = !self.categories.isEmpty
     }
     
     func addRightButton() {
@@ -77,196 +73,277 @@ class CategoryListViewController: UIViewController {
     }
     
     @objc func addCategory(sender: UIBarButtonItem) {
-        let view = CategoryAlertView.instantiateFromNib()
-        view.categoryTextField.becomeFirstResponder()
+        self.popupView = {
+            let view = CategoryListAddView.instantiateFromNib()
+            view.categoryTextField.delegate = self
+            self.categoryTextField = view.categoryTextField
+            view.titleLabel.text = "카테고리 추가"
+            view.cancelButton.addTarget(self, action: #selector(self.handleDismiss), for: .touchUpInside)
+            view.completeButton.layer.cornerRadius = 10
+            view.completeButton.setTitle("카테고리 추가", for: .normal)
+            
+            view.completeButton.addTarget(self, action: #selector(self.addCategoryButtonPressed), for: .touchUpInside)
         
-        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: true)
-        malert.buttonsAxis = .horizontal
-        malert.buttonsSpace = 10
-        malert.buttonsSideMargin = 20
-        malert.buttonsBottomMargin = 20
-        malert.cornerRadius = 10
-        malert.separetorColor = .clear
-        malert.animationType = .fadeIn
-        malert.presentDuration = 1.0
+            return view
+        }()
         
-        let cancelButton = MalertAction(title: "취소") {}
-
-        cancelButton.cornerRadius = 10
-        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
-        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderWidth = 1
-    
-        let completeButton = MalertAction(title: "확인") {
-            guard let newCategory = view.categoryTextField.text else {
-                NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
-                return
-            }
+        if let window = self.view.window {
+            blackView.frame = window.frame
+            blackView.alpha = 0
+            blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+            window.addSubview(blackView)
+            window.addSubview(popupView)
             
-            if self.videoCategories.contains(newCategory) {
-                return
-            }
+            let height: CGFloat = 260
+            let y = window.frame.height - height
+            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
             
-            if let firstCategory = self.categories.first,
-               firstCategory == "전체영상" {
-                self.categories.insert(newCategory, at: 1)
-            } else {
-                self.categories.insert(newCategory, at: 0)
-            }
+            self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
             
-            self.videoCategories.insert(newCategory, at: 0)
-            
-            
-            let listString = self.categories.joined(separator: ",")
-            let params: Parameters = ["categories" : listString, "userID" : self.userID]
-            
-            AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
-                       method: .post,
-                       parameters: params,
-                       encoding: URLEncoding.default,
-                       headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-            
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-                switch response.result {
-                case .success:
-                    Manager.shared.setCategories(categories: self.categories)
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                        NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-                    }
-                case .failure(let err):
-                    print(err.localizedDescription)
-                }
-            })
-        }
-        
-        completeButton.cornerRadius = 10
-        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
-        
-        malert.addAction(cancelButton)
-        malert.addAction(completeButton)
-    
-        DispatchQueue.main.async {
-            self.present(malert, animated: true, completion: nil)
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.blackView.alpha = 1
+                self.popupView.frame = CGRect(x: 0, y: y, width: self.popupView.frame.width, height: self.popupView.frame.height)
+            }, completion: nil)
         }
     }
     
-    func editCategory(oldCategory: String) {
-        let view = CategoryAlertView.instantiateFromNib()
-        view.categoryTextField.text = oldCategory
+    @objc func addCategoryButtonPressed() {
+        guard let categoryTextField = self.categoryTextField,
+                let newCategoryName = categoryTextField.text else { return }
         
-        let malert = Malert(title: nil, customView: view, tapToDismiss: true, dismissOnActionTapped: true)
-        malert.buttonsAxis = .vertical
-        malert.buttonsSpace = 10
-        malert.buttonsSideMargin = 20
-        malert.buttonsBottomMargin = 20
-        malert.cornerRadius = 10
-        malert.separetorColor = .clear
-        malert.animationType = .fadeIn
-        malert.presentDuration = 1.0
-        
-        let cancelButton = MalertAction(title: "취소") {}
-
-        cancelButton.cornerRadius = 10
-        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
-        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.borderWidth = 1
-        
-        let deleteButton = MalertAction(title: "삭제") {
-            self.updateVideoWithCategoryEdit(oldCategory: oldCategory, newCategory: "")
-            self.updateCategoryName(oldCategory: oldCategory, newCategory: "")
+        guard !newCategoryName.isEmpty else {
+            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error, duration: 2.0)
+            return
         }
         
-        deleteButton.cornerRadius = 10
-        deleteButton.backgroundColor = .systemPink
-        deleteButton.tintColor = .white
-    
-        let completeButton = MalertAction(title: "수정") {
-            guard let newCategory = view.categoryTextField.text else {
-                NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
-                return
-            }
-            
-            if oldCategory == newCategory {
-                return
-            }
-            
-            self.updateVideoWithCategoryEdit(oldCategory: oldCategory, newCategory: newCategory)
-            self.updateCategoryName(oldCategory: oldCategory, newCategory: newCategory)
+        guard self.categories.filter({ category in
+            category.categoryName == newCategoryName
+        }).isEmpty else {
+            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error, duration: 2.0)
+            return
         }
         
-        completeButton.cornerRadius = 10
-        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        completeButton.tintColor = .white
+        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), referenceCategoryID: "", categoryName: newCategoryName, videoIDs: [])
         
-        malert.addAction(cancelButton)
-        malert.addAction(deleteButton)
-        malert.addAction(completeButton)
-    
-        DispatchQueue.main.async {
-            self.present(malert, animated: true, completion: nil)
-        }
-    }
-    
-    func updateVideoWithCategoryEdit(oldCategory: String, newCategory: String) {
-        let params: Parameters = ["oldCategory" : oldCategory, "newCategory" : newCategory, "userID" : self.userID]
+        Manager2.shared.user.categories.insert(newCategory, at: 1)
+        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
         
-        AF.request("https://chopas.com/smartappbook/myyou/videoTable/update_all_videos_with_category.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+        categoryTextField.resignFirstResponder()
         
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+        NetworkManager.createCategory(newCategory: newCategory) { response in
             switch response.result {
             case .success:
-                self.updateCategoryName(oldCategory: oldCategory, newCategory: newCategory)
-            case .failure(let err):
-                print(err.localizedDescription)
-            }
-        })
-    }
-    
-    func updateCategoryName(oldCategory: String, newCategory: String) {
-        guard let index = self.categories.firstIndex(of: oldCategory) else { return }
-        
-        if newCategory.isEmpty {
-            self.categories.remove(at: index)
-        } else {
-            self.categories[index] = newCategory
-        }
-        
-        let listString = self.categories.joined(separator: ",")
-        let params: Parameters = ["categories" : listString, "userID" : self.userID]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-            switch response.result {
-            case .success:
-                Manager.shared.setCategories(categories: self.categories)
-                self.videoCategories = self.categories
-                self.videoCategories.removeAll { category in
-                    category == "전체영상" || category == "설정"
-                }
-                
                 DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
+                    HomeViewController.reload {
+                        self.updateVideoCategories()
+                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                        self.handleDismiss()
+                    }
+                    
                 }
             case .failure(let err):
-                print(err.localizedDescription)
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error, duration: 2.0)
+                self.handleDismiss()
             }
-        })
+        }
+    }
+    
+    func editCategory(category: Category) {
+        self.popupView = {
+            let view = CategoryAlertView.instantiateFromNib()
+            self.selectedCategory = category
+            self.categoryTextField = view.categoryTextField
+            view.categoryTextField.text = category.categoryName
+            view.categoryTextField.delegate = self
+            view.cancelButton.addTarget(self, action: #selector(self.handleDismiss), for: .touchUpInside)
+            view.completeButton.layer.cornerRadius = 10
+            view.deleteButton.layer.cornerRadius = 10
+            view.completeButton.addTarget(self, action: #selector(self.changeCategory), for: .touchUpInside)
+            view.deleteButton.addTarget(self, action: #selector(self.deleteCategory), for: .touchUpInside)
+            
+            return view
+        }()
+        
+        if let window = self.view.window {
+            blackView.frame = window.frame
+            blackView.alpha = 0
+            blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+            window.addSubview(blackView)
+            window.addSubview(popupView)
+            
+            let height: CGFloat = 300
+            let y = window.frame.height - height
+            self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
+            
+            self.blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.blackView.alpha = 1
+                self.popupView.frame = CGRect(x: 0, y: y, width: self.popupView.frame.width, height: self.popupView.frame.height)
+            }, completion: nil)
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+            }, completion: nil)
+        }
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.popupView.frame.origin.y -= keyboardSize.height
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            self.popupView.frame.origin.y += keyboardSize.height
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+    }
+
+    
+    @objc func changeCategory() {
+        guard let categoryTextField = self.categoryTextField,
+              let newCategoryName = categoryTextField.text,
+              let selectedCategory = self.selectedCategory else { return }
+        
+        guard !newCategoryName.isEmpty else {
+            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error, duration: 2.0)
+            return
+        }
+        
+        guard self.categories.filter({ category in
+            category.categoryName == newCategoryName
+        }).isEmpty else {
+            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error, duration: 2.0)
+            return
+        }
+        
+        categoryTextField.resignFirstResponder()
+        
+        NetworkManager.updateCategoryName(oldCategory: selectedCategory, newCategoryName: newCategoryName) { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    HomeViewController.reload {
+                        self.updateVideoCategories()
+                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                        self.handleDismiss()
+                    }
+                    
+                }
+            case .failure(let err):
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error, duration: 2.0)
+                self.handleDismiss()
+            }
+        }
+    }
+    
+    @objc func deleteCategory() {
+        guard let selectedCategory = self.selectedCategory,
+              let index = Manager2.shared.user.categoryIDs.firstIndex(of: selectedCategory.categoryID) else { return }
+        
+        Manager2.shared.user.categoryIDs.remove(at: index)
+        
+        NetworkManager.deleteCategory(category: selectedCategory) { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    HomeViewController.reload {
+                        self.updateVideoCategories()
+                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                        self.handleDismiss()
+                    }
+                    
+                }
+            case .failure(let err):
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error, duration: 2.0)
+                self.handleDismiss()
+            }
+        }
+    }
+    
+    @objc func handleDismiss() {
+        UIView.animate(withDuration: 0.5) {
+            
+            self.blackView.alpha = 0
+            if let window = self.view.window {
+                self.popupView.frame = CGRect(x: 0, y: window.frame.height, width: self.popupView.frame.width, height: self.popupView.frame.height)
+            }
+        }
+    }
+    
+
+//    
+//    func deleteCategoryOwner(category: Category, categoryIDs: [String]) {
+//        let params: Parameters = ["categoryID" : category.categoryID,
+//                                  "categoryName" : category.categoryName,
+//                                  "categoryIDs" : categoryIDs.joined(separator: ","),
+//                                  "ownerID" : category.ownerID,
+//                                  "userID" : Manager2.shared.getUserID()]
+//        
+//        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/delete_category_owner.php/",
+//                   method: .post,
+//                   parameters: params,
+//                   encoding: URLEncoding.default,
+//                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+//        
+//        .validate(statusCode: 200..<300)
+//        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+//            switch response.result {
+//            case .success:
+//                DispatchQueue.main.async {
+//                    HomeViewController.reload {
+//                        self.updateVideoCategories()
+//                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+//                    }
+//                }
+//            case .failure(let err):
+//                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+//            }
+//        })
+//    }
+    
+    func deleteCategoryAudience(category: Category, categoryIDs: [String]) {
+//        var audienceIDs = category.audienceID.components(separatedBy: ",")
+//        
+//        guard let index = audienceIDs.firstIndex(of: Manager2.shared.getUserID()) else { return }
+//        audienceIDs.remove(at: index)
+//        
+//        let params: Parameters = ["categoryID" : category.categoryID,
+//                                  "categoryName" : category.categoryName,
+//                                  "categoryIDs" : categoryIDs.joined(separator: ","),
+//                                  "audienceIDs" : audienceIDs.joined(separator: ","),
+//                                  "userID" : Manager2.shared.getUserID()]
+//        
+//        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/delete_category_audience.php/",
+//                   method: .post,
+//                   parameters: params,
+//                   encoding: URLEncoding.default,
+//                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
+//        
+//        .validate(statusCode: 200..<300)
+//        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+//            switch response.result {
+//            case .success:
+//                DispatchQueue.main.async {
+//                    HomeViewController.reload {
+//                        self.updateVideoCategories()
+//                        NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+//                    }
+//                }
+//            case .failure(let err):
+//                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
+//            }
+//        })
+    }
+    
+    func updateVideoCategories() {
+        self.categories = Manager2.shared.user.categories
+        self.collectionView.reloadData()
+        self.emptyCategoryLabel.isHidden = !self.categories.isEmpty
     }
 }

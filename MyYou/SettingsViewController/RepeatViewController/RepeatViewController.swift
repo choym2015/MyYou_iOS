@@ -17,9 +17,8 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet weak var repeatTableView: ContentSizedTableView!
     @IBOutlet weak var repeatTextField: UITextField!
     
-    var repeatSelections = Manager.shared.getRepeatSelection()
-    var selectedRepeatSelection = Manager.shared.getSelectedRepeatSelection()
-    let userID = Manager.shared.getUserID()
+    var repeatSelections = Manager2.shared.user.repeatSelections
+    var selectedRepeatSelection = Manager2.shared.user.selectedRepeatSelection
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,17 +63,6 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @IBAction func completeButtonPressed(_ sender: UIButton) {
-//        let documentReference = self.database.collection(userID).document("configurations")
-//        documentReference.updateData(["selectedRepeatSelection": self.selectedRepeatSelection]) { error in
-//            guard error == nil else {
-//                return
-//            }
-//            
-//            Manager.shared.setSelectedRepeatSelection(selectedRepeatSelection: self.selectedRepeatSelection)
-//            DispatchQueue.main.async {
-//                self.dismiss(animated: true)
-//            }
-//        }
         self.updateSelectedRepeatSelection()
     }
     
@@ -97,21 +85,6 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         self.updateRepeatSelections(repeatSelections: sortedRepeatSelections)
-//        let documentReference = self.database.collection(userID).document("configurations")
-//        documentReference.updateData(["repeatSelection": sortedRepeatSelections])
-//        documentReference.updateData(["repeatSelection": sortedRepeatSelections]) { error in
-//            guard error == nil else {
-//                return
-//            }
-//            
-//            DispatchQueue.main.async {
-//                Manager.shared.setRepeatSelection(repeatSelection: sortedRepeatSelections)
-//                self.repeatSelections = sortedRepeatSelections
-//                self.repeatTableView.reloadData()
-//                self.repeatTextField.text = ""
-//                self.repeatTextField.resignFirstResponder()
-//            }
-//        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -146,9 +119,9 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func updateSelectedRepeatSelection() {
-        let params: Parameters = ["selectedRepeatSelection" : self.selectedRepeatSelection, "userID" : userID]
+        let params: Parameters = ["selectedRepeatSelection" : self.selectedRepeatSelection, "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_selected_repeat_selection.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_selected_repeat_selection.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -158,7 +131,7 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setSelectedRepeatSelection(selectedRepeatSelection: self.selectedRepeatSelection)
+                Manager2.shared.user.selectedRepeatSelection = self.selectedRepeatSelection
                 DispatchQueue.main.async {
                     self.dismiss(animated: true)
                 }
@@ -170,9 +143,9 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func updateRepeatSelections(repeatSelections: [String]) {
         let listString = repeatSelections.joined(separator: ",")
-        let params: Parameters = ["repeatSelection" : listString, "userID" : userID]
+        let params: Parameters = ["repeatSelection" : listString, "userID" : Manager2.shared.getUserID()]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/update_repeat_selections.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/update_repeat_selections.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -182,7 +155,7 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                Manager.shared.setRepeatSelection(repeatSelection: repeatSelections)
+                Manager2.shared.user.repeatSelections = repeatSelections
                 DispatchQueue.main.async {
                     self.repeatSelections = repeatSelections
                     self.repeatTableView.reloadData()

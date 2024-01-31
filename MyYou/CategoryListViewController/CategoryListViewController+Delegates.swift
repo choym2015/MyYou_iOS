@@ -8,102 +8,111 @@
 import Foundation
 import UIKit
 import Alamofire
+import JDStatusBarNotification
 
-extension CategoryListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
+extension CategoryListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryListViewCell", for: indexPath) as? CategoryListViewCell else { return UICollectionViewCell() }
         
+        let category = self.categories[indexPath.row]
+        
         cell.titleLabel.font = .boldSystemFont(ofSize: 17)
-        cell.titleLabel.text = self.videoCategories[indexPath.row]
+        cell.titleLabel.text = category.categoryName
         cell.contentView.layer.cornerRadius = 10
         cell.contentView.layer.borderWidth = 1.0
         cell.contentView.layer.borderColor = UIColor.clear.cgColor
         cell.contentView.layer.masksToBounds = true
         cell.titleLabel.backgroundColor = .white
-        cell.titleLabel.textColor = .black
+        
+        if category.categoryName == "임시" {
+            cell.titleLabel.textColor = .lightGray
+            cell.isUserInteractionEnabled = false
+        } else {
+            cell.titleLabel.textColor = .black
+            cell.isUserInteractionEnabled = true
+        }
         
         return cell
     }
         
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.videoCategories.count
+        return self.categories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-      //  let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryListViewCell", for: indexPath) as! CategoryListViewCell
-      //  let newSize = cell.contentView.sizeThatFits(CGSize(width: cell.frame.width, height: CGFloat.leastNormalMagnitude))
         return CGSize(width: collectionView.frame.width - 40, height: 50)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let category = self.videoCategories[indexPath.row]
-        self.editCategory(oldCategory: category)
-    }
-    
-    /*func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.videoCategories.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryListTableViewCell", for: indexPath) as? CategoryListTableViewCell else { return UITableViewCell() }
+        let category = self.categories[indexPath.row]
         
-        cell.categoryLabel.text = self.videoCategories[indexPath.row]
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.categoryTableView.deselectRow(at: indexPath, animated: true)
-        let category = self.videoCategories[indexPath.row]
-        self.editCategory(oldCategory: category)
-    }
-    
-    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        let dragItem = UIDragItem(itemProvider: NSItemProvider())
-        dragItem.localObject = self.videoCategories[indexPath.row]
-        return [ dragItem ]
-    }
-    
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let mover = self.videoCategories.remove(at: sourceIndexPath.row)
-        self.videoCategories.insert(mover, at: destinationIndexPath.row)
-        
-        var updatedCategories = self.videoCategories
-        
-        if let firstCategory = self.categories.first,
-           firstCategory == "전체영상" {
-            updatedCategories.insert("전체영상", at: 0)
-        }
-        
-        updatedCategories.append("설정")
-        
-        let listString = updatedCategories.joined(separator: ",")
-        let params: Parameters = ["categories" : listString, "userID" : self.userID]
-        
-        AF.request("https://chopas.com/smartappbook/myyou/categoryTable/update_categories.php/",
-                   method: .post,
-                   parameters: params,
-                   encoding: URLEncoding.default,
-                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-        
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
+        NetworkManager.getReferenceUsersForCategory(category: category) { response in
             switch response.result {
             case .success:
-                Manager.shared.setCategories(categories: updatedCategories)
-                self.categories = updatedCategories
-                self.videoCategories = updatedCategories
-                self.videoCategories.removeAll { category in
-                    category == "전체영상" || category == "설정"
+                if let audiences = response.value?.product,
+                   !audiences.isEmpty {
+                    
+                } else {
+                    self.editCategory(category: category)
                 }
+            
                 
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: Notification.Name("updateCategory"), object: nil)
-                }
             case .failure(let err):
-                print(err.localizedDescription)
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error, duration: 2.0)
             }
-        })
-    }*/
+        }        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        return [UIDragItem(itemProvider: NSItemProvider())]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        if session.localDragSession != nil {
+            if destinationIndexPath?.row == 0{
+                return UICollectionViewDropProposal(operation: .cancel, intent: .unspecified)
+            }
+            
+            return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+        }
+    
+        return UICollectionViewDropProposal(operation: .cancel, intent: .unspecified)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        
+        guard let destinationIndexPath = coordinator.destinationIndexPath,
+              destinationIndexPath.row != 0 else {
+            return
+        }
+        
+        coordinator.items.forEach { dropItem in
+            guard let sourceIndexPath = dropItem.sourceIndexPath,
+                sourceIndexPath.row != 0 else { return }
+            let categoryCell = self.categories[sourceIndexPath.row]
+            
+            collectionView.performBatchUpdates({
+                collectionView.deleteItems(at: [sourceIndexPath])
+                collectionView.insertItems(at: [destinationIndexPath])
+                self.categories.remove(at: sourceIndexPath.row)
+                self.categories.insert(categoryCell, at: destinationIndexPath.row)
+            }, completion: { _ in
+                coordinator.drop(dropItem.dragItem, toItemAt: destinationIndexPath)
+                
+                let categoryIDs = self.categories.map { $0.categoryID }
+                NetworkManager.updateCategoryIDs(categoryIDs: categoryIDs) { response in
+                    switch response.result {
+                    case .success:
+                        HomeViewController.reload {
+                            NotificationCenter.default.post(name: Notification.Name("reloadCategory"), object: nil)
+                        }
+                    case .failure(let failure):
+                        NotificationPresenter.shared.present(failure.localizedDescription, includedStyle: .error, duration: 2.0)
+                    }
+                }
+                NetworkManager.updateCategoryIDs(categoryIDs: categoryIDs) { _ in }
+            })
+            
+        }
+    }
 }

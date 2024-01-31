@@ -5,8 +5,7 @@
 //  Created by SOO HYUN CHO on 12/22/23.
 //
 import UIKit
-import FirebaseFirestore
-import FirebaseFirestoreInternal
+import FirebaseAnalytics
 import JDStatusBarNotification
 import Malert
 import Alamofire
@@ -16,7 +15,7 @@ class ViewController: UIViewController {
     static let LOAD_CONFIGURATIONS_URL = "https://chopas.com/smartappbook/myyou/configurationTable/get_configurations.php"
 
     let userDefaults = UserDefaults.standard
-    let database = Firestore.firestore()
+//    let database = Firestore.firestore()
     var userID: String!
     
     let blackView = UIView()
@@ -74,9 +73,10 @@ class ViewController: UIViewController {
             return
         }
         
+        Manager2.shared.androidFCMKey = configuration.androidFcmKey
+        
         if let userID = self.userDefaults.string(forKey: "userID") {
-            Manager.shared.setUserID(userID: userID)
-            self.loadUserConfigs {
+            self.loadUserConfigs(userID: userID) {
                 self.moveToNextScreen()
             }
         } else {
@@ -84,27 +84,25 @@ class ViewController: UIViewController {
         }
     }
     
-    private func loadUserConfigs(closure: @escaping () -> Void) {
-        let userID = Manager.shared.getUserID()
+    private func loadUserConfigs(userID: String, closure: @escaping () -> Void) {
         let params: Parameters = ["userID" : userID]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/get_user.php/",
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/get_user3.php/",
                    method: .get,
                    parameters: params,
                    encoding: URLEncoding.default,
                    headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: User.self, completionHandler: { response in
+        .responseDecodable(of: User2.self, completionHandler: { response in
             switch response.result {
             case .success:
                 guard let user = response.value else { return }
-                
-                user.updateManager()
+                Manager2.shared.setUser(user: user)
+    
                 closure()
-//                self.moveToNextScreen()
                 
             case .failure(let err):
-                print(err.localizedDescription)
+                print(err.localizedDescription) 
             }
         })
     }
@@ -113,11 +111,18 @@ class ViewController: UIViewController {
         let userID = UUID().uuidString
         self.userID = userID
         self.userDefaults.setValue(self.userID, forKey: "userID")
-        Manager.shared.setUserID(userID: self.userID)
         
-        let params: Parameters = ["os" : "ios", "userID" : userID]
+        let tempCategoryID = UUID().uuidString
+        let manualCategoryID = UUID().uuidString
+        let categoryIDs = [tempCategoryID, manualCategoryID]
         
-        AF.request("https://chopas.com/smartappbook/myyou/userTable/create_product.php/",
+        let params: Parameters = ["os" : "ios", 
+                                  "userID" : userID,
+                                  "tempCategoryID": tempCategoryID,
+                                  "manualCategoryID": manualCategoryID,
+                                  "categoryIDs": categoryIDs.joined(separator: ",")]
+        
+        AF.request("https://chopas.com/smartappbook/myyou/userTable3/create_product2.php/",
                    method: .post,
                    parameters: params,
                    encoding: URLEncoding.default,
@@ -127,7 +132,12 @@ class ViewController: UIViewController {
         .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
             switch response.result {
             case .success:
-                self.loadUserConfigs {
+                Analytics.logEvent("user_created", parameters: [
+                    "userID" : userID,
+                    "os": "iOS"
+                ])
+                
+                self.loadUserConfigs(userID: userID) {
                     self.showAuthDialog()
                 }
             case .failure(let err):
