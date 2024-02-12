@@ -120,9 +120,11 @@ class VideoListViewController: UIViewController {
                 self.editVideoView?.videoCategoryButton.setTitle(category.categoryName, for: .normal)
             }
             
-            self.editVideoView?.videoCategoryButton.layer.borderWidth = 0.5
+            self.editVideoView?.videoCategoryButton.layer.borderWidth = 1.0
             self.editVideoView?.videoCategoryButton.addTarget(self, action: #selector(self.showCategories), for: .touchUpInside)
             self.editVideoView?.videoCategoryButton.layer.cornerRadius = 10
+            self.editVideoView?.videoCategoryButton.imageView?.layer.transform = CATransform3DMakeScale(0.5, 0.5, 0.5)
+
             
             self.editVideoView?.videoEditButton.layer.cornerRadius = 10
             self.editVideoView?.videoEditButton.addTarget(self, action: #selector(self.editItem), for: .touchUpInside)

@@ -15,7 +15,6 @@ class ViewController: UIViewController {
     static let LOAD_CONFIGURATIONS_URL = "https://chopas.com/smartappbook/myyou/configurationTable/get_configurations.php"
 
     let userDefaults = UserDefaults.standard
-//    let database = Firestore.firestore()
     var userID: String!
     
     let blackView = UIView()
@@ -68,12 +67,12 @@ class ViewController: UIViewController {
             self.versionLabel.text = "v \(appVersion)"
         }
         
-        guard configuration.version == appVersion else {
+        guard configuration.iosVersion == appVersion else {
             self.showUpdate(isHardUpdateRequired: configuration.hardUpdateRequired == "true" ? true : false)
             return
         }
         
-        Manager2.shared.androidFCMKey = configuration.androidFcmKey
+        Manager2.shared.fcmKey = configuration.fcmKey
         
         if let userID = self.userDefaults.string(forKey: "userID") {
             self.loadUserConfigs(userID: userID) {
@@ -238,8 +237,33 @@ class ViewController: UIViewController {
     }
     
     private func showBombAlert() {
+        let view = ErrorDialogView.instantiateFromNib()
+        
+        let malert = Malert(title: nil, customView: view, tapToDismiss: false, dismissOnActionTapped: true)
+        malert.buttonsAxis = .vertical
+        malert.buttonsSpace = 10
+        malert.buttonsSideMargin = 20
+        malert.buttonsBottomMargin = 20
+        malert.cornerRadius = 10
+        malert.separetorColor = .clear
+        malert.animationType = .fadeIn
+        malert.buttonsHeight = 50
+        malert.presentDuration = 1.0
+        
+        let completeButton = MalertAction(title: "확인") {
+            malert.dismiss(animated: true) {
+                self.dismiss(animated: true)
+            }
+        }
+        
+        completeButton.cornerRadius = 10
+        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#8851f5")
+        completeButton.tintColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
+        
+        malert.addAction(completeButton)
+    
         DispatchQueue.main.async {
-            //show bomb alert here
+            self.present(malert, animated: true, completion: nil)
         }
     }
     

@@ -90,6 +90,8 @@
 		C7A072632B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072622B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift */; };
 		C7A072652B6A0BB400359F91 /* NewMessageDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A072642B6A0BB400359F91 /* NewMessageDialogView.swift */; };
 		C7A072672B6A0BCC00359F91 /* NewMessageDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A072662B6A0BCC00359F91 /* NewMessageDialogView.xib */; };
+		C7A072692B6A30F600359F91 /* ErrorDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7A072682B6A30F600359F91 /* ErrorDialogView.xib */; };
+		C7A0726B2B6A310300359F91 /* ErrorDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0726A2B6A310300359F91 /* ErrorDialogView.swift */; };
 		C7DC8F1F2B5E59FA00FA10A9 /* NextTimeDialogView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */; };
 		C7DC8F212B5E5AF900FA10A9 /* NextTimeDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */; };
 		C7DC8F232B5E7B2100FA10A9 /* Manager2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */; };
@@ -218,6 +220,8 @@
 		C7A072622B68C3AA00359F91 /* SelectVideoToSendViewController+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectVideoToSendViewController+Delegates.swift"; sourceTree = "<group>"; };
 		C7A072642B6A0BB400359F91 /* NewMessageDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageDialogView.swift; sourceTree = "<group>"; };
 		C7A072662B6A0BCC00359F91 /* NewMessageDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewMessageDialogView.xib; sourceTree = "<group>"; };
+		C7A072682B6A30F600359F91 /* ErrorDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ErrorDialogView.xib; sourceTree = "<group>"; };
+		C7A0726A2B6A310300359F91 /* ErrorDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorDialogView.swift; sourceTree = "<group>"; };
 		C7DC8F1E2B5E59FA00FA10A9 /* NextTimeDialogView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NextTimeDialogView.xib; sourceTree = "<group>"; };
 		C7DC8F202B5E5AF900FA10A9 /* NextTimeDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextTimeDialogView.swift; sourceTree = "<group>"; };
 		C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager2.swift; sourceTree = "<group>"; };
@@ -309,6 +313,8 @@
 				C7DC8F222B5E7B2100FA10A9 /* Manager2.swift */,
 				C72FE02B2B5F5ED7009C68FC /* Helper.swift */,
 				C7A072462B677E4300359F91 /* NetworkManager.swift */,
+				C7A072682B6A30F600359F91 /* ErrorDialogView.xib */,
+				C7A0726A2B6A310300359F91 /* ErrorDialogView.swift */,
 			);
 			path = MyYou;
 			sourceTree = "<group>";
@@ -646,6 +652,7 @@
 				C72FE0392B60F45F009C68FC /* MessageItemCollectionViewCell.xib in Resources */,
 				54186D9D2B58FD2300F2117F /* AuthDialogView.xib in Resources */,
 				C79DFD772B47B934004AD425 /* RepeatViewController.xib in Resources */,
+				C7A072692B6A30F600359F91 /* ErrorDialogView.xib in Resources */,
 				5465C27F2B58B285003F53E9 /* CategoryListViewCell.xib in Resources */,
 				C79DFD9A2B4B8EC0004AD425 /* CategoryAlertView.xib in Resources */,
 			);
@@ -761,6 +768,7 @@
 				C79DFD982B4B8EB8004AD425 /* CategoryAlertView.swift in Sources */,
 				C72FE03D2B60F9EB009C68FC /* DownloadMessageViewController.swift in Sources */,
 				C75BDEC62B3EA67200AEC760 /* UIImageView+downloadImage.swift in Sources */,
+				C7A0726B2B6A310300359F91 /* ErrorDialogView.swift in Sources */,
 				C79DFD9E2B4BAB99004AD425 /* VideoEditView.swift in Sources */,
 				C75BDEC02B3EA53900AEC760 /* PaddingLabel.swift in Sources */,
 				C7A072582B68BF4F00359F91 /* SelectCategoryToSendViewController+Delegate.swift in Sources */,

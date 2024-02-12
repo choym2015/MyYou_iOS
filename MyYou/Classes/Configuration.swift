@@ -10,7 +10,7 @@ import Foundation
 struct Configuration: Codable {
     let bomb: String
     let version: String
+    let iosVersion: String
     let hardUpdateRequired: String
-//    let iosFcmKey: String
-    let androidFcmKey: String
+    let fcmKey: String
 }

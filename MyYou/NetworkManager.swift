@@ -324,7 +324,7 @@ public class NetworkManager {
         
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
-            "Authorization": "key=\(Manager2.shared.getAndroidFCMKey())"
+            "Authorization": "key=\(Manager2.shared.getFCMKey())"
         ]
         
         AF.request("https://fcm.googleapis.com/fcm/send",

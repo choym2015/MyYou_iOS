@@ -35,23 +35,46 @@ class RepeatViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         guard let index = self.repeatSelections.firstIndex(of: self.selectedRepeatSelection) else { return }
         self.repeatTableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .none)
+        
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+//        self.view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        self.repeatTextField.resignFirstResponder()
     }
     
     func setupUI() {
-        cancelButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#FFFFFF")
-        cancelButton.tintColor = UIColor().hexStringToUIColor(hex: "#4781ed")
-        cancelButton.layer.borderColor = UIColor().hexStringToUIColor(hex: "#4781ed").cgColor
-        cancelButton.layer.borderWidth = 1
-        cancelButton.layer.cornerRadius = 20
+        cancelButton.backgroundColor = .cancel
+        cancelButton.tintColor = .white
+        cancelButton.layer.cornerRadius = 10
         
-        completeButton.layer.cornerRadius = 20
-        completeButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#4781ed")
+        completeButton.layer.cornerRadius = 10
+        completeButton.backgroundColor = .colorPrimary
         completeButton.tintColor = .white
+        
+        addRepeatButton.backgroundColor = .cancel
+        addRepeatButton.isUserInteractionEnabled = false
+        addRepeatButton.isEnabled = false
+        addRepeatButton.layer.cornerRadius = 10
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.addSelectionNumber()
         return true
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if let text = textField.text,
+           !text.isEmpty {
+            addRepeatButton.backgroundColor = .colorPrimary
+            addRepeatButton.isEnabled = true
+            addRepeatButton.isUserInteractionEnabled = true
+        } else {
+            addRepeatButton.backgroundColor = .cancel
+            addRepeatButton.isEnabled = false
+            addRepeatButton.isUserInteractionEnabled = false
+        }
     }
 
     @IBAction func addRepeatButtonPressed(_ sender: UIButton) {

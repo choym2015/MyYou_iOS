@@ -27,10 +27,6 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         addCategoryButton.layer.cornerRadius = 10
         self.categoryTableView.register(UINib(nibName: "RepeatTableViewCell", bundle: Bundle.main), forCellReuseIdentifier: "RepeatTableViewCell")
         
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
         self.loadCategories()
         self.setupUI()
     }
@@ -57,8 +53,10 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         cancelImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
         categoryTextField.delegate = self
         addCategoryButton.layer.cornerRadius = 10
-        addCategoryButton.backgroundColor = UIColor().hexStringToUIColor(hex: "#6200EE")
+        addCategoryButton.backgroundColor = .cancel
         addCategoryButton.tintColor = .white
+        addCategoryButton.isEnabled = false
+        addCategoryButton.isUserInteractionEnabled = false
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -67,59 +65,59 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         return true
     }
     
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if let text = textField.text,
+           !text.isEmpty {
+            addCategoryButton.backgroundColor = .colorPrimary
+            addCategoryButton.isEnabled = true
+            addCategoryButton.isUserInteractionEnabled = true
+        } else {
+            addCategoryButton.backgroundColor = .cancel
+            addCategoryButton.isEnabled = false
+            addCategoryButton.isUserInteractionEnabled = false
+        }
+    }
+    
     func addCategory() {
-//        guard let category = self.categoryTextField.text, !category.isEmpty else {
-//            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error)
-//            return
-//        }
-//        
-//        if Helper.getCategory(categoryName: category) != nil {
-//            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error)
-//            return
-//        }
-//        
-//        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), audienceID: "", categoryName: category)
-//        Manager2.shared.user.categories.insert(newCategory, at: 1)
-//        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
-//        
-//        let listString = Manager2.shared.user.categoryIDs.joined(separator: ",")
-//        
-//        let params: Parameters = [
-//            "userID" : Manager2.shared.getUserID(),
-//            "ownerID" : newCategory.ownerID,
-//            "audienceID" : "",
-//            "categoryName" : newCategory.categoryName,
-//            "categoryID" : newCategory.categoryID,
-//            "categoryIDs" : listString
-//        ]
-//        
-//        AF.request("https://chopas.com/smartappbook/myyou/categoryTable2/create_category.php/",
-//                   method: .post,
-//                   parameters: params,
-//                   encoding: URLEncoding.default,
-//                   headers: ["Content-Type":"application/x-www-form-urlencoded", "Accept":"application/x-www-form-urlencoded"])
-//        
-//        .validate(statusCode: 200..<300)
-//        .responseDecodable(of: SimpleResponse<String>.self, completionHandler: { response in
-//            switch response.result {
-//            case .success:
-//                self.updateRequired = true
-//                DispatchQueue.main.async {
-//                    self.categoryTextField.text = ""
-//                    self.categoryTextField.resignFirstResponder()
-//                    self.categories.insert(newCategory, at: 1)
-//                    self.categoryTableView.reloadData()
-//                }
-//               
-//            case .failure(let err):
-//                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error)
-//            }
-//        })
+        guard let categoryTextField = self.categoryTextField,
+                let newCategoryName = categoryTextField.text else { return }
+        
+        guard !newCategoryName.isEmpty else {
+            NotificationPresenter.shared.present("카테고리 제목을 입력해주세요", includedStyle: .error, duration: 2.0)
+            return
+        }
+        
+        guard self.categories.filter({ category in
+            category.categoryName == newCategoryName
+        }).isEmpty else {
+            NotificationPresenter.shared.present("같은 이름의 카테고리가 있습니다", includedStyle: .error, duration: 2.0)
+            return
+        }
+        
+        let newCategory = Category(categoryID: UUID().uuidString, ownerID: Manager2.shared.getUserID(), referenceCategoryID: "", categoryName: newCategoryName, videoIDs: [])
+        
+        Manager2.shared.user.categories.insert(newCategory, at: 1)
+        Manager2.shared.user.categoryIDs.insert(newCategory.categoryID, at: 1)
+        
+        categoryTextField.resignFirstResponder()
+        
+        NetworkManager.createCategory(newCategory: newCategory) { response in
+            switch response.result {
+            case .success:
+                DispatchQueue.main.async {
+                    self.categoryTextField.text = ""
+                    self.categories.insert(newCategory, at: 1)
+                    self.categoryTableView.reloadData()
+                    self.updateRequired = true
+                }
+            case .failure(let err):
+                NotificationPresenter.shared.present(err.localizedDescription, includedStyle: .error, duration: 2.0)
+                self.handleDismiss()
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RepeatTableViewCell", for: indexPath) as? RepeatTableViewCell else { return }
-        
         let selectedCategory = self.categories[indexPath.row]
         
         self.dismiss(animated: true) {
@@ -149,18 +147,6 @@ class SelectCategoryViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         return cell
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            self.view.frame.origin.y -= keyboardSize.height
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            self.view.frame.origin.y += keyboardSize.height
-        }
     }
     
     @IBAction func addCategoryPressed(_ sender: UIButton) {

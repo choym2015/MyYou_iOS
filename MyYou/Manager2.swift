@@ -11,7 +11,7 @@ public class Manager2 {
     public static let shared = Manager2()
     
     public var user: User2!
-    public var androidFCMKey: String!
+    public var fcmKey: String!
     
     public func setUser(user: User2) {
         if user.categoryIDs.count != user.categories.count {
@@ -106,8 +106,8 @@ public class Manager2 {
         return Manager2.shared.user.userPhoneNumber
     }
     
-    public func getAndroidFCMKey() -> String {
-        return Manager2.shared.androidFCMKey
+    public func getFCMKey() -> String {
+        return Manager2.shared.fcmKey
     }
 }
 

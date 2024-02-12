@@ -46,7 +46,6 @@ class SettingsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         DispatchQueue.main.async {
             if Manager2.shared.user.userPhoneNumber.isEmpty {
-                self.pushLabelSwitch.isEnabled = false
             } else {
                 self.pushLabelSwitch.isEnabled = true
                 self.pushLabelSwitch.isOn = Manager2.shared.user.pushEnabled
@@ -115,7 +114,19 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func pushSwitchChanged(_ sender: UISwitch) {
-//        self.updatePushEnabled(pushEnabled: sender.isOn)
+        if Manager2.shared.getUserPhoneNumber().isEmpty {
+            NotificationPresenter.shared.present("본인인증후에 사용할 수 있는 기능입니다", includedStyle: .error, duration: 2.0)
+            
+            DispatchQueue.main.async {
+                let authVC = AuthUserViewController(nibName: "AuthUserViewController", bundle: Bundle.main)
+                authVC.modalPresentationStyle = .fullScreen
+                self.navigationController?.pushViewController(authVC, animated: true)
+                self.pushLabelSwitch.isOn = false
+            }
+            
+            return
+        }
+        
         NetworkManager.updatePushNotification(pushEnabled: sender.isOn) { response in
             switch response.result {
             case .success:

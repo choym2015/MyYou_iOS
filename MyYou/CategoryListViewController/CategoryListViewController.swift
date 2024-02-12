@@ -21,6 +21,7 @@ class CategoryListViewController: UIViewController, UITextFieldDelegate {
     
     var selectedCategory: Category?
     var categoryTextField: UITextField?
+    var completeButton: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,10 +78,13 @@ class CategoryListViewController: UIViewController, UITextFieldDelegate {
             let view = CategoryListAddView.instantiateFromNib()
             view.categoryTextField.delegate = self
             self.categoryTextField = view.categoryTextField
+            self.completeButton = view.completeButton
             view.titleLabel.text = "카테고리 추가"
             view.cancelButton.addTarget(self, action: #selector(self.handleDismiss), for: .touchUpInside)
             view.completeButton.layer.cornerRadius = 10
-            view.completeButton.setTitle("카테고리 추가", for: .normal)
+            view.completeButton.setTitle("추가", for: .normal)
+            view.completeButton.isEnabled = false
+            view.completeButton.backgroundColor = .cancel
             
             view.completeButton.addTarget(self, action: #selector(self.addCategoryButtonPressed), for: .touchUpInside)
         
@@ -153,6 +157,7 @@ class CategoryListViewController: UIViewController, UITextFieldDelegate {
             let view = CategoryAlertView.instantiateFromNib()
             self.selectedCategory = category
             self.categoryTextField = view.categoryTextField
+            self.completeButton = view.completeButton
             view.categoryTextField.text = category.categoryName
             view.categoryTextField.delegate = self
             view.cancelButton.addTarget(self, action: #selector(self.handleDismiss), for: .touchUpInside)
@@ -203,7 +208,21 @@ class CategoryListViewController: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
     }
-
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        guard let completeButton = self.completeButton else { return }
+        
+        if let text = textField.text,
+           !text.isEmpty {
+            completeButton.isEnabled = true
+            completeButton.isUserInteractionEnabled = true
+            completeButton.backgroundColor = .colorPrimary
+        } else {
+            completeButton.isEnabled = false
+            completeButton.isUserInteractionEnabled = false
+            completeButton.backgroundColor = .cancel
+        }
+    }
     
     @objc func changeCategory() {
         guard let categoryTextField = self.categoryTextField,
@@ -267,6 +286,8 @@ class CategoryListViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func handleDismiss() {
+        self.categoryTextField?.resignFirstResponder()
+        
         UIView.animate(withDuration: 0.5) {
             
             self.blackView.alpha = 0

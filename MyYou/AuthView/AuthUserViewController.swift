@@ -40,6 +40,13 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
         if !self.fromAuthDialog {
             self.setupNavigationBar()
         }
+        
+        self.sendOtpButton.isEnabled = false
+        self.sendOtpButton.isUserInteractionEnabled = false
+        self.sendOtpButton.backgroundColor = .cancel
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDismiss))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
     func setupNavigationBar() {
@@ -145,7 +152,7 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func handleDismiss() {
-        self.view.resignFirstResponder()
+        view.endEditing(true)
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -196,6 +203,31 @@ class AuthUserViewController: UIViewController, UITextFieldDelegate {
             navigationController.modalPresentationStyle = .fullScreen
             
             self.present(navigationController, animated: true, completion: nil)
+        }
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if let text = textField.text,
+           !text.isEmpty {
+            if textField == self.phoneTextField {
+                self.sendOtpButton.isEnabled = true
+                self.sendOtpButton.isUserInteractionEnabled = true
+                self.sendOtpButton.backgroundColor = .colorPrimary
+            } else if textField == self.otpTextField {
+                self.submitButton.isEnabled = false
+                self.submitButton.isUserInteractionEnabled = false
+                self.submitButton.backgroundColor = .cancel
+            }
+        } else {
+            if textField == self.phoneTextField {
+                self.sendOtpButton.isEnabled = false
+                self.sendOtpButton.isUserInteractionEnabled = false
+                self.sendOtpButton.backgroundColor = .cancel
+            } else if textField == self.otpTextField {
+                self.submitButton.isEnabled = false
+                self.submitButton.isUserInteractionEnabled = false
+                self.submitButton.backgroundColor = .cancel
+            }
         }
     }
 }
